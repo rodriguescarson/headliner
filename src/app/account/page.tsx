@@ -23,7 +23,7 @@ export default async function AccountPage() {
   return (
     <main className="rail-grid flex-1 w-full px-4 py-10 md:px-8">
       <div className="on-ground mx-auto grid w-full max-w-2xl gap-6">
-        <h1 className="font-condensed text-2xl font-semibold uppercase tracking-wide">
+        <h1 className="font-display text-2xl font-bold">
           {t("settings.title")}
         </h1>
         <Plate legend={t("auth.signedInAs")}>

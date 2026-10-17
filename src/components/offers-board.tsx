@@ -1,6 +1,5 @@
 "use client";
 
-import { Play } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { money, pct } from "@/lib/deal/deal-math";
@@ -107,9 +106,8 @@ export function OffersBoard({ rows, note }: { rows: Row[]; note?: string }) {
           type="button"
           onClick={runAll}
           disabled={busy}
-          className="inline-flex h-11 items-center gap-2 rounded-md bg-action px-5 font-condensed text-base font-semibold uppercase tracking-wider text-action-ink shadow-panel disabled:opacity-50"
+          className="inline-flex h-11 items-center gap-2 rounded-md bg-action px-5 font-display text-base font-semibold text-action-ink shadow-panel disabled:opacity-50"
         >
-          <Play size={16} strokeWidth={2.25} aria-hidden="true" />
           {busy ? t("board.running") : t("board.runAll")}
         </button>
         {tally && <output className="legend">{tally}</output>}
@@ -146,7 +144,7 @@ export function OffersBoard({ rows, note }: { rows: Row[]; note?: string }) {
               const o = p.ok ? p.offer : null;
               return (
                 <tr key={r.line} className="border-t border-rail align-middle">
-                  <td className="px-3 py-2 font-condensed text-legend">
+                  <td className="px-3 py-2 font-display text-legend">
                     {String(i + 1).padStart(2, "0")}
                   </td>
                   <td className="px-3 py-2">
@@ -159,21 +157,21 @@ export function OffersBoard({ rows, note }: { rows: Row[]; note?: string }) {
                     <span className="block text-legend">{r.label}</span>
                   </td>
                   <td className="px-3 py-2">{o?.city ?? "—"}</td>
-                  <td className="px-3 py-2 text-right font-condensed">
+                  <td className="px-3 py-2 text-right font-display">
                     {o ? o.capacity.toLocaleString("en-US") : "—"}
                   </td>
-                  <td className="px-3 py-2 text-right font-condensed">
+                  <td className="px-3 py-2 text-right font-display">
                     {o ? money(o.ticketPrice) : "—"}
                   </td>
-                  <td className="px-3 py-2 text-right font-condensed">
+                  <td className="px-3 py-2 text-right font-display">
                     {o ? money(o.guarantee) : "—"}
                   </td>
-                  <td className="px-3 py-2 text-right font-condensed">
+                  <td className="px-3 py-2 text-right font-display">
                     {s.phase === "done" && Number.isFinite(s.breakEvenPct)
                       ? pct(s.breakEvenPct)
                       : "—"}
                   </td>
-                  <td className="px-3 py-2 font-condensed">
+                  <td className="px-3 py-2 font-display">
                     {s.phase === "done"
                       ? (s.affinity ?? t("verdict.noSignal"))
                       : "—"}

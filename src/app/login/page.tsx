@@ -14,9 +14,7 @@ export default async function LoginPage() {
   return (
     <main className="rail-grid flex-1 w-full px-4 py-10 md:px-8">
       <div className="on-ground mx-auto w-full max-w-md">
-        <h1 className="font-condensed text-2xl font-semibold uppercase tracking-wide">
-          {t("auth.signIn")}
-        </h1>
+        <h1 className="font-display text-2xl font-bold">{t("auth.signIn")}</h1>
         <p className="mt-1 text-legend">{t("auth.why")}</p>
         <Plate className="mt-6">
           <AuthForm mode="signin" appleEnabled={appleSignInEnabled()} />

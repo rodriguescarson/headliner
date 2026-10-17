@@ -9,7 +9,7 @@ import { evidenceMode } from "@/lib/check";
 import { t } from "@/lib/i18n";
 import { RULES_VERSION } from "@/lib/rules";
 
-export const metadata: Metadata = { title: "The offer desk" };
+export const metadata: Metadata = { title: "Check a deal" };
 
 export default function Home() {
   const mode = evidenceMode();

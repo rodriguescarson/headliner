@@ -8,7 +8,7 @@ import { t } from "@/lib/i18n";
 import { checkStore, offerLine } from "@/lib/storage";
 
 export const metadata: Metadata = {
-  title: "Shared verdict",
+  title: "Shared result",
   robots: { index: false },
 };
 
@@ -25,7 +25,7 @@ export default async function SharedPage({ params }: PageProps<"/s/[id]">) {
           <div className="on-ground mb-5 flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="legend">{t("share.title")}</p>
-              <p className="mt-1 font-condensed text-xl">{line}</p>
+              <p className="mt-1 font-display text-xl">{line}</p>
               <p className="mt-1 flex items-center gap-2">
                 <Lamp
                   tone={shared.mode === "live" ? "green" : "amber"}

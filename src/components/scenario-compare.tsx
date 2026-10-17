@@ -30,7 +30,7 @@ export function ScenarioCompare({
   return (
     <section aria-live="polite" className="grid gap-4">
       <div className="on-ground flex flex-wrap items-baseline justify-between gap-3">
-        <h2 className="font-condensed text-2xl font-semibold uppercase tracking-wide">
+        <h2 className="font-display text-2xl font-bold">
           {t("scenario.title")} · {scenarioLabel(scenario)}
         </h2>
         <button
@@ -89,7 +89,7 @@ function Column({
     <div className="plate relative p-5">
       <Screws />
       <p className="legend">{legend}</p>
-      <h3 className="mt-2 flex items-center gap-3 font-condensed text-2xl font-semibold uppercase tracking-wide">
+      <h3 className="mt-2 flex items-center gap-3 font-display text-2xl font-bold">
         <VerdictLamp status={v.status} size={28} />
         {t(`verdict.status.${v.status}`)}
       </h3>
@@ -125,7 +125,7 @@ function Row({ k, v }: { k: string; v: string }) {
   return (
     <div className="flex justify-between gap-3">
       <dt className="text-legend">{k}</dt>
-      <dd className="text-right font-condensed text-base">{v}</dd>
+      <dd className="text-right font-display text-base">{v}</dd>
     </div>
   );
 }

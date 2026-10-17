@@ -1,6 +1,5 @@
 "use client";
 
-import { Play } from "lucide-react";
 import { useState } from "react";
 import { t } from "@/lib/i18n";
 import type { SuiteResult } from "@/lib/qloo/suite";
@@ -31,9 +30,8 @@ export function SuiteRunner({ mode }: { mode: "live" | "sample" }) {
           type="button"
           onClick={run}
           disabled={busy}
-          className="inline-flex h-11 items-center gap-2 rounded-md bg-action px-5 font-condensed text-base font-semibold uppercase tracking-wider text-action-ink shadow-panel disabled:opacity-50"
+          className="inline-flex h-11 items-center gap-2 rounded-md bg-action px-5 font-display text-base font-semibold text-action-ink shadow-panel disabled:opacity-50"
         >
-          <Play size={16} strokeWidth={2.25} aria-hidden />
           {busy ? t("suite.running") : t("suite.run")}
         </button>
         <span
@@ -58,7 +56,7 @@ export function SuiteRunner({ mode }: { mode: "live" | "sample" }) {
             <tbody>
               {result.steps.map((s) => (
                 <tr key={s.name} className="border-t border-rail align-top">
-                  <td className="px-3 py-2 font-condensed">{s.name}</td>
+                  <td className="px-3 py-2 font-display">{s.name}</td>
                   <td className="px-3 py-2">
                     {s.trace ? (
                       <Lamp
@@ -70,12 +68,12 @@ export function SuiteRunner({ mode }: { mode: "live" | "sample" }) {
                       <Lamp tone="off" label="—" size={10} />
                     )}
                   </td>
-                  <td className="px-3 py-2 font-condensed">
+                  <td className="px-3 py-2 font-display">
                     {s.trace
                       ? `${s.trace.ms}ms${s.trace.cached ? " cached" : ""}`
                       : "—"}
                   </td>
-                  <td className="px-3 py-2 font-condensed">
+                  <td className="px-3 py-2 font-display">
                     {s.trace?.resultCount ?? "—"}
                   </td>
                   <td className="break-all px-3 py-2 text-legend">

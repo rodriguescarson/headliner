@@ -1,6 +1,5 @@
 "use client";
 
-import { Download, Trash2 } from "lucide-react";
 import { useActionState, useId, useState } from "react";
 import { type SaveState, saveSettings } from "@/app/account/actions";
 import type { Profile } from "@/lib/account/profile";
@@ -39,7 +38,7 @@ export function SettingsForm({
                 value={th}
                 defaultChecked={(profile?.theme ?? initialTheme) === th}
               />
-              <span className="font-condensed text-base font-semibold uppercase tracking-wide">
+              <span className="font-display text-base font-semibold">
                 {t(`settings.themes.${th}`)}
               </span>
             </label>
@@ -89,7 +88,7 @@ export function SettingsForm({
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex h-11 items-center rounded-md bg-action px-5 font-condensed text-base font-semibold uppercase tracking-wider text-action-ink shadow-panel disabled:opacity-50"
+          className="inline-flex h-11 items-center rounded-md bg-action px-5 font-display text-base font-semibold text-action-ink shadow-panel disabled:opacity-50"
         >
           {pending ? t("settings.saving") : t("settings.save")}
         </button>
@@ -136,9 +135,8 @@ export function DataControls() {
         <p className="text-legend">{t("settings.exportHelp")}</p>
         <a
           href="/api/account/export"
-          className="plate mt-3 inline-flex h-10 items-center gap-2 px-4 font-condensed font-semibold uppercase tracking-wider"
+          className="plate mt-3 inline-flex h-10 items-center gap-2 px-4 font-display font-semibold"
         >
-          <Download size={14} aria-hidden="true" />
           {t("settings.exportButton")}
         </a>
       </Plate>
@@ -153,7 +151,7 @@ export function DataControls() {
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             autoComplete="off"
-            className="glass h-10 w-40 px-3 font-condensed outline-none"
+            className="glass h-10 w-40 px-3 font-display outline-none"
           />
           <button
             type="button"
@@ -161,9 +159,8 @@ export function DataControls() {
             disabled={
               confirm !== "DELETE" || state === "busy" || state === "done"
             }
-            className="inline-flex h-10 items-center gap-2 rounded-md border border-lamp-red px-4 font-condensed font-semibold uppercase tracking-wider text-lamp-red disabled:opacity-40"
+            className="inline-flex h-10 items-center gap-2 rounded-md border border-lamp-red px-4 font-display font-semibold text-lamp-red disabled:opacity-40"
           >
-            <Trash2 size={14} aria-hidden="true" />
             {state === "busy"
               ? t("settings.deleting")
               : t("settings.deleteButton")}

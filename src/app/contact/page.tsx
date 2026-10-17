@@ -13,7 +13,7 @@ export default function ContactPage() {
   return (
     <main className="rail-grid flex-1 w-full px-4 py-10 md:px-8">
       <div className="on-ground mx-auto w-full max-w-xl">
-        <h1 className="font-condensed text-2xl font-semibold uppercase tracking-wide">
+        <h1 className="font-display text-2xl font-bold">
           {t("contact.title")}
         </h1>
         <p className="mt-1 text-legend">{t("contact.intro")}</p>

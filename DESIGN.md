@@ -30,23 +30,23 @@ colors:
   screw-highlight: "rgba(255, 255, 255, 0.5)"
 typography:
   headline:
-    fontFamily: "Barlow Condensed, Barlow, sans-serif"
+    fontFamily: "Bricolage Grotesque, Hanken Grotesk, sans-serif"
     fontSize: "1.5rem"
     fontWeight: 600
     lineHeight: 1.333
-    letterSpacing: "0.025em"
+    letterSpacing: "-0.01em"
   reading:
-    fontFamily: "Barlow Condensed, Barlow, sans-serif"
+    fontFamily: "Bricolage Grotesque, Hanken Grotesk, sans-serif"
     fontSize: "1.5rem"
     fontWeight: 600
     lineHeight: 1
     letterSpacing: "normal"
   title:
-    fontFamily: "Barlow Condensed, Barlow, sans-serif"
+    fontFamily: "Bricolage Grotesque, Hanken Grotesk, sans-serif"
     fontSize: "1rem"
     fontWeight: 600
     lineHeight: 1.5
-    letterSpacing: "0.025em"
+    letterSpacing: "-0.01em"
   body:
     fontFamily: "Barlow, system-ui, sans-serif"
     fontSize: "15px"
@@ -54,19 +54,19 @@ typography:
     lineHeight: 1.5
     letterSpacing: "normal"
   legend:
-    fontFamily: "Barlow Condensed, Barlow, sans-serif"
-    fontSize: "0.75rem"
+    fontFamily: "Hanken Grotesk, sans-serif"
+    fontSize: "0.8125rem"
     fontWeight: 500
     lineHeight: 1.5
-    letterSpacing: "0.12em"
+    letterSpacing: "0.005em"
   control:
-    fontFamily: "Barlow Condensed, Barlow, sans-serif"
+    fontFamily: "Bricolage Grotesque, Hanken Grotesk, sans-serif"
     fontSize: "1rem"
     fontWeight: 600
     lineHeight: 1.5
     letterSpacing: "0.05em"
   entry:
-    fontFamily: "Barlow Condensed, Barlow, sans-serif"
+    fontFamily: "Bricolage Grotesque, Hanken Grotesk, sans-serif"
     fontSize: "1.125rem"
     fontWeight: 500
     lineHeight: "1.75rem"
@@ -335,3 +335,12 @@ Gently radiused rectangles, almost square. Plates and glass are 6px; buttons and
 - **Highlight values outside the palette:** `engrave-highlight` (`rgba(255, 255, 255, 0.35)`, the engrave text-shadow for legends on bare ground) and `screw-highlight` (`rgba(255, 255, 255, 0.5)`, the screw's top highlight) are intentional parts of the engraving system. The dark scene swaps the engrave for a black shadow (`0 -1px 0 rgba(0, 0, 0, 0.5)`).
 - **Placeholder on dark glass:** the documenter measured the original `#6b655a` at 4.36:1 on dark glass; it is now `#5e5848` (5.35:1 dark, 5.87:1 light), recorded in `scripts/contrast.mjs`.
 - **Finish review:** two fix rounds on 2026-10-17; every visual finding scored resolved on the recaptures in `.impeccable/review/`. The verdict covers the scored fixes, not a fresh hunt of the whole surface.
+
+## Typography revision, 2026-10-18
+
+Carson rejected the condensed tracked-uppercase voice ("the fonts suck"). The system now runs two faces and no uppercase:
+
+- **Hanken Grotesk** for body, labels and controls (400/500/600, 15px root, tabular numerals). Labels (`.legend`) are 0.8125rem, weight 500, sentence case, letter-spacing 0.005em.
+- **Bricolage Grotesque** for headings, readings and the wordmark (`.font-display`, 500/600/700, letter-spacing -0.01em; wordmark -0.02em at 1.25rem bold).
+- Decorative icons were removed from navigation, buttons and the story; the only icons left are functional marks: the meter logo (`src/components/logo.tsx`, `public/brand/mark.svg`, `src/app/icon.svg`), lamps, and the Google and Apple sign-in marks.
+- Product terms replaced console jargon in the UI: Check a deal, Offers, API status, Settings; Deal economics, Audience evidence, Outside this check, Suggested fixes, API calls. The console vocabulary stays in this document and in component names only.

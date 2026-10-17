@@ -1,6 +1,5 @@
 "use client";
 
-import { Play } from "lucide-react";
 import Link from "next/link";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import type { CheckResponse } from "@/lib/check";
@@ -159,14 +158,13 @@ export function OfferDesk({ rulesVersion }: Props) {
             onChange={(e) => setLine(e.target.value)}
             placeholder={t("desk.placeholder")}
             rows={2}
-            className="glass w-full resize-y px-4 py-3 font-condensed text-lg leading-7 outline-none focus-visible:outline-2"
+            className="glass w-full resize-y px-4 py-3 font-display text-lg leading-7 outline-none focus-visible:outline-2"
           />
           <button
             type="submit"
             disabled={busy || !line.trim()}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-action px-5 font-condensed text-base font-semibold uppercase tracking-wider text-action-ink shadow-panel transition-transform duration-150 hover:-translate-y-px active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-action px-5 font-display text-base font-semibold text-action-ink shadow-panel transition-transform duration-150 hover:-translate-y-px active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <Play size={16} strokeWidth={2.25} aria-hidden />
             {phase === "queued"
               ? t("desk.queued")
               : phase === "running"
@@ -242,7 +240,7 @@ export function OfferDesk({ rulesVersion }: Props) {
 
       <p className="text-legend">
         <Legend>{t("desk.rules")}</Legend>{" "}
-        <span className="ml-2 font-condensed">{rulesVersion}</span>
+        <span className="ml-2 font-display">{rulesVersion}</span>
       </p>
     </div>
   );

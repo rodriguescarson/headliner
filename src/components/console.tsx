@@ -271,7 +271,7 @@ export function Meter({
         </g>
       </svg>
       <div className="mt-1 flex items-baseline justify-between gap-3">
-        <span className="font-condensed text-2xl font-semibold leading-none text-[#15181b]">
+        <span className="font-display text-2xl font-bold leading-none text-[#15181b]">
           {muted ? (mutedText ?? "—") : reading}
         </span>
         {sub && !muted && <span className="legend legend-glass">{sub}</span>}
@@ -295,9 +295,7 @@ export function PatchPoint({
       <Screws />
       <div className="flex items-center gap-2">
         <Lamp tone={tone} size={12} />
-        <h3 className="font-condensed text-base font-semibold uppercase tracking-wide">
-          {title}
-        </h3>
+        <h3 className="font-display text-base font-semibold">{title}</h3>
       </div>
       <div className="mt-2">{children}</div>
     </div>

@@ -58,7 +58,7 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
       <button
         type="submit"
         disabled={state === "busy"}
-        className="inline-flex h-11 items-center justify-center rounded-md bg-action px-4 font-condensed text-base font-semibold uppercase tracking-wider text-action-ink shadow-panel disabled:opacity-50"
+        className="inline-flex h-11 items-center justify-center rounded-md bg-action px-4 font-display text-base font-semibold text-action-ink shadow-panel disabled:opacity-50"
       >
         {t("contact.send")}
       </button>

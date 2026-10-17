@@ -1,6 +1,5 @@
 "use client";
 
-import { Mail } from "lucide-react";
 import { type FormEvent, useId, useState } from "react";
 import { t } from "@/lib/i18n";
 import { createClient } from "@/lib/supabase/client";
@@ -132,9 +131,8 @@ export function AuthForm({
         <button
           type="submit"
           disabled={busy}
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-action px-4 font-condensed text-base font-semibold uppercase tracking-wider text-action-ink shadow-panel disabled:opacity-50"
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-action px-4 font-display text-base font-semibold text-action-ink shadow-panel disabled:opacity-50"
         >
-          <Mail size={16} strokeWidth={2.25} aria-hidden />
           {mode === "signup" ? t("auth.signUp") : t("auth.signIn")}
         </button>
         {mode === "signin" && (

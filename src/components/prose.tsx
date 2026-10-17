@@ -17,9 +17,7 @@ export function Prose({
     <main className="rail-grid flex-1 w-full px-4 py-10 md:px-8">
       <article className="plate relative mx-auto w-full max-w-[72ch] p-6 md:p-8">
         <Screws />
-        <h1 className="font-condensed text-2xl font-semibold uppercase tracking-wide">
-          {title}
-        </h1>
+        <h1 className="font-display text-2xl font-bold">{title}</h1>
         {intro && <p className="mt-2 text-legend">{intro}</p>}
         <p className="legend mt-3">
           {t("legal.updated", { date: LEGAL.lastUpdated })}
@@ -42,7 +40,7 @@ export function Section({
 }) {
   return (
     <section>
-      <h2 className="mb-2 font-condensed text-base font-semibold uppercase tracking-wide text-legend">
+      <h2 className="mb-2 font-display text-base font-semibold text-legend">
         {heading}
       </h2>
       <div className="grid gap-3 text-ink [&_ul]:list-disc [&_ul]:pl-5 [&_li]:mt-1">

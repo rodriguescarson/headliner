@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Barlow, Barlow_Condensed } from "next/font/google";
+import { Bricolage_Grotesque, Hanken_Grotesk } from "next/font/google";
 import { cookies, headers } from "next/headers";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -9,15 +9,15 @@ import { t } from "@/lib/i18n";
 import { authEnabled } from "@/lib/supabase/env";
 import "./globals.css";
 
-const barlow = Barlow({
-  variable: "--font-barlow",
+const hanken = Hanken_Grotesk({
+  variable: "--font-hanken",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
 });
-const barlowCondensed = Barlow_Condensed({
-  variable: "--font-barlow-condensed",
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
-  weight: ["500", "600"],
+  weight: ["500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -40,7 +40,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       data-theme={theme}
-      className={`${barlow.variable} ${barlowCondensed.variable} h-full antialiased`}
+      className={`${hanken.variable} ${bricolage.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {/* The direction contract ships as inert text so it survives the production build and can be audited. */}

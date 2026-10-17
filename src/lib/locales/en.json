@@ -7,10 +7,10 @@
   },
   "nav": {
     "label": "Primary",
-    "suite": "Endpoint suite",
+    "suite": "API status",
     "signIn": "Sign in",
     "account": "Settings",
-    "board": "The board"
+    "board": "Offers"
   },
   "footer": {
     "label": "Legal and support",
@@ -22,9 +22,9 @@
     "contact": "Contact"
   },
   "desk": {
-    "title": "The offer desk",
-    "intro": "Type the offer the way it arrives. The arithmetic is deterministic, Qloo supplies the cultural evidence, and nothing is forecast.",
-    "strip": "Scribble strip",
+    "title": "Check a deal",
+    "intro": "Type the offer the way it arrives. The arithmetic is deterministic, Qloo supplies the audience evidence, and nothing is forecast.",
+    "strip": "Offer",
     "placeholder": "Artist · City · 300 cap · $28 ticket · $3,500 guarantee + $1,200 room",
     "submit": "Check the deal",
     "checking": "Checking…",
@@ -34,10 +34,10 @@
     "offersNote": "Acts and cities are real. Offer terms are illustrative deal shapes, not claims about any act's fees.",
     "missing": "Could not read: {{fields}}. Add them to the line; the desk does not guess.",
     "baselineToggle": "Also run it without Qloo and measure the overlap",
-    "suiteLink": "Watch every Qloo endpoint fire",
-    "empty": "Nothing on the desk yet. Type an offer or load one.",
+    "suiteLink": "See the API calls behind a check",
+    "empty": "Type an offer above or pick one from the offers list.",
     "rules": "Rulebook",
-    "board": "Open the board"
+    "board": "Browse sample offers"
   },
   "verdict": {
     "status": {
@@ -46,12 +46,12 @@
       "refused": "Refused",
       "abstained": "Abstained"
     },
-    "money": "Deal math",
-    "signal": "Qloo signal",
-    "evidence": "Cultural evidence",
-    "cannot": "Cannot establish",
-    "fixes": "Smallest fix",
-    "trace": "Back panel · Qloo calls",
+    "money": "Deal economics",
+    "signal": "Audience evidence",
+    "evidence": "Evidence detail",
+    "cannot": "Outside this check",
+    "fixes": "Suggested fixes",
+    "trace": "API calls",
     "breakEven": "Break-even",
     "ofCapacity": "of capacity",
     "netPerTicket": "Net per ticket",
@@ -89,8 +89,8 @@
     "qlooOnly": "Qloo only"
   },
   "suite": {
-    "title": "Live Qloo endpoint suite",
-    "intro": "Runs every endpoint Headliner depends on, once, against one well-known act, and shows status, latency and result counts. Nothing is canned: with a key these are live calls to the hackathon host.",
+    "title": "API status",
+    "intro": "Runs every Qloo endpoint Headliner depends on, once, against one well-known act, and shows status, latency and result counts. With a key these are live calls.",
     "run": "Run the suite",
     "running": "Running…",
     "endpoint": "Endpoint",
@@ -165,17 +165,17 @@
     "verdict": "Verdict"
   },
   "share": {
-    "title": "Shared verdict",
-    "runYourself": "Run it yourself on the desk",
-    "make": "Share this verdict",
+    "title": "Shared result",
+    "runYourself": "Run this offer yourself",
+    "make": "Share this result",
     "making": "Making the link…",
     "copy": "Copy link",
     "copied": "Copied"
   },
   "board": {
-    "title": "The board",
-    "intro": "Every pre-seeded offer on one board. Run them all and watch each row settle: columns never move, rows carry the state.",
-    "runAll": "Run the board",
+    "title": "Offers",
+    "intro": "Every pre-seeded offer in one list. Run them all and each row fills in with its result.",
+    "runAll": "Run all offers",
     "running": "Running…",
     "act": "Act",
     "city": "City",
@@ -189,18 +189,18 @@
     "notRun": "Not run"
   },
   "story": {
-    "title": "How the desk reads a deal",
+    "title": "How a check works",
     "intro": "Three columns, kept strictly apart. A promoter can trust each one for what it is.",
     "money": {
-      "title": "Money is code",
+      "title": "Economics are arithmetic",
       "body": "Break-even, net per ticket and net at sellout come from arithmetic against a versioned rulebook. No model touches a dollar figure, and the rulebook version is stamped on every verdict."
     },
     "taste": {
-      "title": "Taste is evidence",
+      "title": "Audience is evidence",
       "body": "Qloo supplies the cultural read: the act resolved to an entity, affinity across the metro's heatmap cells, who the audience is, which local acts share it, which brands they already buy. Every call is on the back panel."
     },
     "unknown": {
-      "title": "The unknowable is named",
+      "title": "Limits are stated",
       "body": "Competing shows, radius clauses, actual sales, the hold, the date. The desk lists what no signal can establish, and it abstains out loud when the signal itself is missing."
     },
     "scenario": {
@@ -211,12 +211,12 @@
   "settings": {
     "title": "Settings",
     "appearance": "Appearance",
-    "appearanceHelp": "The desk reads under a lamp by default. House lights turn the panel dark; the meter glass stays cream either way.",
+    "appearanceHelp": "Light is the default. Dark keeps the cream readings on a dark panel.",
     "theme": "Theme",
     "themes": {
-      "light": "Lamp (light)",
-      "dark": "House lights (dark)",
-      "system": "Follow the system"
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
     },
     "notifications": "Email notifications",
     "notificationsHelp": "Account mail (confirmation, password reset) always sends. These are the optional ones.",

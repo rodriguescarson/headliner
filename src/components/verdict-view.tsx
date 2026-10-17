@@ -73,7 +73,7 @@ export function VerdictView({
 
         <Plate className="flex flex-col justify-between">
           <div>
-            <h2 className="flex items-center gap-3 font-condensed text-2xl font-semibold uppercase tracking-wide">
+            <h2 className="flex items-center gap-3 font-display text-2xl font-bold">
               <VerdictLamp status={verdict.status} size={32} />
               {t(`verdict.status.${verdict.status}`)}
             </h2>
@@ -256,7 +256,7 @@ function Row({ k, v, muted }: { k: string; v: string; muted?: boolean }) {
   return (
     <div className={`flex justify-between gap-3 ${muted ? "text-legend" : ""}`}>
       <span>{k}</span>
-      <span className="text-right font-condensed text-base">{v}</span>
+      <span className="text-right font-display text-base">{v}</span>
     </div>
   );
 }
@@ -296,7 +296,7 @@ function CandidateList({
                 {c.name}
               </span>
               {typeof c.affinity === "number" && (
-                <span className="font-condensed text-legend">
+                <span className="font-display text-legend">
                   {c.affinity.toFixed(2)}
                 </span>
               )}
@@ -478,7 +478,7 @@ function ScenarioButton({
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex h-9 items-center gap-2 rounded-md border border-rail bg-panel-raised px-3 font-condensed font-semibold uppercase tracking-wider shadow-panel transition-transform duration-150 hover:-translate-y-px"
+      className="inline-flex h-9 items-center gap-2 rounded-md border border-rail bg-panel-raised px-3 font-display font-semibold shadow-panel transition-transform duration-150 hover:-translate-y-px"
     >
       <span
         aria-hidden
