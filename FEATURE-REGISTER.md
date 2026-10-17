@@ -24,10 +24,12 @@ Standard: `~/PRODUCT-ENGINEERING-STANDARD.md`. Context: Qloo Agentic Hackathon e
 
 | F17 | Scenario compare | A promoter asks what changes if the booking changes | P0 | anonymous: run | C13, C7 | F2, F3, F5 | built, deployed | Market, opener and sponsor scenarios re-run the same check; two verdicts side by side with a deterministic diff; invalid scenarios rejected | `src/lib/verdict/diff.test.ts` (3 tests); API runs of all three kinds 2026-10-17; browser run of the sponsor compare |
 
+| F18 | Settings: appearance, notifications, export, delete | Hard rule B10: settings, deletion and export in every product | P1 | user: read/update own profile; delete own account | B5, B10, C2, C26, C38 | F13, Supabase stack | built, deployed | Theme (lamp / house lights / system) stored in `profiles` under RLS and in a cookie for SSR; notification preferences stored; JSON export of account, profile and shares; typed-confirmation delete that soft-deletes shares and profile then removes the auth user | signed-out routes verified (redirect, 401); signed-in flow pending Carson's test |
+
 **Not applicable, and why**
 - B1 Auth: now built (F13); running a check still needs no account by design.
 - B3 RBAC, B4 CRUD, B5 soft delete: no user-owned records yet. Revisit with F10.
-- B9/B10 notifications, settings, support tickets, account deletion: no accounts. Support contact lives in README and on the page footer.
+- B9 notifications: preferences stored; no notification sending yet beyond auth mail. Support tickets: email to the support address (no ticket ids yet).
 - B14/B15 mobile offline and version gates: web only.
 - B18 email domain: no email is sent.
 - B2 i18n: in place (`src/lib/i18n.ts`, `en.json`); single locale shipped.

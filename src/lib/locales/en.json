@@ -9,7 +9,7 @@
     "label": "Primary",
     "suite": "Endpoint suite",
     "signIn": "Sign in",
-    "account": "Account",
+    "account": "Settings",
     "board": "The board"
   },
   "footer": {
@@ -207,5 +207,37 @@
       "title": "Change one thing",
       "body": "Swap the market, put the opener on the bill, apply a sponsor offset. The same check runs again and the two verdicts sit side by side with exactly what moved and why."
     }
+  },
+  "settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "appearanceHelp": "The desk reads under a lamp by default. House lights turn the panel dark; the meter glass stays cream either way.",
+    "theme": "Theme",
+    "themes": {
+      "light": "Lamp (light)",
+      "dark": "House lights (dark)",
+      "system": "Follow the system"
+    },
+    "notifications": "Email notifications",
+    "notificationsHelp": "Account mail (confirmation, password reset) always sends. These are the optional ones.",
+    "notifyVerdict": "Verdict mail for saved checks",
+    "notifyVerdictHelp": "A copy of each verdict you share, with its link. Coming once shares can be saved to an account.",
+    "notifyProduct": "Product updates",
+    "notifyProductHelp": "Rare, plain, from headliner@carsonrodrigues.com. Unsubscribe here any time.",
+    "save": "Save settings",
+    "saving": "Saving…",
+    "status": {
+      "saved": "Saved",
+      "save_failed": "Could not save. Try again.",
+      "signed_out": "Your session ended. Sign in again."
+    },
+    "export": "Export my data",
+    "exportHelp": "Everything Headliner holds about you, as one JSON file: account, settings, and the verdicts you shared while signed in.",
+    "exportButton": "Download JSON",
+    "delete": "Delete account and data",
+    "deleteHelp": "Removes your account from the sign-in service and retires your settings and shared links. Shared links stop working immediately. This cannot be undone.",
+    "deleteConfirmLabel": "Type DELETE to confirm",
+    "deleteButton": "Delete my account",
+    "deleting": "Deleting…"
   }
 }

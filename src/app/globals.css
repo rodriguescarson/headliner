@@ -35,7 +35,7 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Dark scene is opt-in (house lights), never the OS default: judges and promoters read the desk under a lamp. */
+/* Dark scene (house lights): chosen in Settings; the OS preference applies only when the visitor chose "follow the system". */
 :root[data-theme="dark"] {
   --panel: #1b2026;
   --panel-raised: #232a31;

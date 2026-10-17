@@ -15,6 +15,7 @@ export type SharedCheck = {
   mode: "live" | "sample";
   offer: Offer;
   verdict: Verdict;
+  userId?: string | null;
 };
 
 export interface CheckStore {
@@ -65,6 +66,7 @@ export class RestCheckStore implements CheckStore {
   async put(check: Omit<SharedCheck, "id" | "createdAt">) {
     const row = {
       id: newId(),
+      user_id: check.userId ?? null,
       mode: check.mode,
       offer_line: offerLine(check.offer),
       payload: { offer: check.offer, verdict: check.verdict },

@@ -1,3 +1,4 @@
+import { currentUser } from "@/lib/auth/session";
 import { jobStore } from "@/lib/jobs/store";
 import { guardJson, log } from "@/lib/security/guard";
 import { checkStore, toShared } from "@/lib/storage";
@@ -27,7 +28,11 @@ export async function POST(request: Request) {
       { status: 422 },
     );
   try {
-    const saved = await checkStore().put(shared);
+    const user = await currentUser().catch(() => null);
+    const saved = await checkStore().put({
+      ...shared,
+      userId: user?.id ?? null,
+    });
     const base = process.env.NEXT_PUBLIC_APP_URL ?? new URL(request.url).origin;
     return Response.json(
       { ok: true, id: saved.id, url: `${base}/s/${saved.id}` },

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Barlow, Barlow_Condensed } from "next/font/google";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { parseTheme, THEME_COOKIE, themeAttribute } from "@/lib/account/theme";
 import { currentUser } from "@/lib/auth/session";
 import { t } from "@/lib/i18n";
 import { authEnabled } from "@/lib/supabase/env";
@@ -32,10 +33,13 @@ const CONTRACT = `DIRECTION CONTRACT (seed 36cafb75, assigned index 3) THESIS: T
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   // Reading request headers opts every page into dynamic rendering, which the per-request CSP nonce requires.
   await headers();
+  const jar = await cookies();
+  const theme = themeAttribute(parseTheme(jar.get(THEME_COOKIE)?.value));
   const user = authEnabled() ? await currentUser() : null;
   return (
     <html
       lang="en"
+      data-theme={theme}
       className={`${barlow.variable} ${barlowCondensed.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
