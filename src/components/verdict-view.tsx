@@ -131,10 +131,7 @@ export function VerdictView({
                 d.selloutNet < 0 && "text-destructive",
               )}
             >
-              <CountUp
-                value={d.selloutNet}
-                format={(n) => money(Math.round(n))}
-              />
+              <CountUp value={d.selloutNet} format="money" />
             </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-3">
@@ -179,7 +176,7 @@ export function VerdictView({
             <CardTitle className="text-3xl font-semibold tabular-nums">
               {aff ? (
                 <>
-                  <CountUp value={aff.mean} format={(n) => n.toFixed(2)} />
+                  <CountUp value={aff.mean} format="fixed2" />
                   <Badge variant="secondary" className="ml-2 align-middle">
                     {aff.label}
                   </Badge>

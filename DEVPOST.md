@@ -1,6 +1,6 @@
 # Headliner — Devpost submission draft
 
-> Judges may score from this text alone. Every number below must come from a run; placeholders are marked `[RUN]` and are filled on key day from `scripts/verify-qloo.ts` and the pre-seeded offers.
+> Judges may score from this text alone. Every number below must come from a run; placeholders are marked `[RUN]`. On key day, `pnpm probe` prints the probe counts and `pnpm offers --baseline` prints the board tally and the Without-Qloo overlap, both straight from the code paths the site uses.
 
 ## Inspiration
 
@@ -51,6 +51,13 @@ Would it work without Qloo? No. The first column is arithmetic any spreadsheet c
 - `[RUN]` of the twelve pre-seeded offers fail as written; `[RUN]` abstain; `[RUN]` clear.
 - Raw response shapes and every trace are in the repo's probe output (git-ignored data, documented schema).
 
+## How we kept it honest
+
+- **Money never comes from a model.** Deal math is plain TypeScript against `headliner-rules@1.0.0`, covered by unit tests (36 tests across deal math, offer parsing, verdicts, scenario diffs, storage and theme). The rulebook version is printed on every verdict.
+- **It abstains out loud.** No entity, or fewer than five heatmap cells, means "Abstained" with the missing signal named. The pre-seeded set includes an act built to abstain.
+- **Every number is reproducible.** The two key-day scripts run every offer and every probe act, failures included, and write the raw output to a git-ignored folder. Nothing is hand-picked.
+- **We fixed what we found.** A pre-submission pass caught shared verdict links failing to render (a server/client boundary bug in the count-up animation) and an in-memory store that dev bundles did not share. Both are fixed and noted in the commit history.
+
 ## For the judges
 
 - **Try it with any act**: nothing is canned; the desk runs live against `hackathon.api.qloo.com`, cached server-side.
@@ -65,9 +72,11 @@ Would it work without Qloo? No. The first column is arithmetic any spreadsheet c
 
 ## Built with
 
-Next.js 16, TypeScript, Vitest, Biome, Qloo Insights API, Model Context Protocol SDK, Vercel AI SDK (baseline control only).
+Next.js 16 (App Router), React 19, TypeScript, shadcn/ui on Base UI, Tailwind CSS 4, Geist, GSAP and Lenis (motion, off under reduced motion), Supabase (self-hosted: Auth with Google and email, Postgres with row-level security), Resend, Docker behind Caddy on a VPS, Vitest, Biome, Qloo Insights API, Model Context Protocol SDK, Vercel AI SDK (Without-Qloo control only).
+
+Interface patterns were benchmarked against shipped products (Gemini and Copilot for the input, Wise and Grammarly for the verdict, Mercury and Polar for the board); structure only, no borrowed visuals.
 
 ## Repo and demo
 
 - Repo: `[URL]` (MIT)
-- Demo: `[URL]`
+- Demo: https://headliner.carsonrodrigues.com (no sign-in needed to run a check)

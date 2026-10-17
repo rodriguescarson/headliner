@@ -83,8 +83,12 @@ export class MemoryJobStore implements JobStore {
   }
 }
 
-let store: JobStore | undefined;
+const jobHolder = globalThis as typeof globalThis & {
+  __headlinerJobStore?: JobStore;
+};
+
+/** One queue per process, shared by every route bundle (see storage/index.ts for why). */
 export function jobStore(): JobStore {
-  if (!store) store = new MemoryJobStore();
-  return store;
+  jobHolder.__headlinerJobStore ??= new MemoryJobStore();
+  return jobHolder.__headlinerJobStore;
 }

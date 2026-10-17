@@ -111,6 +111,31 @@ async function main() {
   }
 
   const out = `.cache/probe-${Date.now()}.json`;
+  // 3. The counts the Devpost write-up quotes, computed here so nobody types them by hand.
+  const acts = Object.values(
+    report.acts as Record<
+      string,
+      {
+        entity: unknown;
+        localAffinity: { cells: number } | null;
+      }
+    >,
+  );
+  const resolved = acts.filter((a) => a.entity).length;
+  const dense = acts.filter(
+    (a) => a.entity && (a.localAffinity?.cells ?? 0) >= 5,
+  ).length;
+  report.summary = {
+    acts: acts.length,
+    resolved,
+    unresolved: acts.length - resolved,
+    resolvedWithFiveOrMoreCells: dense,
+  };
+  rows.push(
+    "",
+    `Summary: ${resolved} of ${acts.length} acts resolved; ${acts.length - resolved} did not.`,
+    `${dense} of ${resolved} resolved acts had five or more heatmap cells in their first city.`,
+  );
   await writeFile(out, JSON.stringify(report, null, 2));
   console.log(rows.join("\n"));
   console.log(`\nRaw shapes and traces written to ${out} (git-ignored).`);

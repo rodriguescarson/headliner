@@ -22,6 +22,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3011",
   ),
+  openGraph: { siteName: "Headliner", type: "website" },
+  twitter: { card: "summary_large_image" },
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {

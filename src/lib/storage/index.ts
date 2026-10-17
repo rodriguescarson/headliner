@@ -128,14 +128,20 @@ export function newId() {
   return randomBytes(9).toString("base64url");
 }
 
-let store: CheckStore | undefined;
+// One instance per process. Next bundles route handlers and pages separately, so a module-level variable
+// would give each its own in-memory store and a share made by the API would 404 on the page.
+const holder = globalThis as typeof globalThis & {
+  __headlinerCheckStore?: CheckStore;
+};
+
 export function checkStore(): CheckStore {
-  if (!store) {
+  if (!holder.__headlinerCheckStore) {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    store = url && key ? new RestCheckStore(url, key) : new MemoryCheckStore();
+    holder.__headlinerCheckStore =
+      url && key ? new RestCheckStore(url, key) : new MemoryCheckStore();
   }
-  return store;
+  return holder.__headlinerCheckStore;
 }
 export const shareStoreIsDurable = () =>
   Boolean(

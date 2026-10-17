@@ -9,10 +9,23 @@ import { VerdictView } from "@/components/verdict-view";
 import { t } from "@/lib/i18n";
 import { checkStore, offerLine } from "@/lib/storage";
 
-export const metadata: Metadata = {
-  title: "Shared result",
-  robots: { index: false },
-};
+export async function generateMetadata({
+  params,
+}: PageProps<"/s/[id]">): Promise<Metadata> {
+  const { id } = await params;
+  const shared = /^[A-Za-z0-9_-]{6,32}$/.test(id)
+    ? await checkStore().get(id)
+    : null;
+  const title = shared
+    ? `${t(`verdict.status.${shared.verdict.status}`)}: ${shared.offer.artist}, ${shared.offer.city}`
+    : "Shared result";
+  return {
+    title,
+    description: shared?.verdict.headline,
+    robots: { index: false },
+    openGraph: { title, description: shared?.verdict.headline },
+  };
+}
 
 export default async function SharedPage({ params }: PageProps<"/s/[id]">) {
   const { id } = await params;
