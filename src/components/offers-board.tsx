@@ -2,13 +2,23 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { money, pct } from "@/lib/deal/deal-math";
 import { parseOfferLine } from "@/lib/deal/offer-parser";
 import type { VerdictStatus } from "@/lib/enums";
 import { t } from "@/lib/i18n";
 import type { JobRecord } from "@/lib/jobs/store";
-import { Lamp, Screws, VerdictLamp } from "./console";
 import { useFlipIn } from "./motion/reveal";
+import { Dot, StatusBadge } from "./status";
 
 type Row = { label: string; line: string };
 type RowState =
@@ -101,110 +111,96 @@ export function OffersBoard({ rows, note }: { rows: Row[]; note?: string }) {
 
   return (
     <div className="grid gap-4">
-      <div className="on-ground flex flex-wrap items-center gap-4">
-        <button
-          type="button"
-          onClick={runAll}
-          disabled={busy}
-          className="inline-flex h-11 items-center gap-2 rounded-md bg-action px-5 font-display text-base font-semibold text-action-ink shadow-panel disabled:opacity-50"
-        >
+      <div className="flex flex-wrap items-center gap-4">
+        <Button type="button" onClick={runAll} disabled={busy}>
           {busy ? t("board.running") : t("board.runAll")}
-        </button>
-        {tally && <output className="legend">{tally}</output>}
+        </Button>
+        {tally && (
+          <output className="text-sm text-muted-foreground">{tally}</output>
+        )}
       </div>
-      {note && <p className="on-ground">{note}</p>}
-      <div className="plate relative overflow-x-auto p-3">
-        <Screws />
-        <table className="w-full text-left">
-          <thead>
-            <tr className="legend">
-              <th className="px-3 py-2 font-medium">#</th>
-              <th className="px-3 py-2 font-medium">{t("board.act")}</th>
-              <th className="px-3 py-2 font-medium">{t("board.city")}</th>
-              <th className="px-3 py-2 text-right font-medium">
-                {t("board.cap")}
-              </th>
-              <th className="px-3 py-2 text-right font-medium">
-                {t("board.ticket")}
-              </th>
-              <th className="px-3 py-2 text-right font-medium">
+      {note && <p className="text-sm text-muted-foreground">{note}</p>}
+      <Card className="overflow-x-auto py-0">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-10">#</TableHead>
+              <TableHead>{t("board.act")}</TableHead>
+              <TableHead>{t("board.city")}</TableHead>
+              <TableHead className="text-right">{t("board.cap")}</TableHead>
+              <TableHead className="text-right">{t("board.ticket")}</TableHead>
+              <TableHead className="text-right">
                 {t("board.guarantee")}
-              </th>
-              <th className="px-3 py-2 text-right font-medium">
+              </TableHead>
+              <TableHead className="text-right">
                 {t("board.breakEven")}
-              </th>
-              <th className="px-3 py-2 font-medium">{t("board.signal")}</th>
-              <th className="px-3 py-2 font-medium">{t("board.state")}</th>
-            </tr>
-          </thead>
-          <tbody>
+              </TableHead>
+              <TableHead>{t("board.signal")}</TableHead>
+              <TableHead>{t("board.state")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {rows.map((r, i) => {
               const p = parsed[i];
               const s = states[i];
               const o = p.ok ? p.offer : null;
               return (
-                <tr key={r.line} className="border-t border-rail align-middle">
-                  <td className="px-3 py-2 font-display text-legend">
+                <TableRow key={r.line}>
+                  <TableCell className="font-mono text-muted-foreground">
                     {String(i + 1).padStart(2, "0")}
-                  </td>
-                  <td className="px-3 py-2">
+                  </TableCell>
+                  <TableCell>
                     <Link
                       href={`/?line=${encodeURIComponent(r.line)}`}
-                      className="underline underline-offset-4"
+                      className="font-medium underline-offset-4 hover:underline"
                     >
                       {o?.artist ?? r.label}
                     </Link>
-                    <span className="block text-legend">{r.label}</span>
-                  </td>
-                  <td className="px-3 py-2">{o?.city ?? "—"}</td>
-                  <td className="px-3 py-2 text-right font-display">
+                    <span className="block text-xs text-muted-foreground">
+                      {r.label}
+                    </span>
+                  </TableCell>
+                  <TableCell>{o?.city ?? "—"}</TableCell>
+                  <TableCell className="text-right font-mono tabular-nums">
                     {o ? o.capacity.toLocaleString("en-US") : "—"}
-                  </td>
-                  <td className="px-3 py-2 text-right font-display">
+                  </TableCell>
+                  <TableCell className="text-right font-mono tabular-nums">
                     {o ? money(o.ticketPrice) : "—"}
-                  </td>
-                  <td className="px-3 py-2 text-right font-display">
+                  </TableCell>
+                  <TableCell className="text-right font-mono tabular-nums">
                     {o ? money(o.guarantee) : "—"}
-                  </td>
-                  <td className="px-3 py-2 text-right font-display">
+                  </TableCell>
+                  <TableCell className="text-right font-mono tabular-nums">
                     {s.phase === "done" && Number.isFinite(s.breakEvenPct)
                       ? pct(s.breakEvenPct)
                       : "—"}
-                  </td>
-                  <td className="px-3 py-2 font-display">
+                  </TableCell>
+                  <TableCell>
                     {s.phase === "done"
                       ? (s.affinity ?? t("verdict.noSignal"))
                       : "—"}
-                  </td>
+                  </TableCell>
                   <StateCell phase={s.phase}>
                     {s.phase === "done" ? (
-                      <VerdictLamp
-                        status={s.status}
-                        label={t(`verdict.status.${s.status}`)}
-                        size={14}
-                      />
+                      <StatusBadge status={s.status} />
                     ) : s.phase === "failed" ? (
-                      <Lamp tone="red" label={t("board.failed")} size={12} />
+                      <Dot tone="destructive">{t("board.failed")}</Dot>
                     ) : s.phase === "idle" ? (
-                      <Lamp tone="off" label={t("board.notRun")} size={12} />
+                      <Dot tone="muted">{t("board.notRun")}</Dot>
                     ) : (
-                      <Lamp
-                        tone="amber"
-                        label={
-                          s.phase === "running"
-                            ? t("desk.running")
-                            : t("desk.queued")
-                        }
-                        size={12}
-                      />
+                      <Dot tone="warning">
+                        {s.phase === "running"
+                          ? t("desk.running")
+                          : t("desk.queued")}
+                      </Dot>
                     )}
                   </StateCell>
-                </tr>
+                </TableRow>
               );
             })}
-          </tbody>
-        </table>
-      </div>
+          </TableBody>
+        </Table>
+      </Card>
     </div>
   );
 }
@@ -218,11 +214,8 @@ function StateCell({
 }) {
   const ref = useFlipIn([phase]);
   return (
-    <td
-      ref={ref as React.RefObject<HTMLTableCellElement>}
-      className="px-3 py-2"
-    >
+    <TableCell ref={ref as React.RefObject<HTMLTableCellElement>}>
       {children}
-    </td>
+    </TableCell>
   );
 }

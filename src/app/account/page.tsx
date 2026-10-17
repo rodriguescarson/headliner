@@ -1,8 +1,16 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Plate } from "@/components/console";
 import { DataControls, SettingsForm } from "@/components/settings-form";
+import { PageHeading, Shell } from "@/components/shell";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { getProfile } from "@/lib/account/profile";
 import { parseTheme, THEME_COOKIE } from "@/lib/account/theme";
 import { currentUser } from "@/lib/auth/session";
@@ -21,23 +29,26 @@ export default async function AccountPage() {
   const [profile, jar] = await Promise.all([getProfile(user.id), cookies()]);
   const initialTheme = parseTheme(jar.get(THEME_COOKIE)?.value);
   return (
-    <main className="rail-grid flex-1 w-full px-4 py-10 md:px-8">
-      <div className="on-ground mx-auto grid w-full max-w-2xl gap-6">
-        <h1 className="font-display text-2xl font-bold">
-          {t("settings.title")}
-        </h1>
-        <Plate legend={t("auth.signedInAs")}>
-          <p className="text-lg">{user.name ?? user.email}</p>
-          {user.name && <p className="text-legend">{user.email}</p>}
-          <form action="/auth/signout" method="post" className="mt-4">
-            <button type="submit" className="plate h-10 px-4 font-medium">
-              {t("auth.signOut")}
-            </button>
-          </form>
-        </Plate>
+    <Shell width="medium">
+      <PageHeading title={t("settings.title")} />
+      <div className="grid gap-6">
+        <Card>
+          <CardHeader>
+            <CardDescription>{t("auth.signedInAs")}</CardDescription>
+            <CardTitle>{user.name ?? user.email}</CardTitle>
+            {user.name && <CardDescription>{user.email}</CardDescription>}
+          </CardHeader>
+          <CardContent>
+            <form action="/auth/signout" method="post">
+              <Button type="submit" variant="outline">
+                {t("auth.signOut")}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
         <SettingsForm profile={profile} initialTheme={initialTheme} />
         <DataControls />
       </div>
-    </main>
+    </Shell>
   );
 }

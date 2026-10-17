@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Lamp } from "@/components/console";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
+import { Shell } from "@/components/shell";
+import { Dot } from "@/components/status";
+import { buttonVariants } from "@/components/ui/button";
 import { VerdictView } from "@/components/verdict-view";
 import { t } from "@/lib/i18n";
 import { checkStore, offerLine } from "@/lib/storage";
@@ -20,41 +22,37 @@ export default async function SharedPage({ params }: PageProps<"/s/[id]">) {
   const line = offerLine(shared.offer);
   return (
     <SmoothScroll>
-      <main className="rail-grid flex-1 w-full px-4 py-6 md:px-8 md:py-8">
-        <div className="mx-auto w-full max-w-7xl">
-          <div className="on-ground mb-5 flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <p className="legend">{t("share.title")}</p>
-              <p className="mt-1 font-display text-xl">{line}</p>
-              <p className="mt-1 flex items-center gap-2">
-                <Lamp
-                  tone={shared.mode === "live" ? "green" : "amber"}
-                  size={12}
-                />
-                <span className="legend">
-                  {shared.mode === "live"
-                    ? t("app.liveBanner")
-                    : t("app.sampleBanner")}
-                </span>
-                <span className="legend">
-                  ·{" "}
-                  {new Date(shared.createdAt).toLocaleString("en-US", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })}
-                </span>
-              </p>
-            </div>
-            <Link
-              href={`/?line=${encodeURIComponent(line)}`}
-              className="underline underline-offset-4"
-            >
-              {t("share.runYourself")}
-            </Link>
+      <Shell>
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-sm text-muted-foreground">{t("share.title")}</p>
+            <h1 className="mt-1 text-xl font-semibold tracking-tight">
+              {line}
+            </h1>
+            <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+              <Dot tone={shared.mode === "live" ? "success" : "warning"}>
+                {shared.mode === "live"
+                  ? t("app.liveBanner")
+                  : t("app.sampleBanner")}
+              </Dot>
+              <span>
+                ·{" "}
+                {new Date(shared.createdAt).toLocaleString("en-US", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
+              </span>
+            </p>
           </div>
-          <VerdictView verdict={shared.verdict} offer={shared.offer} />
+          <Link
+            href={`/?line=${encodeURIComponent(line)}`}
+            className={buttonVariants({ variant: "outline" })}
+          >
+            {t("share.runYourself")}
+          </Link>
         </div>
-      </main>
+        <VerdictView verdict={shared.verdict} offer={shared.offer} />
+      </Shell>
     </SmoothScroll>
   );
 }

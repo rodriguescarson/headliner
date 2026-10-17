@@ -30,7 +30,7 @@ export default function SupportPage() {
         {faq.map((f) => (
           <div key={f.q}>
             <p className="font-medium">{f.q}</p>
-            <p className="text-legend">{f.a}</p>
+            <p className="text-muted-foreground">{f.a}</p>
           </div>
         ))}
       </Section>
@@ -38,7 +38,7 @@ export default function SupportPage() {
         <p>
           <a
             href={`mailto:${LEGAL.supportEmail}`}
-            className="text-lamp-blue underline-offset-4 hover:underline"
+            className="underline underline-offset-4"
           >
             {LEGAL.supportEmail}
           </a>

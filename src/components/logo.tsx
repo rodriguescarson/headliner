@@ -32,7 +32,7 @@ export function Mark({
       <path
         d="M40.6 15.9 A22 22 0 0 1 52 40"
         fill="none"
-        stroke="var(--cap-amber)"
+        stroke="var(--warning)"
         strokeWidth="2.5"
         strokeLinecap="round"
       />
@@ -52,23 +52,21 @@ export function Mark({
 
 export function Wordmark({ className = "" }: { className?: string }) {
   return (
-    <span
-      className={`font-display text-xl font-bold tracking-[-0.02em] ${className}`}
-    >
+    <span className={`text-lg font-semibold tracking-tight ${className}`}>
       Headliner
     </span>
   );
 }
 
 export function Lockup({
-  size = 26,
+  size = 24,
   className = "",
 }: {
   size?: number;
   className?: string;
 }) {
   return (
-    <span className={`inline-flex items-center gap-2.5 ${className}`}>
+    <span className={`inline-flex items-center gap-2 ${className}`}>
       <Mark size={size} />
       <Wordmark />
     </span>

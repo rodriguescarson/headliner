@@ -1,15 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { parseTheme, themeAttribute } from "./theme";
+import { parseTheme, themeClass } from "./theme";
 
 describe("theme", () => {
-  it("falls back to light for anything unknown", () => {
+  it("parses known values and falls back to system", () => {
     expect(parseTheme("dark")).toBe("dark");
+    expect(parseTheme("light")).toBe("light");
     expect(parseTheme("system")).toBe("system");
-    expect(parseTheme("neon")).toBe("light");
-    expect(parseTheme(undefined)).toBe("light");
+    expect(parseTheme("neon")).toBe("system");
+    expect(parseTheme(undefined)).toBe("system");
   });
-  it("maps system to no attribute so the OS decides", () => {
-    expect(themeAttribute("system")).toBeUndefined();
-    expect(themeAttribute("dark")).toBe("dark");
+  it("maps a theme to the html class", () => {
+    expect(themeClass("dark")).toBe("dark");
+    expect(themeClass("light")).toBe("light");
+    expect(themeClass("system")).toBeUndefined();
   });
 });

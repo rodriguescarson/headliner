@@ -11,8 +11,8 @@ export function SiteFooter() {
     ["/contact", t("footer.contact")],
   ] as const;
   return (
-    <footer className="mt-12 border-t border-rail">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-6 text-legend md:flex-row md:items-center md:justify-between md:px-8">
+    <footer className="mt-12 border-t">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-6 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between md:px-8">
         <p>
           {t("footer.operator", {
             year: new Date().getFullYear(),
@@ -28,7 +28,7 @@ export function SiteFooter() {
             <Link
               key={href}
               href={href}
-              className="underline-offset-4 hover:underline"
+              className="underline-offset-4 hover:text-foreground hover:underline"
             >
               {label}
             </Link>

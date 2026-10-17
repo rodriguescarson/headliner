@@ -1,3 +1,22 @@
+import { Progress as ProgressPrimitive } from "@base-ui/react/progress";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ProgressIndicator, ProgressTrack } from "@/components/ui/progress";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import type { BaselineComparison } from "@/lib/baseline/baseline";
 import { money, pct } from "@/lib/deal/deal-math";
 import type { Offer } from "@/lib/deal/offer-parser";
@@ -5,19 +24,17 @@ import { t } from "@/lib/i18n";
 import type { Candidate } from "@/lib/qloo/evidence";
 import { rules } from "@/lib/rules";
 import type { Scenario } from "@/lib/scenario";
+import { cn } from "@/lib/utils";
 import type { Fix, Verdict } from "@/lib/verdict/verdict";
-import {
-  Lamp,
-  Meter,
-  PatchPoint,
-  Plate,
-  Stencil,
-  VerdictLamp,
-} from "./console";
 import { CountUp } from "./motion/count-up";
 import { Reveal } from "./motion/reveal";
+import { Dot, Stat, StatusBadge, type Tone } from "./status";
 
-const affinityIndex = { low: 0.18, mid: 0.5, strong: 0.84 } as const;
+const fixTone: Record<Fix["kind"], Tone> = {
+  opener: "info",
+  sponsor: "warning",
+  market: "success",
+};
 
 export function VerdictView({
   verdict,
@@ -38,96 +55,156 @@ export function VerdictView({
   const aff = ev.localAffinity;
   const warn = rules.money.warnAboveBreakEvenPct;
   const refuse = rules.money.refuseAboveBreakEvenPct;
+  const level =
+    be === null
+      ? "muted"
+      : be > refuse
+        ? "destructive"
+        : be > warn
+          ? "warning"
+          : "success";
 
   return (
-    <section aria-live="polite" className="grid gap-5">
-      {/* Meter bridge */}
-      <div className="grid gap-4 md:grid-cols-[1fr_minmax(240px,0.9fr)_1fr]">
-        <Meter
-          legend={t("verdict.money")}
-          value={be === null ? null : Math.min(be, 1.2) / 1.2}
-          reading={
-            be === null ? (
-              "—"
-            ) : (
-              <>
-                <CountUp
-                  value={d.breakEvenTickets}
-                  format={(n) => String(Math.round(n))}
-                />{" "}
-                / {d.inputs.capacity}
-              </>
-            )
-          }
-          sub={
-            be === null ? undefined : `${pct(be)} ${t("verdict.ofCapacity")}`
-          }
-          zones={[
-            { from: 0, to: warn / 1.2, tone: "green" },
-            { from: warn / 1.2, to: refuse / 1.2, tone: "amber" },
-            { from: refuse / 1.2, to: 1, tone: "red" },
-          ]}
-          ticks={[0, warn / 1.2, refuse / 1.2, 1 / 1.2, 1]}
-          tickLabels={["0", pct(warn), pct(refuse), "100%", "+"]}
-        />
-
-        <Plate className="flex flex-col justify-between">
-          <div>
-            <h2 className="flex items-center gap-3 font-display text-2xl font-bold">
-              <VerdictLamp status={verdict.status} size={32} />
-              {t(`verdict.status.${verdict.status}`)}
-            </h2>
-            <p className="mt-3 text-balance font-medium">{verdict.headline}</p>
-            <p className="mt-2 text-legend">
+    <section aria-live="polite" className="grid gap-4">
+      <div className="grid gap-4 md:grid-cols-3">
+        {/* Verdict */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <StatusBadge status={verdict.status} />
+            </div>
+            <CardTitle className="text-xl text-balance">
+              {verdict.headline}
+            </CardTitle>
+            <CardDescription>
               {offer.artist} · {offer.city} · {offer.capacity} cap ·{" "}
               {money(offer.ticketPrice)} · {money(offer.guarantee)} guarantee
-            </p>
-          </div>
-          <ul className="mt-4 grid gap-1.5">
-            {verdict.reasons.map((r) => (
-              <li key={r}>{r}</li>
-            ))}
-            {verdict.abstentions.map((a) => (
-              <li key={a.code} className="text-lamp-blue">
-                {a.message}
-              </li>
-            ))}
-          </ul>
-        </Plate>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="grid gap-1.5 text-sm">
+              {verdict.reasons.map((r) => (
+                <li key={r}>{r}</li>
+              ))}
+              {verdict.abstentions.map((a) => (
+                <li key={a.code} className="text-muted-foreground">
+                  <Dot tone="info">{a.message}</Dot>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
 
-        <Meter
-          legend={t("verdict.signal")}
-          value={aff ? affinityIndex[aff.label] : null}
-          reading={
-            aff ? (
-              <CountUp value={aff.mean} format={(n) => n.toFixed(2)} />
-            ) : (
-              "—"
-            )
-          }
-          sub={
-            aff
-              ? `${aff.label} · ${t("verdict.cells", { count: aff.cells })}`
-              : undefined
-          }
-          zones={[
-            { from: 0, to: 0.33, tone: "red" },
-            { from: 0.33, to: 0.66, tone: "amber" },
-            { from: 0.66, to: 1, tone: "green" },
-          ]}
-          ticks={[0.17, 0.5, 0.83]}
-          tickLabels={["low", "mid", "strong"]}
-          muted={!aff}
-          mutedText={t("verdict.noSignal")}
-        />
+        {/* Deal economics */}
+        <Card>
+          <CardHeader>
+            <CardDescription>{t("verdict.money")}</CardDescription>
+            <CardTitle className="text-3xl font-semibold tabular-nums">
+              {be === null ? (
+                "—"
+              ) : (
+                <>
+                  <CountUp
+                    value={d.breakEvenTickets}
+                    format={(n) => String(Math.round(n))}
+                  />
+                  <span className="ml-2 text-base font-normal text-muted-foreground">
+                    / {d.inputs.capacity} {t("verdict.breakEven").toLowerCase()}
+                  </span>
+                </>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-3">
+            <ProgressPrimitive.Root
+              value={be === null ? 0 : Math.min(be, 1.2) / 1.2}
+              max={1}
+              aria-label={t("verdict.breakEven")}
+            >
+              <ProgressTrack className="h-2">
+                <ProgressIndicator
+                  className={cn(
+                    level === "success" && "bg-success",
+                    level === "warning" && "bg-warning",
+                    level === "destructive" && "bg-destructive",
+                    level === "muted" && "bg-muted-foreground/40",
+                  )}
+                />
+              </ProgressTrack>
+            </ProgressPrimitive.Root>
+            <p className="text-sm text-muted-foreground">
+              {be === null
+                ? "—"
+                : `${pct(be)} ${t("verdict.ofCapacity")} · ${t("verdict.warnAbove", { warn: pct(warn), refuse: pct(refuse) })}`}
+            </p>
+            <div className="grid gap-1.5 border-t pt-3">
+              <Stat
+                label={t("verdict.netPerTicket")}
+                value={money(d.netPerTicket, true)}
+              />
+              <Stat
+                label={t("verdict.fixedCosts")}
+                value={money(d.totalFixedCost)}
+              />
+              <Stat
+                label={t("verdict.selloutNet")}
+                value={money(d.selloutNet)}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Audience evidence */}
+        <Card>
+          <CardHeader>
+            <CardDescription>{t("verdict.signal")}</CardDescription>
+            <CardTitle className="text-3xl font-semibold tabular-nums">
+              {aff ? (
+                <>
+                  <CountUp value={aff.mean} format={(n) => n.toFixed(2)} />
+                  <Badge variant="secondary" className="ml-2 align-middle">
+                    {aff.label}
+                  </Badge>
+                </>
+              ) : (
+                "—"
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-3">
+            <p className="text-sm text-muted-foreground">
+              {aff
+                ? t("verdict.cells", { count: aff.cells })
+                : t("verdict.noSignal")}
+            </p>
+            {ev.entity && (
+              <div className="grid gap-1.5 border-t pt-3">
+                <Stat
+                  label={t("verdict.entity")}
+                  value={`${ev.entity.name} (${ev.entity.type})`}
+                />
+                {ev.demographics && (
+                  <Stat
+                    label={t("verdict.demographics")}
+                    value={Object.entries(ev.demographics.age)
+                      .sort((a, b) => b[1] - a[1])
+                      .slice(0, 2)
+                      .map(([k, v]) => `${k.replaceAll("_", " ")} ${pct(v)}`)
+                      .join(", ")}
+                  />
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Patch bay and stencil */}
+      {/* Fixes and limits */}
       <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
-        <div className="on-ground grid gap-3">
+        <div className="grid content-start gap-3">
           {verdict.fixes.length > 0 ? (
             <>
-              <h2 className="legend">{t("verdict.fixes")}</h2>
+              <h2 className="text-base font-semibold">{t("verdict.fixes")}</h2>
               <Reveal className="grid gap-3">
                 {verdict.fixes.map((f) => (
                   <FixView key={f.kind} fix={f} onScenario={onScenario} />
@@ -135,133 +212,156 @@ export function VerdictView({
               </Reveal>
             </>
           ) : (
-            <MoneyTable verdict={verdict} />
+            <NetTable verdict={verdict} />
           )}
         </div>
-        <Stencil
-          legend={t("verdict.cannot")}
-          items={verdict.cannotEstablish.map((c) => t(`cannot.${c}`))}
-        />
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("verdict.cannot")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="grid gap-1.5 text-sm text-muted-foreground">
+              {verdict.cannotEstablish.map((c) => (
+                <li key={c} className="flex items-start gap-2">
+                  <span
+                    aria-hidden="true"
+                    className="mt-2.5 h-px w-3 shrink-0 bg-muted-foreground"
+                  />
+                  {t(`cannot.${c}`)}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
       </div>
 
-      {verdict.fixes.length > 0 && <MoneyTable verdict={verdict} />}
+      {verdict.fixes.length > 0 && <NetTable verdict={verdict} />}
 
-      {/* Evidence rack */}
-      <Plate legend={t("verdict.evidence")}>
-        <p className="mb-3 text-legend">{ev.sourceNote}</p>
-        <div className="grid gap-4 md:grid-cols-4">
-          <div className="grid content-start gap-2">
-            {ev.entity && (
-              <Row
-                k={t("verdict.entity")}
-                v={`${ev.entity.name} (${ev.entity.type})`}
+      {/* Evidence detail */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("verdict.evidence")}</CardTitle>
+          <CardDescription>{ev.sourceNote}</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-6">
+          {(ev.tasteTags.length > 0 ||
+            ev.openers.length > 0 ||
+            ev.sponsors.length > 0 ||
+            ev.places.length > 0) && (
+            <div className="grid gap-6 md:grid-cols-4">
+              <div className="grid content-start gap-1.5 text-sm">
+                {ev.tasteTags.length > 0 && (
+                  <>
+                    <p className="font-medium">{t("verdict.tags")}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {ev.tasteTags.slice(0, 8).map((tag) => (
+                        <Badge key={tag} variant="outline">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+              <CandidateList title={t("verdict.openers")} items={ev.openers} />
+              <CandidateList
+                title={t("verdict.sponsors")}
+                items={ev.sponsors}
               />
-            )}
-            {ev.demographics && (
-              <Row
-                k={t("verdict.demographics")}
-                v={Object.entries(ev.demographics.age)
-                  .sort((a, b) => b[1] - a[1])
-                  .slice(0, 2)
-                  .map(([k, v]) => `${k.replaceAll("_", " ")} ${pct(v)}`)
-                  .join(", ")}
-              />
-            )}
-            {ev.tasteTags.length > 0 && (
-              <Row
-                k={t("verdict.tags")}
-                v={ev.tasteTags.slice(0, 6).join(", ")}
-              />
-            )}
-          </div>
-          <CandidateList title={t("verdict.openers")} items={ev.openers} />
-          <CandidateList title={t("verdict.sponsors")} items={ev.sponsors} />
-          <CandidateList title={t("verdict.places")} items={ev.places} />
-        </div>
-        <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-legend">
-          {ev.coverage.map((c) => (
-            <li key={c.code} className="inline-flex items-center gap-1.5">
-              <Lamp tone={c.ok ? "green" : "amber"} size={10} />
-              {c.detail}
-            </li>
-          ))}
-        </ul>
-      </Plate>
+              <CandidateList title={t("verdict.places")} items={ev.places} />
+            </div>
+          )}
+          <ul className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted-foreground">
+            {ev.coverage.map((c) => (
+              <li key={c.code}>
+                <Dot tone={c.ok ? "success" : "warning"}>{c.detail}</Dot>
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
 
       {baseline && <BaselineView baseline={baseline} />}
 
-      {/* Back panel */}
-      <details className="plate p-4">
-        <summary className="legend cursor-pointer list-none">
-          {t("verdict.trace")} · {ev.trace.length}
-        </summary>
-        {ev.trace.length === 0 ? (
-          <p className="mt-2 text-legend">{t("verdict.noTrace")}</p>
-        ) : (
-          <ol className="mt-3 grid gap-2">
-            {ev.trace.map((e) => (
-              <li
-                key={e.id}
-                className="grid grid-cols-[3rem_4rem_1fr] gap-2 break-all"
-              >
-                <span className={e.ok ? "text-lamp-green" : "text-lamp-red"}>
-                  {e.status}
-                </span>
-                <span className="text-legend">
-                  {e.ms}ms{e.cached ? " ·c" : ""}
-                </span>
-                <span>
-                  GET {e.path}?{new URLSearchParams(e.params).toString()}
-                  {e.error ? ` — ${e.error}` : ""}
-                  {typeof e.resultCount === "number"
-                    ? ` → ${e.resultCount}`
-                    : ""}
-                </span>
-              </li>
-            ))}
-          </ol>
-        )}
-      </details>
+      {/* API calls */}
+      <Card>
+        <details>
+          <summary className="cursor-pointer list-none px-6 py-4 text-sm font-medium">
+            {t("verdict.trace")}{" "}
+            <span className="text-muted-foreground">· {ev.trace.length}</span>
+          </summary>
+          {ev.trace.length === 0 ? (
+            <p className="px-6 pb-4 text-sm text-muted-foreground">
+              {t("verdict.noTrace")}
+            </p>
+          ) : (
+            <div className="border-t">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-16">{t("suite.status")}</TableHead>
+                    <TableHead className="w-24">{t("suite.latency")}</TableHead>
+                    <TableHead>{t("suite.params")}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {ev.trace.map((e) => (
+                    <TableRow key={e.id}>
+                      <TableCell>
+                        <Dot tone={e.ok ? "success" : "destructive"}>
+                          <span className="font-mono">{e.status}</span>
+                        </Dot>
+                      </TableCell>
+                      <TableCell className="font-mono text-muted-foreground">
+                        {e.ms}ms{e.cached ? " ·c" : ""}
+                      </TableCell>
+                      <TableCell className="whitespace-normal break-all font-mono text-xs">
+                        GET {e.path}?{new URLSearchParams(e.params).toString()}
+                        {e.error ? ` — ${e.error}` : ""}
+                        {typeof e.resultCount === "number"
+                          ? ` → ${e.resultCount}`
+                          : ""}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </details>
+      </Card>
     </section>
   );
 }
 
-function MoneyTable({ verdict }: { verdict: Verdict }) {
+function NetTable({ verdict }: { verdict: Verdict }) {
   const d = verdict.deal;
   return (
-    <Plate legend={t("verdict.money")}>
-      <div className="grid gap-1.5 md:grid-cols-2 md:gap-x-8">
-        <Row k={t("verdict.netPerTicket")} v={money(d.netPerTicket, true)} />
-        <Row k={t("verdict.fixedCosts")} v={money(d.totalFixedCost)} />
-        <Row k={t("verdict.selloutNet")} v={money(d.selloutNet)} />
-        {d.netAtPctSold.map((p) => (
-          <Row
-            key={p.pct}
-            k={t("verdict.netAt", { pct: pct(p.pct) })}
-            v={money(p.net)}
-            muted
-          />
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("verdict.netTitle")}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-1.5 md:grid-cols-2 md:gap-x-8">
+          {d.netAtPctSold.map((p) => (
+            <Stat
+              key={p.pct}
+              label={t("verdict.netAt", { pct: pct(p.pct) })}
+              value={money(p.net)}
+            />
+          ))}
+        </div>
+        {d.violations.map((v) => (
+          <p key={v.code} className="mt-3 text-sm text-destructive">
+            {v.detail}
+          </p>
         ))}
-      </div>
-      {d.violations.map((v) => (
-        <p key={v.code} className="mt-3 text-lamp-red">
-          {v.detail}
-        </p>
-      ))}
-    </Plate>
+      </CardContent>
+    </Card>
   );
 }
 
-function Row({ k, v, muted }: { k: string; v: string; muted?: boolean }) {
-  return (
-    <div className={`flex justify-between gap-3 ${muted ? "text-legend" : ""}`}>
-      <span>{k}</span>
-      <span className="text-right font-display text-base">{v}</span>
-    </div>
-  );
-}
-
-/** Candidates rank by affinity; the mark grows with the deflection, the type stays one size. */
+/** Candidates rank by affinity. Name left, score right, nothing else. */
 function CandidateList({
   title,
   items,
@@ -271,38 +371,19 @@ function CandidateList({
 }) {
   if (items.length === 0) return null;
   return (
-    <div>
-      <p className="legend">{title}</p>
+    <div className="text-sm">
+      {title && <p className="font-medium">{title}</p>}
       <ul className="mt-1.5 grid gap-1">
-        {items.slice(0, 4).map((c) => {
-          const a = typeof c.affinity === "number" ? c.affinity : 0.5;
-          return (
-            <li key={c.id} className="flex items-center justify-between gap-3">
-              <span className="inline-flex items-center gap-2">
-                <svg
-                  aria-hidden="true"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 14 14"
-                  className="shrink-0"
-                >
-                  <circle
-                    cx="7"
-                    cy="7"
-                    r={(2 + a * 5).toFixed(1)}
-                    fill="var(--lamp-blue)"
-                  />
-                </svg>
-                {c.name}
+        {items.slice(0, 4).map((c) => (
+          <li key={c.id} className="flex items-baseline justify-between gap-3">
+            <span>{c.name}</span>
+            {typeof c.affinity === "number" && (
+              <span className="font-mono text-muted-foreground tabular-nums">
+                {c.affinity.toFixed(2)}
               </span>
-              {typeof c.affinity === "number" && (
-                <span className="font-display text-legend">
-                  {c.affinity.toFixed(2)}
-                </span>
-              )}
-            </li>
-          );
-        })}
+            )}
+          </li>
+        ))}
       </ul>
     </div>
   );
@@ -315,116 +396,146 @@ function FixView({
   fix: Fix;
   onScenario?: (scenario: Scenario) => void;
 }) {
-  const tone =
-    fix.kind === "opener" ? "blue" : fix.kind === "sponsor" ? "amber" : "green";
   return (
-    <PatchPoint tone={tone} title={fix.title}>
-      <p className="text-legend">{fix.detail}</p>
-      {fix.kind !== "market" && (
-        <div className="mt-3">
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          <Dot tone={fixTone[fix.kind]}>{fix.title}</Dot>
+        </CardTitle>
+        <CardDescription>{fix.detail}</CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-3">
+        {fix.kind !== "market" && (
           <CandidateList title="" items={fix.candidates} />
-        </div>
-      )}
-      {fix.kind === "sponsor" && (
-        <div className="mt-3 grid gap-1">
-          <Row
-            k={`With ${money(fix.assumption.low)} offset`}
-            v={`${fix.dealAtLow.breakEvenTickets} (${pct(fix.dealAtLow.breakEvenCapacityPct)})`}
-          />
-          <Row
-            k={`With ${money(fix.assumption.high)} offset`}
-            v={`${fix.dealAtHigh.breakEvenTickets} (${pct(fix.dealAtHigh.breakEvenCapacityPct)})`}
-          />
-          <p className="text-legend">{fix.assumption.label}</p>
-        </div>
-      )}
-      {fix.kind === "market" && fix.sharedTags && fix.sharedTags.length > 0 && (
-        <p className="mt-2 text-legend">
-          {t("verdict.sharedTags")}: {fix.sharedTags.join(", ")}
-        </p>
-      )}
-      {onScenario && (
-        <div className="mt-3 flex flex-wrap gap-2">
-          {fix.kind === "market" && fix.altCity && (
-            <ScenarioButton
-              label={t("scenario.market", { city: fix.altCity })}
-              onClick={() => onScenario({ kind: "market", city: fix.altCity })}
+        )}
+        {fix.kind === "sponsor" && (
+          <div className="grid gap-1">
+            <Stat
+              label={`With ${money(fix.assumption.low)} offset`}
+              value={`${fix.dealAtLow.breakEvenTickets} (${pct(fix.dealAtLow.breakEvenCapacityPct)})`}
             />
-          )}
-          {fix.kind === "opener" && fix.candidates[0] && (
-            <ScenarioButton
-              label={t("scenario.opener", { opener: fix.candidates[0].name })}
-              onClick={() =>
-                onScenario({ kind: "opener", opener: fix.candidates[0].name })
-              }
+            <Stat
+              label={`With ${money(fix.assumption.high)} offset`}
+              value={`${fix.dealAtHigh.breakEvenTickets} (${pct(fix.dealAtHigh.breakEvenCapacityPct)})`}
             />
+            <p className="text-sm text-muted-foreground">
+              {fix.assumption.label}
+            </p>
+          </div>
+        )}
+        {fix.kind === "market" &&
+          fix.sharedTags &&
+          fix.sharedTags.length > 0 && (
+            <p className="text-sm text-muted-foreground">
+              {t("verdict.sharedTags")}: {fix.sharedTags.join(", ")}
+            </p>
           )}
-          {fix.kind === "sponsor" && (
-            <>
-              <ScenarioButton
-                label={t("scenario.sponsor", {
-                  amount: money(fix.assumption.low),
-                })}
+        {onScenario && (
+          <div className="flex flex-wrap gap-2">
+            {fix.kind === "market" && fix.altCity && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
                 onClick={() =>
-                  onScenario({
-                    kind: "sponsor",
-                    sponsorOffset: fix.assumption.low,
-                  })
+                  onScenario({ kind: "market", city: fix.altCity })
                 }
-              />
-              <ScenarioButton
-                label={t("scenario.sponsor", {
-                  amount: money(fix.assumption.high),
-                })}
+              >
+                {t("scenario.market", { city: fix.altCity })}
+              </Button>
+            )}
+            {fix.kind === "opener" && fix.candidates[0] && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
                 onClick={() =>
-                  onScenario({
-                    kind: "sponsor",
-                    sponsorOffset: fix.assumption.high,
-                  })
+                  onScenario({ kind: "opener", opener: fix.candidates[0].name })
                 }
-              />
-            </>
-          )}
-        </div>
-      )}
-    </PatchPoint>
+              >
+                {t("scenario.opener", { opener: fix.candidates[0].name })}
+              </Button>
+            )}
+            {fix.kind === "sponsor" && (
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    onScenario({
+                      kind: "sponsor",
+                      sponsorOffset: fix.assumption.low,
+                    })
+                  }
+                >
+                  {t("scenario.sponsor", { amount: money(fix.assumption.low) })}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    onScenario({
+                      kind: "sponsor",
+                      sponsorOffset: fix.assumption.high,
+                    })
+                  }
+                >
+                  {t("scenario.sponsor", {
+                    amount: money(fix.assumption.high),
+                  })}
+                </Button>
+              </>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
 function BaselineView({ baseline }: { baseline: BaselineComparison }) {
   return (
-    <Plate legend={t("baseline.title")}>
-      <p className="text-legend">
-        {baseline.note}
-        {baseline.model ? ` · ${baseline.model}` : ""}
-      </p>
-      {baseline.overlap && baseline.guess && (
-        <div className="mt-3 grid gap-3 md:grid-cols-3">
-          <div>
-            <p className="legend">{t("baseline.affinity")}</p>
-            <p className="mt-1">
-              {baseline.guess.localAffinity}
-              {baseline.overlap.affinityAgrees === null
-                ? ""
-                : baseline.overlap.affinityAgrees
-                  ? ` · ${t("baseline.agrees")}`
-                  : ` · ${t("baseline.disagrees")}`}
-            </p>
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("baseline.title")}</CardTitle>
+        <CardDescription>
+          {baseline.note}
+          {baseline.model ? ` · ${baseline.model}` : ""}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-3">
+        {baseline.overlap && baseline.guess && (
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="text-sm">
+              <p className="font-medium">{t("baseline.affinity")}</p>
+              <p className="mt-1">
+                {baseline.guess.localAffinity}
+                {baseline.overlap.affinityAgrees === null
+                  ? ""
+                  : baseline.overlap.affinityAgrees
+                    ? ` · ${t("baseline.agrees")}`
+                    : ` · ${t("baseline.disagrees")}`}
+              </p>
+            </div>
+            <OverlapList
+              title={t("verdict.openers")}
+              o={baseline.overlap.openers}
+            />
+            <OverlapList
+              title={t("verdict.sponsors")}
+              o={baseline.overlap.sponsors}
+            />
           </div>
-          <OverlapList
-            title={t("verdict.openers")}
-            o={baseline.overlap.openers}
-          />
-          <OverlapList
-            title={t("verdict.sponsors")}
-            o={baseline.overlap.sponsors}
-          />
-        </div>
-      )}
-      {baseline.guess?.reasoning && (
-        <p className="mt-3 text-legend">{baseline.guess.reasoning}</p>
-      )}
-    </Plate>
+        )}
+        {baseline.guess?.reasoning && (
+          <p className="text-sm text-muted-foreground">
+            {baseline.guess.reasoning}
+          </p>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -441,50 +552,34 @@ function OverlapList({
   };
 }) {
   return (
-    <div>
-      <p className="legend">
-        {title} ·{" "}
-        {o.pct === null ? "n/a" : `${o.pct}% ${t("baseline.overlap")}`}
+    <div className="text-sm">
+      <p className="font-medium">
+        {title}{" "}
+        <span className="text-muted-foreground">
+          · {o.pct === null ? "n/a" : `${o.pct}% ${t("baseline.overlap")}`}
+        </span>
       </p>
-      <ul className="mt-1 grid gap-0.5">
+      <ul className="mt-1 grid gap-1">
         {o.shared.map((n) => (
-          <li key={`s-${n}`} className="text-lamp-green">
-            {n}
+          <li key={`s-${n}`}>
+            <Dot tone="success">{n}</Dot>
           </li>
         ))}
         {o.modelOnly.map((n) => (
-          <li key={`m-${n}`} className="text-legend">
-            {n} · {t("baseline.modelOnly")}
+          <li key={`m-${n}`} className="text-muted-foreground">
+            <Dot tone="muted">
+              {n} · {t("baseline.modelOnly")}
+            </Dot>
           </li>
         ))}
         {o.qlooOnly.map((n) => (
-          <li key={`q-${n}`} className="text-lamp-blue">
-            {n} · {t("baseline.qlooOnly")}
+          <li key={`q-${n}`}>
+            <Dot tone="info">
+              {n} · {t("baseline.qlooOnly")}
+            </Dot>
           </li>
         ))}
       </ul>
     </div>
-  );
-}
-
-function ScenarioButton({
-  label,
-  onClick,
-}: {
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="inline-flex h-9 items-center gap-2 rounded-md border border-rail bg-panel-raised px-3 font-display font-semibold shadow-panel transition-transform duration-150 hover:-translate-y-px"
-    >
-      <span
-        aria-hidden
-        className="inline-block h-2 w-2 rounded-full bg-cap-blue"
-      />
-      {label}
-    </button>
   );
 }

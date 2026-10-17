@@ -1,6 +1,11 @@
 "use client";
 
 import { type FormEvent, useId, useState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { t } from "@/lib/i18n";
 
 export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
@@ -24,48 +29,42 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
   }
 
   if (state === "sent") {
-    return (
-      <output className="block text-lamp-green">{t("contact.sent")}</output>
-    );
+    return <output className="block text-sm">{t("contact.sent")}</output>;
   }
   return (
-    <form onSubmit={submit} className="grid gap-3">
-      <label htmlFor={emailId} className="legend">
-        {t("contact.email")}
-      </label>
-      <input
-        id={emailId}
-        type="email"
-        required
-        autoComplete="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="glass h-11 px-3 outline-none"
-      />
-      <label htmlFor={msgId} className="legend">
-        {t("contact.message")}
-      </label>
-      <textarea
-        id={msgId}
-        required
-        minLength={10}
-        maxLength={2000}
-        rows={6}
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        className="glass px-3 py-2 outline-none"
-      />
-      <button
-        type="submit"
-        disabled={state === "busy"}
-        className="inline-flex h-11 items-center justify-center rounded-md bg-action px-4 font-display text-base font-semibold text-action-ink shadow-panel disabled:opacity-50"
-      >
+    <form onSubmit={submit} className="grid gap-4">
+      <div className="grid gap-2">
+        <Label htmlFor={emailId}>{t("contact.email")}</Label>
+        <Input
+          id={emailId}
+          type="email"
+          required
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+      </div>
+      <div className="grid gap-2">
+        <Label htmlFor={msgId}>{t("contact.message")}</Label>
+        <Textarea
+          id={msgId}
+          required
+          minLength={10}
+          maxLength={2000}
+          rows={6}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
+      </div>
+      <Button type="submit" disabled={state === "busy"} className="w-full">
         {t("contact.send")}
-      </button>
+      </Button>
       {state === "error" && (
-        <p className="text-lamp-red" role="alert">
-          {t("auth.error")} {t("contact.fallback", { email: fallbackEmail })}
-        </p>
+        <Alert variant="destructive" role="alert">
+          <AlertDescription>
+            {t("auth.error")} {t("contact.fallback", { email: fallbackEmail })}
+          </AlertDescription>
+        </Alert>
       )}
     </form>
   );

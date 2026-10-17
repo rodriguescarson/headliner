@@ -2,11 +2,23 @@
 
 import Link from "next/link";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
 import type { CheckResponse } from "@/lib/check";
 import { t } from "@/lib/i18n";
 import type { JobRecord } from "@/lib/jobs/store";
 import type { Scenario } from "@/lib/scenario";
-import { Legend, Screws } from "./console";
 import { ScenarioCompare } from "./scenario-compare";
 import { ShareButton } from "./share-button";
 import { VerdictView } from "./verdict-view";
@@ -26,6 +38,7 @@ export function OfferDesk({ rulesVersion }: Props) {
   );
   const [scenarioBusy, setScenarioBusy] = useState(false);
   const inputId = useId();
+  const baselineId = useId();
   const resultRef = useRef<HTMLDivElement>(null);
   const busy = phase === "queued" || phase === "running";
 
@@ -143,71 +156,90 @@ export function OfferDesk({ rulesVersion }: Props) {
     }
   }
 
+  const submitLabel =
+    phase === "queued"
+      ? t("desk.queued")
+      : phase === "running"
+        ? t("desk.running")
+        : t("desk.submit");
+
   return (
     <div className="grid gap-6">
-      <form onSubmit={submit} className="plate relative p-5 md:p-6">
-        <Screws />
-        <h1 className="legend">{t("desk.title")}</h1>
-        <label htmlFor={inputId} className="mt-3 block">
-          {t("desk.intro")}
-        </label>
-        <div className="mt-2 grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
-          <textarea
-            id={inputId}
-            value={line}
-            onChange={(e) => setLine(e.target.value)}
-            placeholder={t("desk.placeholder")}
-            rows={2}
-            className="glass w-full resize-y px-4 py-3 font-display text-lg leading-7 outline-none focus-visible:outline-2"
-          />
-          <button
-            type="submit"
-            disabled={busy || !line.trim()}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-action px-5 font-display text-base font-semibold text-action-ink shadow-panel transition-transform duration-150 hover:-translate-y-px active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {phase === "queued"
-              ? t("desk.queued")
-              : phase === "running"
-                ? t("desk.running")
-                : t("desk.submit")}
-          </button>
-        </div>
-        <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2">
-          <label className="inline-flex items-center gap-2 text-legend">
-            <input
-              type="checkbox"
-              checked={baseline}
-              onChange={(e) => setBaseline(e.target.checked)}
-            />
-            {t("desk.baselineToggle")}
-          </label>
-          <Link href="/board" className="underline underline-offset-4">
-            {t("desk.board")}
-          </Link>
-        </div>
-        {result && !result.ok && (
-          <p className="mt-3 text-lamp-red" role="alert">
-            {result.missing?.length
-              ? t("desk.missing", { fields: result.missing.join(", ") })
-              : result.error}
-          </p>
-        )}
-      </form>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl">{t("desk.title")}</CardTitle>
+          <CardDescription>{t("desk.intro")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={submit} className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor={inputId} className="sr-only">
+                {t("desk.intro")}
+              </Label>
+              <Textarea
+                id={inputId}
+                value={line}
+                onChange={(e) => setLine(e.target.value)}
+                placeholder={t("desk.placeholder")}
+                rows={2}
+                className="min-h-20 resize-y text-base"
+              />
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id={baselineId}
+                  checked={baseline}
+                  onCheckedChange={(c) => setBaseline(c === true)}
+                />
+                <Label
+                  htmlFor={baselineId}
+                  className="font-normal text-muted-foreground"
+                >
+                  {t("desk.baselineToggle")}
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/board"
+                  className={buttonVariants({ variant: "ghost", size: "sm" })}
+                >
+                  {t("desk.board")}
+                </Link>
+                <Button type="submit" disabled={busy || !line.trim()}>
+                  {submitLabel}
+                </Button>
+              </div>
+            </div>
+            {result && !result.ok && (
+              <Alert variant="destructive" role="alert">
+                <AlertDescription>
+                  {result.missing?.length
+                    ? t("desk.missing", { fields: result.missing.join(", ") })
+                    : result.error}
+                </AlertDescription>
+              </Alert>
+            )}
+          </form>
+        </CardContent>
+      </Card>
 
-      <div ref={resultRef}>
+      <div ref={resultRef} className="grid gap-6">
         {phase === "idle" && !result && (
-          <p className="on-ground">{t("desk.empty")}</p>
+          <p className="text-sm text-muted-foreground">{t("desk.empty")}</p>
         )}
         {busy && <VerdictSkeleton />}
         {result?.ok && scenario && (
-          <div className="mb-6">
+          <div>
             {scenarioBusy && (
-              <p className="on-ground legend">{t("scenario.running")}</p>
+              <p className="text-sm text-muted-foreground">
+                {t("scenario.running")}
+              </p>
             )}
             {scenarioResult && !scenarioResult.ok && (
-              <p className="on-ground text-lamp-red" role="alert">
-                {scenarioResult.error}
-              </p>
+              <Alert variant="destructive" role="alert">
+                <AlertDescription>{scenarioResult.error}</AlertDescription>
+              </Alert>
             )}
             {scenarioResult?.ok && (
               <ScenarioCompare
@@ -231,16 +263,11 @@ export function OfferDesk({ rulesVersion }: Props) {
             onScenario={runScenario}
           />
         )}
-        {result?.ok && jobId && (
-          <div className="mt-5">
-            <ShareButton jobId={jobId} />
-          </div>
-        )}
+        {result?.ok && jobId && <ShareButton jobId={jobId} />}
       </div>
 
-      <p className="text-legend">
-        <Legend>{t("desk.rules")}</Legend>{" "}
-        <span className="ml-2 font-display">{rulesVersion}</span>
+      <p className="text-sm text-muted-foreground">
+        {t("desk.rules")} <span className="ml-1 font-mono">{rulesVersion}</span>
       </p>
     </div>
   );
@@ -249,12 +276,12 @@ export function OfferDesk({ rulesVersion }: Props) {
 function VerdictSkeleton() {
   return (
     <div
-      className="grid gap-4 md:grid-cols-[1fr_minmax(220px,0.8fr)_1fr]"
+      className="grid gap-4 md:grid-cols-3"
       aria-busy="true"
       aria-live="polite"
     >
       {[0, 1, 2].map((i) => (
-        <div key={i} className="glass h-56 animate-pulse opacity-60" />
+        <Skeleton key={i} className="h-56 rounded-xl" />
       ))}
     </div>
   );

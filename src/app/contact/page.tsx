@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Plate } from "@/components/console";
 import { ContactForm } from "@/components/contact-form";
+import { PageHeading, Shell } from "@/components/shell";
+import { Card, CardContent } from "@/components/ui/card";
 import { t } from "@/lib/i18n";
 import { LEGAL } from "@/lib/legal";
 
@@ -11,19 +12,16 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <main className="rail-grid flex-1 w-full px-4 py-10 md:px-8">
-      <div className="on-ground mx-auto w-full max-w-xl">
-        <h1 className="font-display text-2xl font-bold">
-          {t("contact.title")}
-        </h1>
-        <p className="mt-1 text-legend">{t("contact.intro")}</p>
-        <Plate className="mt-6">
+    <Shell width="medium" className="max-w-xl">
+      <PageHeading title={t("contact.title")} intro={t("contact.intro")} />
+      <Card>
+        <CardContent>
           <ContactForm fallbackEmail={LEGAL.supportEmail} />
-        </Plate>
-        <p className="mt-4 text-legend">
-          {t("contact.fallback", { email: LEGAL.supportEmail })}
-        </p>
-      </div>
-    </main>
+        </CardContent>
+      </Card>
+      <p className="mt-4 text-sm text-muted-foreground">
+        {t("contact.fallback", { email: LEGAL.supportEmail })}
+      </p>
+    </Shell>
   );
 }

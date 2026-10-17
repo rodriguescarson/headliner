@@ -1,221 +1,201 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-/*
-  The Console. Light scene: a desk lamp at night, a judge's laptop by day. The panel is marine grey,
-  the meter faces are cream glass, legends are engraved. Dark scene keeps the same materials under house lights.
-*/
-:root {
-  --panel: #8a97a5;
-  --panel-raised: #e6ebf0;
-  --panel-deep: #4f5f70;
-  --panel-deep-ink: #f1f4f7;
-  --rail: #6f7d8b;
-  --rail-line: rgba(21, 24, 27, 0.14);
-  --glass: #f3e9d2;
-  --glass-edge: #cbbfa3;
-  --ink: #15181b;
-  --legend: #3f4a55;
-  --legend-ground: #15181b;
-  --legend-on-glass: #4a4335;
-  --placeholder: #5e5848;
-  --lamp-red: #b3202f;
-  --lamp-green: #176a3c;
-  --lamp-amber: #8a5a00;
-  --lamp-blue: #2d5aa6;
-  --cap-red: #d7263d;
-  --cap-green: #2e9e5b;
-  --cap-amber: #e0a526;
-  --cap-blue: #3a6fd8;
-  --action: #e0a526;
-  --action-ink: #15181b;
-  --focus: #2d5aa6;
-  --shadow:
-    0 1px 0 rgba(255, 255, 255, 0.55) inset, 0 2px 6px rgba(21, 24, 27, 0.14);
-  --engrave: 0 1px 0 rgba(255, 255, 255, 0.6);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+@custom-variant dark {
+  &:where(.dark, .dark *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(html:not(.light), html:not(.light) *) {
+      @slot;
+    }
+  }
 }
 
-/* Dark scene (house lights): chosen in Settings; the OS preference applies only when the visitor chose "follow the system". */
-:root[data-theme="dark"] {
-  --panel: #1b2026;
-  --panel-raised: #232a31;
-  --panel-deep: #0f1317;
-  --panel-deep-ink: #eef0f2;
-  --rail: #353e47;
-  --rail-line: rgba(255, 255, 255, 0.07);
-  --legend-ground: #eef0f2;
-  --glass: #e9dfc8;
-  --glass-edge: #a79b7f;
-  --ink: #eef0f2;
-  --legend: #b7c0c9;
-  --legend-on-glass: #4a4335;
-  --placeholder: #5e5848;
-  --lamp-red: #ff7b86;
-  --lamp-green: #6ed19a;
-  --lamp-amber: #f2c35c;
-  --lamp-blue: #8fb4f0;
-  --action: #e0a526;
-  --action-ink: #15181b;
-  --focus: #8fb4f0;
-  --shadow:
-    0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 2px 8px rgba(0, 0, 0, 0.45);
-  --engrave: 0 -1px 0 rgba(0, 0, 0, 0.5);
+/* Headliner on shadcn/ui (base-nova, neutral). One accent, plus status colours for verdicts. Fonts: Geist via next/font. */
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+  --success: oklch(0.627 0.17 149);
+  --success-foreground: oklch(0.985 0 0);
+  --warning: oklch(0.769 0.165 70);
+  --warning-foreground: oklch(0.2 0.04 70);
+  --info: oklch(0.623 0.19 260);
+  --info-foreground: oklch(0.985 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+  --success: oklch(0.72 0.17 149);
+  --success-foreground: oklch(0.145 0 0);
+  --warning: oklch(0.82 0.16 80);
+  --warning-foreground: oklch(0.2 0.04 70);
+  --info: oklch(0.71 0.16 260);
+  --info-foreground: oklch(0.145 0 0);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not(.light):not(.dark) {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.556 0 0);
+    --success: oklch(0.72 0.17 149);
+    --success-foreground: oklch(0.145 0 0);
+    --warning: oklch(0.82 0.16 80);
+    --warning-foreground: oklch(0.2 0.04 70);
+    --info: oklch(0.71 0.16 260);
+    --info-foreground: oklch(0.145 0 0);
+  }
 }
 
 @theme inline {
-  --color-panel: var(--panel);
-  --color-panel-raised: var(--panel-raised);
-  --color-panel-deep: var(--panel-deep);
-  --color-panel-deep-ink: var(--panel-deep-ink);
-  --color-rail: var(--rail);
-  --color-glass: var(--glass);
-  --color-glass-edge: var(--glass-edge);
-  --color-ink: var(--ink);
-  --color-legend: var(--legend);
-  --color-legend-glass: var(--legend-on-glass);
-  --color-lamp-red: var(--lamp-red);
-  --color-lamp-green: var(--lamp-green);
-  --color-lamp-amber: var(--lamp-amber);
-  --color-lamp-blue: var(--lamp-blue);
-  --color-cap-red: var(--cap-red);
-  --color-cap-green: var(--cap-green);
-  --color-cap-amber: var(--cap-amber);
-  --color-cap-blue: var(--cap-blue);
-  --color-action: var(--action);
-  --color-action-ink: var(--action-ink);
-  --font-sans: var(--font-hanken), system-ui, sans-serif;
-  --font-display: var(--font-bricolage), var(--font-hanken), sans-serif;
-  --shadow-panel: var(--shadow);
-  --ease-out: var(--ease-out);
+  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+  --radius-xs: calc(var(--radius) * 0.5);
+  --radius-sm: calc(var(--radius) * 0.75);
+  --radius-md: calc(var(--radius) * 0.875);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.5);
+  --radius-2xl: calc(var(--radius) * 2);
+  --radius-3xl: calc(var(--radius) * 3);
+  --radius-4xl: calc(var(--radius) * 4);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
 }
 
-html {
-  background: var(--panel);
-  color: var(--ink);
-  font-family: var(--font-hanken), system-ui, sans-serif;
-  font-size: 15px;
-  line-height: 1.5;
-  font-variant-numeric: tabular-nums;
-  scrollbar-color: var(--rail) var(--panel);
-  caret-color: var(--lamp-blue);
-  accent-color: var(--lamp-blue);
-}
-
-body {
-  background: var(--panel);
-  color: var(--ink);
-  min-height: 100%;
-}
-
-::selection {
-  background: var(--action);
-  color: var(--action-ink);
-}
-
-:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
-
-/* Label voice: small, medium weight, sentence case. Never tracked uppercase. */
-.legend {
-  font-family: var(--font-hanken), system-ui, sans-serif;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  letter-spacing: 0.005em;
-  color: var(--legend);
-}
-.legend-glass {
-  color: var(--legend-on-glass);
-}
-/* Display voice: headings and readings. */
-.font-display {
-  font-family: var(--font-bricolage), var(--font-hanken), sans-serif;
-  letter-spacing: -0.01em;
-}
-
-/* Bare ground: legends read in ink, the rail grid shows through. */
-.rail-grid {
-  background-image:
-    repeating-linear-gradient(
-      90deg,
-      var(--rail-line) 0 1px,
-      transparent 1px 96px
-    ),
-    repeating-linear-gradient(
-      0deg,
-      var(--rail-line) 0 1px,
-      transparent 1px 96px
-    );
-  background-position: center top;
-}
-.on-ground .legend,
-.on-ground.legend {
-  color: var(--legend-ground);
-}
-.on-ground {
-  color: var(--ink);
-}
-
-/* Panel plate: a raised module on the rail. Depth has offset and blur. */
-.plate {
-  background: var(--panel-raised);
-  border: 1px solid var(--rail);
-  border-radius: 6px;
-  box-shadow: var(--shadow);
-}
-
-/* Meter glass: the cream face under the needle. */
-.glass {
-  background: var(--glass);
-  border: 1px solid var(--glass-edge);
-  border-radius: 6px;
-  color: #15181b;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    inset 0 -2px 6px rgba(74, 67, 53, 0.12),
-    0 1px 2px rgba(21, 24, 27, 0.18);
-}
-.glass ::placeholder {
-  color: var(--placeholder);
-}
-
-/* Screw holes mark the rail grid. */
-.screw {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 40% 40%,
-    var(--panel-raised),
-    var(--panel-deep)
-  );
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
-}
-
-/* The one authored motion: a needle swinging to its value and a lamp warming up. */
-.needle {
-  transition: transform 700ms var(--ease-out);
-}
-.lamp-on {
-  animation: lamp-warm 450ms var(--ease-out) both;
-}
-@keyframes lamp-warm {
-  from {
-    filter: brightness(0.6);
-    transform: scale(0.94);
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-  to {
-    filter: brightness(1);
-    transform: scale(1);
+  html {
+    @apply font-sans;
+    font-variant-numeric: tabular-nums;
   }
-}
-@media (prefers-reduced-motion: reduce) {
-  .needle {
-    transition: none;
-  }
-  .lamp-on {
-    animation: none;
+  body {
+    @apply bg-background text-foreground;
   }
 }

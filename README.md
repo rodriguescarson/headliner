@@ -61,7 +61,7 @@ Every fix carries a one-click scenario: swap the market to the compared metro, p
 
 ## The board and share links
 
-- **/board**: every pre-seeded offer on one fixed-column board. Run them all and each row settles with its break-even, signal and verdict lamp; a tally counts cleared, fix required, refused and abstained. Clicking an act prefills the desk.
+- **/board**: every pre-seeded offer on one fixed-column board. Run them all and each row settles with its break-even, signal and verdict badge; a tally counts cleared, fix required, refused and abstained. Clicking an act prefills the desk.
 - **Share a verdict**: a finished check becomes a link at `/s/<id>`, stored in the headliner Supabase stack through PostgREST with the service role (row-level security on, no anon policy, soft delete). Without `SUPABASE_SERVICE_ROLE_KEY` the store is in memory.
 
 ## For judges and counterparties
@@ -85,9 +85,9 @@ Every fix carries a one-click scenario: swap the market to the compared metro, p
 
 ## Design
 
-The Console: the offer desk is a channel strip. Deal math and Qloo signal are meter faces, the verdict is a lamp, fixes are patch points, the unknowables are an engraved stencil, the Qloo trace is the back panel. Tokens live in `src/app/globals.css` (light scene default, dark behind `data-theme="dark"`); contrast is measured with `node scripts/contrast.mjs`. Direction contract: `src/app/layout.tsx`.
+shadcn/ui (style `base-nova`, Base UI primitives, neutral palette) with Geist Sans for interface text and Geist Mono for every number, id and parameter. Components under `src/components/ui/` are owned source added with the shadcn CLI; the product components compose them. Colour is reserved for state: four status tones (`success`, `warning`, `destructive`, `info`) map one-to-one onto the four verdict statuses in `src/lib/enums.ts` and are always paired with a text label. Tokens live in `src/app/globals.css`; the `.dark` class and the OS preference both switch the scene, and the account settings page overrides it. Contrast is measured with `node scripts/contrast.mjs`.
 
-Motion (`src/components/motion/`): one orchestrated moment per surface. GSAP drives the count-up readings beside the needle swing, the patch-bay reveal and the board rows flipping in as checks land; a Vanta NET backdrop in the console's inks sits behind the hero strip (lazy, transparent over the rail grid); Lenis smooth-scrolls the home and share pages. Every piece is off under `prefers-reduced-motion`.
+Motion (`src/components/motion/`) is small and functional: GSAP counts the break-even and affinity readings up to their exact values, reveals fixes on scroll and flips board rows in as checks land; Lenis smooth-scrolls the home and share pages. Every piece is off under `prefers-reduced-motion`.
 
 ## Deploy (Carson's VPS, behind the shared Caddy)
 

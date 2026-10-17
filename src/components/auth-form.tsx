@@ -1,6 +1,11 @@
 "use client";
 
 import { type FormEvent, useId, useState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { t } from "@/lib/i18n";
 import { createClient } from "@/lib/supabase/client";
 
@@ -75,81 +80,90 @@ export function AuthForm({
     setNotice(t("auth.resetSent"));
   }
 
-  if (!supabase) return <p className="text-legend">{t("auth.disabled")}</p>;
+  if (!supabase)
+    return (
+      <p className="text-sm text-muted-foreground">{t("auth.disabled")}</p>
+    );
 
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-5">
       <div className="grid gap-2">
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="lg"
           onClick={() => oauth("google")}
           disabled={busy}
-          className="plate inline-flex h-11 items-center justify-center gap-3 px-4 font-medium disabled:opacity-50"
+          className="w-full"
         >
           <GoogleMark />
           {t("auth.google")}
-        </button>
+        </Button>
         {appleEnabled && (
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="lg"
             onClick={() => oauth("apple")}
             disabled={busy}
-            className="plate inline-flex h-11 items-center justify-center gap-3 px-4 font-medium disabled:opacity-50"
+            className="w-full"
           >
             <AppleMark />
             {t("auth.apple")}
-          </button>
+          </Button>
         )}
       </div>
-      <p className="legend text-center">{t("auth.or")}</p>
-      <form onSubmit={submit} className="grid gap-3">
-        <label htmlFor={emailId} className="legend">
-          {t("auth.email")}
-        </label>
-        <input
-          id={emailId}
-          type="email"
-          autoComplete="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="glass h-11 px-3 outline-none"
-        />
-        <label htmlFor={passId} className="legend">
-          {t("auth.password")}
-        </label>
-        <input
-          id={passId}
-          type="password"
-          autoComplete={mode === "signup" ? "new-password" : "current-password"}
-          required
-          minLength={8}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="glass h-11 px-3 outline-none"
-        />
-        <button
-          type="submit"
-          disabled={busy}
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-action px-4 font-display text-base font-semibold text-action-ink shadow-panel disabled:opacity-50"
-        >
+      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        <Separator className="flex-1" />
+        {t("auth.or")}
+        <Separator className="flex-1" />
+      </div>
+      <form onSubmit={submit} className="grid gap-4">
+        <div className="grid gap-2">
+          <Label htmlFor={emailId}>{t("auth.email")}</Label>
+          <Input
+            id={emailId}
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="grid gap-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor={passId}>{t("auth.password")}</Label>
+            {mode === "signin" && (
+              <button
+                type="button"
+                onClick={reset}
+                className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+              >
+                {t("auth.forgot")}
+              </button>
+            )}
+          </div>
+          <Input
+            id={passId}
+            type="password"
+            autoComplete={
+              mode === "signup" ? "new-password" : "current-password"
+            }
+            required
+            minLength={8}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <Button type="submit" size="lg" disabled={busy} className="w-full">
           {mode === "signup" ? t("auth.signUp") : t("auth.signIn")}
-        </button>
-        {mode === "signin" && (
-          <button
-            type="button"
-            onClick={reset}
-            className="text-left text-lamp-blue underline-offset-4 hover:underline"
-          >
-            {t("auth.forgot")}
-          </button>
-        )}
+        </Button>
       </form>
-      {notice && <output className="block text-lamp-green">{notice}</output>}
+      {notice && <output className="block text-sm">{notice}</output>}
       {error && (
-        <p className="text-lamp-red" role="alert">
-          {error}
-        </p>
+        <Alert variant="destructive" role="alert">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
     </div>
   );
@@ -157,7 +171,7 @@ export function AuthForm({
 
 function GoogleMark() {
   return (
-    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+    <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true">
       <path
         fill="#EA4335"
         d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.5 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.3l7.8 6C12.3 13.5 17.7 9.5 24 9.5z"
@@ -181,8 +195,8 @@ function GoogleMark() {
 function AppleMark() {
   return (
     <svg
-      width="18"
-      height="18"
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       aria-hidden="true"
       fill="currentColor"

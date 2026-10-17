@@ -70,7 +70,9 @@
     "demographics": "Audience skew",
     "coverage": "Coverage",
     "noTrace": "No calls were made (sample mode).",
-    "sharedTags": "Shared taste tags"
+    "sharedTags": "Shared taste tags",
+    "warnAbove": "warn above {{warn}}, refuse above {{refuse}}",
+    "netTitle": "Net by tickets sold"
   },
   "cannot": {
     "competing_shows_same_night": "Competing shows on the same night",
@@ -238,6 +240,7 @@
     "deleteHelp": "Removes your account from the sign-in service and retires your settings and shared links. Shared links stop working immediately. This cannot be undone.",
     "deleteConfirmLabel": "Type DELETE to confirm",
     "deleteButton": "Delete my account",
-    "deleting": "Deleting…"
+    "deleting": "Deleting…",
+    "cancel": "Cancel"
   }
 }

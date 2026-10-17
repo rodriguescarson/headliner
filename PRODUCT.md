@@ -34,7 +34,7 @@ Entry is a single typed offer line or pasted terms; evening desk use on a laptop
 
 ## Brand Commitments
 
-Name: Headliner. Voice: plainspoken, surgical, honest about limits; numbers with the command that produced them; no hype, no emoji. Owner wants a strong point of view, strong icons and SVG, gradients and motion used with intent, colour chosen for its psychology, not decoration.
+Name: Headliner. Voice: plainspoken, surgical, honest about limits; numbers with the command that produced them; no hype, no emoji. Owner decided on 2026-10-17 to build the interface on shadcn/ui (standard components, neutral palette, Geist) after rejecting a bespoke console look: standard, scannable, light by default, colour only for state.
 
 ## Evidence on Hand
 

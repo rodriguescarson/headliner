@@ -1,9 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { t } from "@/lib/i18n";
 import type { SuiteResult } from "@/lib/qloo/suite";
-import { Lamp, Screws } from "./console";
+import { Dot } from "./status";
 
 export function SuiteRunner({ mode }: { mode: "live" | "sample" }) {
   const [busy, setBusy] = useState(false);
@@ -24,73 +35,67 @@ export function SuiteRunner({ mode }: { mode: "live" | "sample" }) {
   }
 
   return (
-    <div className="mt-6 grid gap-4">
+    <div className="grid gap-4">
       <div className="flex flex-wrap items-center gap-4">
-        <button
-          type="button"
-          onClick={run}
-          disabled={busy}
-          className="inline-flex h-11 items-center gap-2 rounded-md bg-action px-5 font-display text-base font-semibold text-action-ink shadow-panel disabled:opacity-50"
-        >
+        <Button type="button" onClick={run} disabled={busy}>
           {busy ? t("suite.running") : t("suite.run")}
-        </button>
-        <span
-          className={`legend ${mode === "live" ? "text-lamp-green" : "text-lamp-amber"}`}
+        </Button>
+        <Dot
+          tone={mode === "live" ? "success" : "warning"}
+          className="text-sm text-muted-foreground"
         >
           {mode === "live" ? t("app.liveBanner") : t("app.sampleBanner")}
-        </span>
+        </Dot>
       </div>
       {result && (
-        <div className="plate relative overflow-x-auto p-3">
-          <Screws />
-          <table className="w-full text-left">
-            <thead>
-              <tr className="legend">
-                <th className="px-3 py-2 font-medium">{t("suite.endpoint")}</th>
-                <th className="px-3 py-2 font-medium">{t("suite.status")}</th>
-                <th className="px-3 py-2 font-medium">{t("suite.latency")}</th>
-                <th className="px-3 py-2 font-medium">{t("suite.results")}</th>
-                <th className="px-3 py-2 font-medium">{t("suite.params")}</th>
-              </tr>
-            </thead>
-            <tbody>
+        <Card className="overflow-x-auto py-0">
+          <Table>
+            <TableCaption className="pb-3">
+              {result.act} · {result.city} · {result.baseUrl} ·{" "}
+              {result.startedAt}
+            </TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("suite.endpoint")}</TableHead>
+                <TableHead>{t("suite.status")}</TableHead>
+                <TableHead>{t("suite.latency")}</TableHead>
+                <TableHead>{t("suite.results")}</TableHead>
+                <TableHead>{t("suite.params")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {result.steps.map((s) => (
-                <tr key={s.name} className="border-t border-rail align-top">
-                  <td className="px-3 py-2 font-display">{s.name}</td>
-                  <td className="px-3 py-2">
+                <TableRow key={s.name}>
+                  <TableCell className="font-medium">{s.name}</TableCell>
+                  <TableCell>
                     {s.trace ? (
-                      <Lamp
-                        tone={s.trace.ok ? "green" : "red"}
-                        label={String(s.trace.status)}
-                        size={10}
-                      />
+                      <Dot tone={s.trace.ok ? "success" : "destructive"}>
+                        <span className="font-mono">{s.trace.status}</span>
+                      </Dot>
                     ) : (
-                      <Lamp tone="off" label="—" size={10} />
+                      <Dot tone="muted">—</Dot>
                     )}
-                  </td>
-                  <td className="px-3 py-2 font-display">
+                  </TableCell>
+                  <TableCell className="font-mono tabular-nums">
                     {s.trace
                       ? `${s.trace.ms}ms${s.trace.cached ? " cached" : ""}`
                       : "—"}
-                  </td>
-                  <td className="px-3 py-2 font-display">
+                  </TableCell>
+                  <TableCell className="font-mono tabular-nums">
                     {s.trace?.resultCount ?? "—"}
-                  </td>
-                  <td className="break-all px-3 py-2 text-legend">
+                  </TableCell>
+                  <TableCell className="whitespace-normal break-all font-mono text-xs text-muted-foreground">
                     {s.note ??
                       (s.trace
                         ? new URLSearchParams(s.trace.params).toString()
                         : "")}
                     {s.trace?.error ? ` — ${s.trace.error}` : ""}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-          <p className="px-3 py-2 text-legend">
-            {result.act} · {result.city} · {result.baseUrl} · {result.startedAt}
-          </p>
-        </div>
+            </TableBody>
+          </Table>
+        </Card>
       )}
     </div>
   );
