@@ -9,7 +9,8 @@
     "label": "Primary",
     "suite": "Endpoint suite",
     "signIn": "Sign in",
-    "account": "Account"
+    "account": "Account",
+    "board": "The board"
   },
   "footer": {
     "label": "Legal and support",
@@ -35,7 +36,8 @@
     "baselineToggle": "Also run it without Qloo and measure the overlap",
     "suiteLink": "Watch every Qloo endpoint fire",
     "empty": "Nothing on the desk yet. Type an offer or load one.",
-    "rules": "Rulebook"
+    "rules": "Rulebook",
+    "board": "Open the board"
   },
   "verdict": {
     "status": {
@@ -161,5 +163,29 @@
     "breakEven": "Break-even",
     "affinity": "Local affinity",
     "verdict": "Verdict"
+  },
+  "share": {
+    "title": "Shared verdict",
+    "runYourself": "Run it yourself on the desk",
+    "make": "Share this verdict",
+    "making": "Making the link…",
+    "copy": "Copy link",
+    "copied": "Copied"
+  },
+  "board": {
+    "title": "The board",
+    "intro": "Every pre-seeded offer on one board. Run them all and watch each row settle: columns never move, rows carry the state.",
+    "runAll": "Run the board",
+    "running": "Running…",
+    "act": "Act",
+    "city": "City",
+    "cap": "Cap",
+    "ticket": "Ticket",
+    "guarantee": "Guarantee",
+    "breakEven": "Break-even",
+    "signal": "Signal",
+    "state": "State",
+    "failed": "Failed",
+    "notRun": "Not run"
   }
 }

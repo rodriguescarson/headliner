@@ -1,4 +1,4 @@
-import { Activity, LogIn, UserRound } from "lucide-react";
+import { Activity, LogIn, Table2, UserRound } from "lucide-react";
 import Link from "next/link";
 import type { SessionUser } from "@/lib/auth/session";
 import { t } from "@/lib/i18n";
@@ -21,6 +21,13 @@ export function SiteHeader({
           </span>
         </Link>
         <nav aria-label={t("nav.label")} className="flex items-center gap-5 ">
+          <Link
+            href="/board"
+            className="inline-flex items-center gap-1.5 underline-offset-4 hover:underline"
+          >
+            <Table2 size={16} strokeWidth={1.75} aria-hidden="true" />
+            {t("nav.board")}
+          </Link>
           <Link
             href="/suite"
             className="inline-flex items-center gap-1.5 underline-offset-4 hover:underline"

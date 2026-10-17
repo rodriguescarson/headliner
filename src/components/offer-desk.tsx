@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronDown, Play } from "lucide-react";
+import { Play } from "lucide-react";
+import Link from "next/link";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import type { CheckResponse } from "@/lib/check";
 import { t } from "@/lib/i18n";
@@ -8,16 +9,13 @@ import type { JobRecord } from "@/lib/jobs/store";
 import type { Scenario } from "@/lib/scenario";
 import { Legend, Screws } from "./console";
 import { ScenarioCompare } from "./scenario-compare";
+import { ShareButton } from "./share-button";
 import { VerdictView } from "./verdict-view";
 
-type Props = {
-  samples: { label: string; line: string }[];
-  samplesNote?: string;
-  rulesVersion: string;
-};
+type Props = { rulesVersion: string };
 type Phase = "idle" | "queued" | "running" | "done";
 
-export function OfferDesk({ samples, samplesNote, rulesVersion }: Props) {
+export function OfferDesk({ rulesVersion }: Props) {
   const [line, setLine] = useState("");
   const [baseline, setBaseline] = useState(false);
   const [phase, setPhase] = useState<Phase>("idle");
@@ -66,11 +64,13 @@ export function OfferDesk({ samples, samplesNote, rulesVersion }: Props) {
 
   useEffect(() => {
     const fromHash = window.location.hash.match(/^#job=([A-Za-z0-9_-]{6,})$/);
+    const fromQuery = new URLSearchParams(window.location.search).get("line");
+    if (fromQuery && !line) setLine(fromQuery.slice(0, 500));
     if (fromHash && !jobId) {
       setJobId(fromHash[1]);
       setPhase("queued");
     }
-  }, [jobId]);
+  }, [jobId, line]);
 
   useEffect(() => {
     if (phase === "done" && result?.ok)
@@ -183,33 +183,9 @@ export function OfferDesk({ samples, samplesNote, rulesVersion }: Props) {
             />
             {t("desk.baselineToggle")}
           </label>
-          <details className="group">
-            <summary className="inline-flex cursor-pointer list-none items-center gap-1 text-lamp-blue underline-offset-4 hover:underline">
-              {t("desk.samples")}
-              <ChevronDown
-                size={14}
-                className="transition-transform group-open:rotate-180"
-                aria-hidden="true"
-              />
-            </summary>
-            {samplesNote && <p className="mt-2 text-legend">{samplesNote}</p>}
-            <ul className="mt-2 grid gap-1 md:grid-cols-2">
-              {samples.map((s, i) => (
-                <li key={s.line} className="flex items-baseline gap-3">
-                  <span className="legend w-6 shrink-0 tabular-nums">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <button
-                    type="button"
-                    className="text-left underline-offset-4 hover:underline"
-                    onClick={() => setLine(s.line)}
-                  >
-                    {s.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </details>
+          <Link href="/board" className="underline underline-offset-4">
+            {t("desk.board")}
+          </Link>
         </div>
         {result && !result.ok && (
           <p className="mt-3 text-lamp-red" role="alert">
@@ -256,6 +232,11 @@ export function OfferDesk({ samples, samplesNote, rulesVersion }: Props) {
             baseline={result.baseline}
             onScenario={runScenario}
           />
+        )}
+        {result?.ok && jobId && (
+          <div className="mt-5">
+            <ShareButton jobId={jobId} />
+          </div>
         )}
       </div>
 

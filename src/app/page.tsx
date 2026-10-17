@@ -4,8 +4,6 @@ import { Lamp } from "@/components/console";
 import { OfferDesk } from "@/components/offer-desk";
 import { evidenceMode } from "@/lib/check";
 import { t } from "@/lib/i18n";
-import { LIVE_OFFERS } from "@/lib/offers";
-import { SAMPLE_OFFERS } from "@/lib/qloo/sample";
 import { RULES_VERSION } from "@/lib/rules";
 
 export const metadata: Metadata = { title: "The offer desk" };
@@ -21,11 +19,7 @@ export default function Home() {
             {mode === "live" ? t("app.liveBanner") : t("app.sampleBanner")}
           </span>
         </output>
-        <OfferDesk
-          samples={mode === "live" ? LIVE_OFFERS : SAMPLE_OFFERS}
-          samplesNote={mode === "live" ? t("desk.offersNote") : undefined}
-          rulesVersion={RULES_VERSION}
-        />
+        <OfferDesk rulesVersion={RULES_VERSION} />
         <p className="mt-8 ">
           <Link
             href="/suite"
