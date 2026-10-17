@@ -54,6 +54,8 @@ Would it work without Qloo? No. The first column is arithmetic any spreadsheet c
 ## For the judges
 
 - **Try it with any act**: nothing is canned; the desk runs live against `hackathon.api.qloo.com`, cached server-side.
+- **/board**: all twelve pre-seeded offers on one board; run them and watch each row settle with its verdict.
+- **Share**: any verdict becomes a link a co-promoter or sponsor can open.
 - **/suite**: watch every endpoint fire with status and latency.
 - **MCP**: a venue booker's or sponsor's agent can run `check_offer`, read the `rulebook` and the `endpoint_suite` over stdio. Same evidence, same trace, read-only.
 
