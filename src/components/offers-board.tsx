@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -14,11 +15,11 @@ import {
 } from "@/components/ui/table";
 import { money, pct } from "@/lib/deal/deal-math";
 import { parseOfferLine } from "@/lib/deal/offer-parser";
-import type { VerdictStatus } from "@/lib/enums";
+import { VERDICT_STATUS, type VerdictStatus } from "@/lib/enums";
 import { t } from "@/lib/i18n";
 import type { JobRecord } from "@/lib/jobs/store";
 import { useFlipIn } from "./motion/reveal";
-import { Dot, StatusBadge } from "./status";
+import { Dot, StatusBadge, statusTone } from "./status";
 
 type Row = { label: string; line: string };
 type RowState =
@@ -39,6 +40,7 @@ export function OffersBoard({ rows, note }: { rows: Row[]; note?: string }) {
     rows.map(() => ({ phase: "idle" })),
   );
   const [busy, setBusy] = useState(false);
+  const router = useRouter();
   const parsed = rows.map((r) => parseOfferLine(r.line));
 
   async function runAll() {
@@ -105,19 +107,34 @@ export function OffersBoard({ rows, note }: { rows: Row[]; note?: string }) {
     RowState,
     { phase: "done" }
   >[];
-  const tally = done.length
-    ? `${done.length} checked · ${done.filter((d) => d.status === "cleared").length} cleared · ${done.filter((d) => d.status === "fix_required").length} fix required · ${done.filter((d) => d.status === "refused").length} refused · ${done.filter((d) => d.status === "abstained").length} abstained`
-    : null;
+  const counts = VERDICT_STATUS.map((status) => ({
+    status,
+    n: done.filter((d) => d.status === status).length,
+  }));
 
   return (
     <div className="grid gap-4">
-      <div className="flex flex-wrap items-center gap-4">
+      {/* Summary strip above the table, action on the right (Mercury, Polar) */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <output className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+          <span className="font-medium">
+            {t("board.checked", { done: done.length, total: rows.length })}
+          </span>
+          {done.length > 0 &&
+            counts.map((c) => (
+              <span key={c.status} className="text-muted-foreground">
+                <Dot tone={statusTone[c.status]}>
+                  {t(`verdict.status.${c.status}`)}{" "}
+                  <span className="font-mono text-foreground tabular-nums">
+                    {c.n}
+                  </span>
+                </Dot>
+              </span>
+            ))}
+        </output>
         <Button type="button" onClick={runAll} disabled={busy}>
           {busy ? t("board.running") : t("board.runAll")}
         </Button>
-        {tally && (
-          <output className="text-sm text-muted-foreground">{tally}</output>
-        )}
       </div>
       {note && <p className="text-sm text-muted-foreground">{note}</p>}
       <Card className="overflow-x-auto py-0">
@@ -145,7 +162,14 @@ export function OffersBoard({ rows, note }: { rows: Row[]; note?: string }) {
               const s = states[i];
               const o = p.ok ? p.offer : null;
               return (
-                <TableRow key={r.line}>
+                <TableRow
+                  key={r.line}
+                  className="cursor-pointer"
+                  onClick={(e) => {
+                    if ((e.target as HTMLElement).closest("a")) return;
+                    router.push(`/?line=${encodeURIComponent(r.line)}`);
+                  }}
+                >
                   <TableCell className="font-mono text-muted-foreground">
                     {String(i + 1).padStart(2, "0")}
                   </TableCell>

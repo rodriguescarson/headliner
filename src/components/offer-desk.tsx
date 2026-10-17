@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,6 +15,8 @@ import type { Scenario } from "@/lib/scenario";
 import { ScenarioCompare } from "./scenario-compare";
 import { ShareButton } from "./share-button";
 import { VerdictView } from "./verdict-view";
+
+const MAX_LINE = 500;
 
 type Props = { rulesVersion: string; initialLine?: string };
 type Phase = "idle" | "queued" | "running" | "done";
@@ -157,73 +158,84 @@ export function OfferDesk({ rulesVersion, initialLine = "" }: Props) {
 
   return (
     <div className="grid gap-6">
-      <Card className="mx-auto w-full max-w-3xl shadow-sm">
-        <CardContent>
-          <form onSubmit={submit} className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor={inputId} className="sr-only">
-                {t("desk.strip")}
-              </Label>
-              <Textarea
-                id={inputId}
-                value={line}
-                onChange={(e) => setLine(e.target.value)}
-                placeholder={t("desk.placeholder")}
-                rows={2}
-                className="min-h-24 resize-y text-base md:text-base"
+      <form onSubmit={submit} className="mx-auto grid w-full max-w-3xl gap-3">
+        {/* Composer: input, option and submit share one surface (Gemini, Copilot, ElevenLabs) */}
+        <div className="rounded-2xl border bg-card shadow-sm transition-shadow focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/30">
+          <Label htmlFor={inputId} className="sr-only">
+            {t("desk.strip")}
+          </Label>
+          <Textarea
+            id={inputId}
+            value={line}
+            maxLength={MAX_LINE}
+            onChange={(e) => setLine(e.target.value)}
+            onKeyDown={(e) => {
+              if (
+                e.key === "Enter" &&
+                !e.shiftKey &&
+                !e.nativeEvent.isComposing
+              ) {
+                e.preventDefault();
+                e.currentTarget.form?.requestSubmit();
+              }
+            }}
+            placeholder={t("desk.placeholder")}
+            rows={2}
+            className="min-h-24 resize-none border-0 bg-transparent px-4 pt-4 text-base shadow-none focus-visible:ring-0 md:text-base dark:bg-transparent"
+          />
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t px-4 py-3">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id={baselineId}
+                checked={baseline}
+                onCheckedChange={(c) => setBaseline(c === true)}
               />
+              <Label
+                htmlFor={baselineId}
+                className="text-sm font-normal text-muted-foreground"
+              >
+                {t("desk.baselineToggle")}
+              </Label>
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id={baselineId}
-                  checked={baseline}
-                  onCheckedChange={(c) => setBaseline(c === true)}
-                />
-                <Label
-                  htmlFor={baselineId}
-                  className="font-normal text-muted-foreground"
-                >
-                  {t("desk.baselineToggle")}
-                </Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/board"
-                  className={buttonVariants({ variant: "ghost", size: "sm" })}
-                >
-                  {t("desk.board")}
-                </Link>
-                <Button type="submit" size="lg" disabled={busy || !line.trim()}>
-                  {submitLabel}
-                </Button>
-              </div>
+            <div className="ml-auto flex items-center gap-3">
+              <span
+                className="font-mono text-xs text-muted-foreground tabular-nums"
+                aria-hidden="true"
+              >
+                {line.length} / {MAX_LINE}
+              </span>
+              <Button type="submit" disabled={busy || !line.trim()}>
+                {submitLabel}
+              </Button>
             </div>
-            {result && !result.ok && (
-              <Alert variant="destructive" role="alert">
-                <AlertDescription>
-                  {result.missing?.length
-                    ? t("desk.missing", { fields: result.missing.join(", ") })
-                    : result.error}
-                </AlertDescription>
-              </Alert>
-            )}
-          </form>
-        </CardContent>
-      </Card>
-
-      <p className="mx-auto flex w-full max-w-3xl flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-        <span>
-          {t("desk.rules")} <span className="font-mono">{rulesVersion}</span>
-        </span>
-        <span aria-hidden="true">·</span>
-        <Link
-          href="/suite"
-          className="underline-offset-4 hover:text-foreground hover:underline"
-        >
-          {t("desk.suiteLink")}
-        </Link>
-      </p>
+          </div>
+        </div>
+        {result && !result.ok && (
+          <Alert variant="destructive" role="alert">
+            <AlertDescription>
+              {result.missing?.length
+                ? t("desk.missing", { fields: result.missing.join(", ") })
+                : result.error}
+            </AlertDescription>
+          </Alert>
+        )}
+        <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+          <Link
+            href="/board"
+            className="font-medium text-foreground underline-offset-4 hover:underline"
+          >
+            {t("desk.board")}
+          </Link>
+          <span aria-hidden="true" className="hidden md:inline">
+            ·
+          </span>
+          <span className="hidden md:inline">{t("desk.enterHint")}</span>
+          <span aria-hidden="true">·</span>
+          <span>
+            {t("desk.rules")} <span className="font-mono">{rulesVersion}</span>
+          </span>
+        </p>
+      </form>
 
       <div ref={resultRef} className="grid scroll-mt-20 gap-6">
         {busy && <VerdictSkeleton />}

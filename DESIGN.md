@@ -58,9 +58,22 @@ Light is the default; the `.dark` class switches every token, the OS preference 
 - Status is never colour alone: every dot and badge carries its label.
 - No decorative gradients, glass, textures, or icon-per-heading scaffolding. Lucide icons only where a control needs one, at `size-4`.
 
+## Pattern references (Refero, 2026-10-18)
+
+Structure, step order and hierarchy come from shipped products, looked up on [Refero](https://refero.design) (Mobbin's agent tools need a paid plan; Refero shows six screens per search without an account). Nothing was copied from their visuals or brands.
+
+| Screen | Reference | What was taken |
+|---|---|---|
+| Start (desk) | Google Gemini, Microsoft Copilot home | One heading, one input, the submit button inside the input surface |
+| Start (desk) | ElevenLabs prompt dialog | Character counter beside the submit button |
+| Verdict | Wise transaction details | Status, title and the deciding number in one header row; secondary detail behind tabs |
+| Verdict | Grammarly performance report | Lead with one figure and a plain sentence, then label and value rows against a benchmark |
+| Offers | Mercury credit card | Summary strip of totals directly above the table; right-aligned tabular amounts |
+| Offers | Polar income | Action button beside the summary; bordered table with an inline empty state |
+
 ## Layout of a verdict
 
-The answer leads: a full-width card with the status badge, a 4px top edge in the status tone, the headline, the offer and the reasons. Deal economics and audience evidence sit side by side beneath it, then fixes beside the list of what the check cannot establish, then the net-by-tickets table, evidence detail, the Without-Qloo comparison and the API calls.
+The answer leads: a full-width card with the status badge, a 4px top edge in the status tone, the headline and the offer on the left, and break-even tickets over capacity on the right. Deal economics (led by net at sellout) and audience evidence sit side by side beneath it, then fixes beside the list of what the check cannot establish, then the net-by-tickets table. Evidence detail, the Without-Qloo comparison and the API calls share one tabbed card.
 
 ## Measured contrast (WCAG AA)
 

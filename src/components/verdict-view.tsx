@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { BaselineComparison } from "@/lib/baseline/baseline";
 import { money, pct } from "@/lib/deal/deal-math";
 import type { Offer } from "@/lib/deal/offer-parser";
@@ -76,19 +77,32 @@ export function VerdictView({
       {/* Verdict: the answer leads, full width */}
       <Card className={cn("border-t-4", statusEdge[verdict.status])}>
         <CardHeader>
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <StatusBadge status={verdict.status} />
-            <span className="font-mono text-xs text-muted-foreground">
-              {verdict.rulesVersion}
-            </span>
+          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div className="grid gap-2">
+              <StatusBadge status={verdict.status} />
+              <CardTitle className="text-2xl font-semibold tracking-tight text-balance">
+                {verdict.headline}
+              </CardTitle>
+              <CardDescription>
+                {offer.artist} · {offer.city} · {offer.capacity} cap ·{" "}
+                {money(offer.ticketPrice)} · {money(offer.guarantee)} guarantee
+              </CardDescription>
+            </div>
+            {/* The one number that decides the deal sits beside the answer (Wise) */}
+            <div className="shrink-0 md:text-right">
+              <p className="text-sm text-muted-foreground">
+                {t("verdict.breakEven")}
+              </p>
+              <p className="font-mono text-3xl font-semibold tabular-nums">
+                {be === null
+                  ? "—"
+                  : `${d.breakEvenTickets} / ${d.inputs.capacity}`}
+              </p>
+              <p className="font-mono text-xs text-muted-foreground">
+                {be === null ? "" : `${pct(be)} · ${verdict.rulesVersion}`}
+              </p>
+            </div>
           </div>
-          <CardTitle className="text-2xl font-semibold tracking-tight text-balance">
-            {verdict.headline}
-          </CardTitle>
-          <CardDescription>
-            {offer.artist} · {offer.city} · {offer.capacity} cap ·{" "}
-            {money(offer.ticketPrice)} · {money(offer.guarantee)} guarantee
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <ul className="grid gap-1.5 text-sm">
@@ -108,21 +122,19 @@ export function VerdictView({
         {/* Deal economics */}
         <Card>
           <CardHeader>
-            <CardDescription>{t("verdict.money")}</CardDescription>
-            <CardTitle className="text-3xl font-semibold tabular-nums">
-              {be === null ? (
-                "—"
-              ) : (
-                <>
-                  <CountUp
-                    value={d.breakEvenTickets}
-                    format={(n) => String(Math.round(n))}
-                  />
-                  <span className="ml-2 text-base font-normal text-muted-foreground">
-                    / {d.inputs.capacity} {t("verdict.breakEven").toLowerCase()}
-                  </span>
-                </>
+            <CardDescription>
+              {t("verdict.money")} · {t("verdict.selloutNet")}
+            </CardDescription>
+            <CardTitle
+              className={cn(
+                "font-mono text-3xl font-semibold tabular-nums",
+                d.selloutNet < 0 && "text-destructive",
               )}
+            >
+              <CountUp
+                value={d.selloutNet}
+                format={(n) => money(Math.round(n))}
+              />
             </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-3">
@@ -155,10 +167,6 @@ export function VerdictView({
               <Stat
                 label={t("verdict.fixedCosts")}
                 value={money(d.totalFixedCost)}
-              />
-              <Stat
-                label={t("verdict.selloutNet")}
-                value={money(d.selloutNet)}
               />
             </div>
           </CardContent>
@@ -249,98 +257,125 @@ export function VerdictView({
 
       {verdict.fixes.length > 0 && <NetTable verdict={verdict} />}
 
-      {/* Evidence detail */}
+      {/* Secondary detail behind tabs, so the answer and the numbers stay on one screen (Wise) */}
       <Card>
-        <CardHeader>
-          <CardTitle>{t("verdict.evidence")}</CardTitle>
-          <CardDescription>{ev.sourceNote}</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-6">
-          {(ev.tasteTags.length > 0 ||
-            ev.openers.length > 0 ||
-            ev.sponsors.length > 0 ||
-            ev.places.length > 0) && (
-            <div className="grid gap-6 md:grid-cols-4">
-              <div className="grid content-start gap-1.5 text-sm">
-                {ev.tasteTags.length > 0 && (
-                  <>
-                    <p className="font-medium">{t("verdict.tags")}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {ev.tasteTags.slice(0, 8).map((tag) => (
-                        <Badge key={tag} variant="outline">
-                          {tag}
-                        </Badge>
+        <CardContent>
+          <Tabs defaultValue="evidence" className="gap-4">
+            <TabsList
+              variant="line"
+              className="w-full justify-start border-b pb-1"
+            >
+              <TabsTrigger value="evidence" className="flex-none">
+                {t("verdict.evidence")}
+              </TabsTrigger>
+              {baseline && (
+                <TabsTrigger value="baseline" className="flex-none">
+                  {t("baseline.title")}
+                </TabsTrigger>
+              )}
+              <TabsTrigger value="trace" className="flex-none">
+                {t("verdict.trace")}
+                <span className="font-mono text-xs text-muted-foreground">
+                  {ev.trace.length}
+                </span>
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="evidence" className="grid gap-6">
+              <p className="text-muted-foreground">{ev.sourceNote}</p>
+
+              {(ev.tasteTags.length > 0 ||
+                ev.openers.length > 0 ||
+                ev.sponsors.length > 0 ||
+                ev.places.length > 0) && (
+                <div className="grid gap-6 md:grid-cols-4">
+                  <div className="grid content-start gap-1.5 text-sm">
+                    {ev.tasteTags.length > 0 && (
+                      <>
+                        <p className="font-medium">{t("verdict.tags")}</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {ev.tasteTags.slice(0, 8).map((tag) => (
+                            <Badge key={tag} variant="outline">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <CandidateList
+                    title={t("verdict.openers")}
+                    items={ev.openers}
+                  />
+                  <CandidateList
+                    title={t("verdict.sponsors")}
+                    items={ev.sponsors}
+                  />
+                  <CandidateList
+                    title={t("verdict.places")}
+                    items={ev.places}
+                  />
+                </div>
+              )}
+              <ul className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted-foreground">
+                {ev.coverage.map((c) => (
+                  <li key={c.code}>
+                    <Dot tone={c.ok ? "success" : "warning"}>{c.detail}</Dot>
+                  </li>
+                ))}
+              </ul>
+            </TabsContent>
+            {baseline && (
+              <TabsContent value="baseline">
+                <BaselineView baseline={baseline} />
+              </TabsContent>
+            )}
+            <TabsContent value="trace">
+              {ev.trace.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  {t("verdict.noTrace")}
+                </p>
+              ) : (
+                <div className="overflow-x-auto rounded-lg border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-16">
+                          {t("suite.status")}
+                        </TableHead>
+                        <TableHead className="w-24">
+                          {t("suite.latency")}
+                        </TableHead>
+                        <TableHead>{t("suite.params")}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {ev.trace.map((e) => (
+                        <TableRow key={e.id}>
+                          <TableCell>
+                            <Dot tone={e.ok ? "success" : "destructive"}>
+                              <span className="font-mono">{e.status}</span>
+                            </Dot>
+                          </TableCell>
+                          <TableCell className="font-mono text-muted-foreground">
+                            {e.ms}ms{e.cached ? " ·c" : ""}
+                          </TableCell>
+                          <TableCell className="whitespace-normal break-all font-mono text-xs">
+                            GET {e.path}?
+                            {new URLSearchParams(e.params).toString()}
+                            {e.error ? ` — ${e.error}` : ""}
+                            {typeof e.resultCount === "number"
+                              ? ` → ${e.resultCount}`
+                              : ""}
+                          </TableCell>
+                        </TableRow>
                       ))}
-                    </div>
-                  </>
-                )}
-              </div>
-              <CandidateList title={t("verdict.openers")} items={ev.openers} />
-              <CandidateList
-                title={t("verdict.sponsors")}
-                items={ev.sponsors}
-              />
-              <CandidateList title={t("verdict.places")} items={ev.places} />
-            </div>
-          )}
-          <ul className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted-foreground">
-            {ev.coverage.map((c) => (
-              <li key={c.code}>
-                <Dot tone={c.ok ? "success" : "warning"}>{c.detail}</Dot>
-              </li>
-            ))}
-          </ul>
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </CardContent>
-      </Card>
-
-      {baseline && <BaselineView baseline={baseline} />}
-
-      {/* API calls */}
-      <Card>
-        <details>
-          <summary className="cursor-pointer list-none px-6 py-4 text-sm font-medium">
-            {t("verdict.trace")}{" "}
-            <span className="text-muted-foreground">· {ev.trace.length}</span>
-          </summary>
-          {ev.trace.length === 0 ? (
-            <p className="px-6 pb-4 text-sm text-muted-foreground">
-              {t("verdict.noTrace")}
-            </p>
-          ) : (
-            <div className="border-t">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-16">{t("suite.status")}</TableHead>
-                    <TableHead className="w-24">{t("suite.latency")}</TableHead>
-                    <TableHead>{t("suite.params")}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {ev.trace.map((e) => (
-                    <TableRow key={e.id}>
-                      <TableCell>
-                        <Dot tone={e.ok ? "success" : "destructive"}>
-                          <span className="font-mono">{e.status}</span>
-                        </Dot>
-                      </TableCell>
-                      <TableCell className="font-mono text-muted-foreground">
-                        {e.ms}ms{e.cached ? " ·c" : ""}
-                      </TableCell>
-                      <TableCell className="whitespace-normal break-all font-mono text-xs">
-                        GET {e.path}?{new URLSearchParams(e.params).toString()}
-                        {e.error ? ` — ${e.error}` : ""}
-                        {typeof e.resultCount === "number"
-                          ? ` → ${e.resultCount}`
-                          : ""}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </details>
       </Card>
     </section>
   );
@@ -509,45 +544,40 @@ function FixView({
 
 function BaselineView({ baseline }: { baseline: BaselineComparison }) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("baseline.title")}</CardTitle>
-        <CardDescription>
-          {baseline.note}
-          {baseline.model ? ` · ${baseline.model}` : ""}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-3">
-        {baseline.overlap && baseline.guess && (
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="text-sm">
-              <p className="font-medium">{t("baseline.affinity")}</p>
-              <p className="mt-1">
-                {baseline.guess.localAffinity}
-                {baseline.overlap.affinityAgrees === null
-                  ? ""
-                  : baseline.overlap.affinityAgrees
-                    ? ` · ${t("baseline.agrees")}`
-                    : ` · ${t("baseline.disagrees")}`}
-              </p>
-            </div>
-            <OverlapList
-              title={t("verdict.openers")}
-              o={baseline.overlap.openers}
-            />
-            <OverlapList
-              title={t("verdict.sponsors")}
-              o={baseline.overlap.sponsors}
-            />
+    <div className="grid gap-3">
+      <p className="text-sm text-muted-foreground">
+        {baseline.note}
+        {baseline.model ? ` · ${baseline.model}` : ""}
+      </p>
+      {baseline.overlap && baseline.guess && (
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="text-sm">
+            <p className="font-medium">{t("baseline.affinity")}</p>
+            <p className="mt-1">
+              {baseline.guess.localAffinity}
+              {baseline.overlap.affinityAgrees === null
+                ? ""
+                : baseline.overlap.affinityAgrees
+                  ? ` · ${t("baseline.agrees")}`
+                  : ` · ${t("baseline.disagrees")}`}
+            </p>
           </div>
-        )}
-        {baseline.guess?.reasoning && (
-          <p className="text-sm text-muted-foreground">
-            {baseline.guess.reasoning}
-          </p>
-        )}
-      </CardContent>
-    </Card>
+          <OverlapList
+            title={t("verdict.openers")}
+            o={baseline.overlap.openers}
+          />
+          <OverlapList
+            title={t("verdict.sponsors")}
+            o={baseline.overlap.sponsors}
+          />
+        </div>
+      )}
+      {baseline.guess?.reasoning && (
+        <p className="text-sm text-muted-foreground">
+          {baseline.guess.reasoning}
+        </p>
+      )}
+    </div>
   );
 }
 

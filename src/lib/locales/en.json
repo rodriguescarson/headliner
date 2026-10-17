@@ -37,7 +37,8 @@
     "suiteLink": "See the API calls behind a check",
     "empty": "Type an offer above or pick one from the offers list.",
     "rules": "Rulebook",
-    "board": "Browse sample offers"
+    "board": "Try a sample offer",
+    "enterHint": "Enter to check, Shift+Enter for a new line"
   },
   "verdict": {
     "status": {
@@ -189,7 +190,8 @@
     "signal": "Signal",
     "state": "State",
     "failed": "Failed",
-    "notRun": "Not run"
+    "notRun": "Not run",
+    "checked": "{{done}} of {{total}} checked"
   },
   "story": {
     "title": "How a check works",
@@ -246,7 +248,7 @@
   },
   "home": {
     "title": "Check a show offer before you sign it",
-    "subtitle": "Paste the offer line. Headliner runs the deal math against a versioned rulebook, pulls audience evidence from Qloo, and lists what no data can tell you.",
+    "subtitle": "Paste the offer line. The money is arithmetic, the audience evidence comes from Qloo, and the unknowns are named.",
     "meta": "Rulebook {{version}}"
   }
 }
