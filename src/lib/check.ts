@@ -1,3 +1,4 @@
+import { type BaselineComparison, runBaseline } from "@/lib/baseline/baseline";
 import {
   type Offer,
   OfferSchema,
@@ -8,9 +9,19 @@ import { type CulturalEvidence, gatherEvidence } from "@/lib/qloo/evidence";
 import { sampleEvidence } from "@/lib/qloo/sample";
 import { decide, type Verdict } from "@/lib/verdict/verdict";
 
-export type CheckRequest = { line?: string; offer?: unknown };
+export type CheckRequest = {
+  line?: string;
+  offer?: unknown;
+  baseline?: boolean;
+};
 export type CheckResponse =
-  | { ok: true; mode: "live" | "sample"; offer: Offer; verdict: Verdict }
+  | {
+      ok: true;
+      mode: "live" | "sample";
+      offer: Offer;
+      verdict: Verdict;
+      baseline?: BaselineComparison;
+    }
   | { ok: false; error: string; missing?: string[] };
 
 export function evidenceMode(): "live" | "sample" {
@@ -49,10 +60,15 @@ export async function runCheck(req: CheckRequest): Promise<CheckResponse> {
   } else {
     evidence = sampleEvidence(offer);
   }
+  const verdict = decide(offer, evidence);
+  const baseline = req.baseline
+    ? await runBaseline(offer, evidence)
+    : undefined;
   return {
     ok: true,
     mode: client ? "live" : "sample",
     offer,
-    verdict: decide(offer, evidence),
+    verdict,
+    baseline,
   };
 }

@@ -4,6 +4,7 @@
  */
 import { z } from "zod";
 import type { Offer } from "@/lib/deal/offer-parser";
+import { nearbyCity } from "@/lib/geo/nearby";
 import { rules } from "@/lib/rules";
 import { ENTITY, type QlooClient, type TraceEntry } from "./client";
 
@@ -41,6 +42,11 @@ export type CulturalEvidence = {
   openers: Candidate[];
   sponsors: Candidate[];
   places: Candidate[];
+  altMarket: {
+    city: string;
+    localAffinity: CulturalEvidence["localAffinity"];
+    sharedTags: string[];
+  } | null;
   coverage: CoverageFlag[];
   trace: TraceEntry[];
 };
@@ -167,6 +173,7 @@ export async function gatherEvidence(
     openers: [],
     sponsors: [],
     places: [],
+    altMarket: null,
     coverage,
     trace: client.trace,
   };
@@ -204,29 +211,23 @@ export async function gatherEvidence(
     typeof top.popularity === "number"
       ? Math.max(0.05, top.popularity - 0.05)
       : 0.9;
+  // Comedians and podcasters resolve as persons; their openers are persons too.
+  const openerType = (top.type ?? "").includes("person")
+    ? "urn:entity:person"
+    : ENTITY.artist;
 
   const [heat, demo, openers, brands, places, tags] = await Promise.all([
     client.heatmap([id], offer.city),
     client.demographics([id], offer.city),
-    client.openers([id], offer.city, popularityMax),
+    client.openers([id], offer.city, popularityMax, 10, openerType),
     client.brands([id], offer.city),
     client.places([id], offer.city),
     client.tasteTags([id]),
   ]);
 
-  const h = heat.ok ? HeatmapResponse.safeParse(heat.data) : undefined;
-  const cells = h?.success ? (h.data.results.heatmap ?? []) : [];
-  const affinities = cells
-    .map((c) => c.query.affinity)
-    .filter((a): a is number => typeof a === "number");
+  const affinities = heatmapAffinities(heat);
   if (affinities.length >= rules.evidence.minHeatmapCells) {
-    const mean = affinities.reduce((s, a) => s + a, 0) / affinities.length;
-    ev.localAffinity = {
-      mean: round3(mean),
-      max: round3(Math.max(...affinities)),
-      cells: affinities.length,
-      label: affinityLabel(mean),
-    };
+    ev.localAffinity = summariseAffinity(affinities);
     coverage.push({
       code: "HEATMAP_OK",
       ok: true,
@@ -239,6 +240,34 @@ export async function gatherEvidence(
       detail: heat.ok
         ? `Only ${affinities.length} heatmap cells for ${offer.city}; the rulebook needs ${rules.evidence.minHeatmapCells}.`
         : `Heatmap call failed: ${heat.trace.error}.`,
+    });
+  }
+
+  // Routing alternative: only worth the calls when the primary market reads weak.
+  const alt = nearbyCity(offer.city);
+  if (alt && ev.localAffinity && ev.localAffinity.label === "low") {
+    const [altHeat, cmp] = await Promise.all([
+      client.heatmap([id], alt),
+      client.compare([id], [id], ENTITY.tag),
+    ]);
+    const altAff = heatmapAffinities(altHeat);
+    const cmpParsed = cmp.ok ? TagsResponse.safeParse(cmp.data) : undefined;
+    ev.altMarket = {
+      city: alt,
+      localAffinity:
+        altAff.length >= rules.evidence.minHeatmapCells
+          ? summariseAffinity(altAff)
+          : null,
+      sharedTags: cmpParsed?.success
+        ? (cmpParsed.data.results.entities ?? []).map((t) => t.name).slice(0, 8)
+        : [],
+    };
+    coverage.push({
+      code: "ALT_MARKET",
+      ok: ev.altMarket.localAffinity !== null,
+      detail: ev.altMarket.localAffinity
+        ? `${alt}: ${altAff.length} heatmap cells, mean ${ev.altMarket.localAffinity.mean}.`
+        : `${alt}: heatmap too sparse to compare (${altAff.length} cells).`,
     });
   }
 
@@ -288,3 +317,25 @@ export async function gatherEvidence(
 }
 
 const round3 = (n: number) => Math.round(n * 1000) / 1000;
+
+function heatmapAffinities(
+  res: Awaited<ReturnType<QlooClient["heatmap"]>>,
+): number[] {
+  const h = res.ok ? HeatmapResponse.safeParse(res.data) : undefined;
+  const cells = h?.success ? (h.data.results.heatmap ?? []) : [];
+  return cells
+    .map((c) => c.query.affinity)
+    .filter((a): a is number => typeof a === "number");
+}
+
+function summariseAffinity(
+  affinities: number[],
+): NonNullable<CulturalEvidence["localAffinity"]> {
+  const mean = affinities.reduce((s, a) => s + a, 0) / affinities.length;
+  return {
+    mean: round3(mean),
+    max: round3(Math.max(...affinities)),
+    cells: affinities.length,
+    label: affinityLabel(mean),
+  };
+}

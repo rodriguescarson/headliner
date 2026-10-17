@@ -1,53 +1,220 @@
 @import "tailwindcss";
 
+/*
+  The Console. Light scene: a desk lamp at night, a judge's laptop by day. The panel is marine grey,
+  the meter faces are cream glass, legends are engraved. Dark scene keeps the same materials under house lights.
+*/
 :root {
-  --background: #faf9f6;
-  --surface: #ffffff;
-  --foreground: #1c1b18;
-  --muted: #5f5b52;
-  --line: #e4e0d6;
-  --accent: #8a3b12;
-  --accent-ink: #ffffff;
-  --ok: #1f6b3a;
-  --warn: #8a5a00;
-  --bad: #9f1d1d;
-  --calm: #2f4f7a;
+  --panel: #8a97a5;
+  --panel-raised: #e6ebf0;
+  --panel-deep: #4f5f70;
+  --panel-deep-ink: #f1f4f7;
+  --rail: #6f7d8b;
+  --rail-line: rgba(21, 24, 27, 0.14);
+  --glass: #f3e9d2;
+  --glass-edge: #cbbfa3;
+  --ink: #15181b;
+  --legend: #3f4a55;
+  --legend-ground: #15181b;
+  --legend-on-glass: #4a4335;
+  --placeholder: #6b655a;
+  --lamp-red: #b3202f;
+  --lamp-green: #176a3c;
+  --lamp-amber: #8a5a00;
+  --lamp-blue: #2d5aa6;
+  --cap-red: #d7263d;
+  --cap-green: #2e9e5b;
+  --cap-amber: #e0a526;
+  --cap-blue: #3a6fd8;
+  --action: #e0a526;
+  --action-ink: #15181b;
+  --focus: #2d5aa6;
+  --shadow:
+    0 1px 0 rgba(255, 255, 255, 0.55) inset, 0 2px 6px rgba(21, 24, 27, 0.14);
+  --engrave: 0 1px 0 rgba(255, 255, 255, 0.6);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #141311;
-    --surface: #1d1b18;
-    --foreground: #f1ede4;
-    --muted: #b3ac9f;
-    --line: #34312b;
-    --accent: #e08a52;
-    --accent-ink: #141311;
-    --ok: #7fd09a;
-    --warn: #f0bd5a;
-    --bad: #f28b8b;
-    --calm: #9dbbe0;
-  }
+/* Dark scene is opt-in (house lights), never the OS default: judges and promoters read the desk under a lamp. */
+:root[data-theme="dark"] {
+  --panel: #1b2026;
+  --panel-raised: #232a31;
+  --panel-deep: #0f1317;
+  --panel-deep-ink: #eef0f2;
+  --rail: #353e47;
+  --rail-line: rgba(255, 255, 255, 0.07);
+  --legend-ground: #eef0f2;
+  --glass: #e9dfc8;
+  --glass-edge: #a79b7f;
+  --ink: #eef0f2;
+  --legend: #b7c0c9;
+  --legend-on-glass: #4a4335;
+  --placeholder: #6b655a;
+  --lamp-red: #ff7b86;
+  --lamp-green: #6ed19a;
+  --lamp-amber: #f2c35c;
+  --lamp-blue: #8fb4f0;
+  --action: #e0a526;
+  --action-ink: #15181b;
+  --focus: #8fb4f0;
+  --shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 2px 8px rgba(0, 0, 0, 0.45);
+  --engrave: 0 -1px 0 rgba(0, 0, 0, 0.5);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-surface: var(--surface);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-line: var(--line);
-  --color-accent: var(--accent);
-  --color-accent-ink: var(--accent-ink);
-  --color-ok: var(--ok);
-  --color-warn: var(--warn);
-  --color-bad: var(--bad);
-  --color-calm: var(--calm);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-panel: var(--panel);
+  --color-panel-raised: var(--panel-raised);
+  --color-panel-deep: var(--panel-deep);
+  --color-panel-deep-ink: var(--panel-deep-ink);
+  --color-rail: var(--rail);
+  --color-glass: var(--glass);
+  --color-glass-edge: var(--glass-edge);
+  --color-ink: var(--ink);
+  --color-legend: var(--legend);
+  --color-legend-glass: var(--legend-on-glass);
+  --color-lamp-red: var(--lamp-red);
+  --color-lamp-green: var(--lamp-green);
+  --color-lamp-amber: var(--lamp-amber);
+  --color-lamp-blue: var(--lamp-blue);
+  --color-cap-red: var(--cap-red);
+  --color-cap-green: var(--cap-green);
+  --color-cap-amber: var(--cap-amber);
+  --color-cap-blue: var(--cap-blue);
+  --color-action: var(--action);
+  --color-action-ink: var(--action-ink);
+  --font-sans: var(--font-barlow), system-ui, sans-serif;
+  --font-condensed:
+    var(--font-barlow-condensed), var(--font-barlow), sans-serif;
+  --shadow-panel: var(--shadow);
+  --ease-out: var(--ease-out);
+}
+
+html {
+  background: var(--panel);
+  color: var(--ink);
+  font-family: var(--font-barlow), system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  scrollbar-color: var(--rail) var(--panel);
+  caret-color: var(--lamp-blue);
+  accent-color: var(--lamp-blue);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  background: var(--panel);
+  color: var(--ink);
+  min-height: 100%;
+}
+
+::selection {
+  background: var(--action);
+  color: var(--action-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Engraved legend: the console's label voice. One size, condensed, tracked, never a heading ladder. */
+.legend {
+  font-family: var(--font-condensed);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--legend);
+  text-shadow: var(--engrave);
+}
+.legend-glass {
+  color: var(--legend-on-glass);
+  text-shadow: none;
+}
+
+/* Bare ground: legends read in ink, the rail grid shows through. */
+.rail-grid {
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      var(--rail-line) 0 1px,
+      transparent 1px 96px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      var(--rail-line) 0 1px,
+      transparent 1px 96px
+    );
+  background-position: center top;
+}
+.on-ground .legend,
+.on-ground.legend {
+  color: var(--legend-ground);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.on-ground {
+  color: var(--ink);
+}
+
+/* Panel plate: a raised module on the rail. Depth has offset and blur. */
+.plate {
+  background: var(--panel-raised);
+  border: 1px solid var(--rail);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+}
+
+/* Meter glass: the cream face under the needle. */
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--glass-edge);
+  border-radius: 6px;
+  color: #15181b;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -2px 6px rgba(74, 67, 53, 0.12),
+    0 1px 2px rgba(21, 24, 27, 0.18);
+}
+.glass ::placeholder {
+  color: var(--placeholder);
+}
+
+/* Screw holes mark the rail grid. */
+.screw {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 40% 40%,
+    var(--panel-raised),
+    var(--panel-deep)
+  );
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* The one authored motion: a needle swinging to its value and a lamp warming up. */
+.needle {
+  transition: transform 700ms var(--ease-out);
+}
+.lamp-on {
+  animation: lamp-warm 450ms var(--ease-out) both;
+}
+@keyframes lamp-warm {
+  from {
+    filter: brightness(0.6);
+    transform: scale(0.94);
+  }
+  to {
+    filter: brightness(1);
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .needle {
+    transition: none;
+  }
+  .lamp-on {
+    animation: none;
+  }
 }

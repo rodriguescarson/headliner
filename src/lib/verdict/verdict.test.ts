@@ -36,6 +36,18 @@ describe("decide (sample evidence)", () => {
     );
   });
 
+  it("names the alternative market with its own evidence, never a forecast", () => {
+    const v = run(SAMPLE_OFFERS[2].line);
+    const market = v.fixes.find((f) => f.kind === "market");
+    expect(market).toBeDefined();
+    if (market?.kind !== "market") return;
+    expect(market.altCity).toBe("Salt Lake City, UT");
+    expect(market.altAffinity?.cells).toBeGreaterThan(0);
+    expect(market.detail).not.toMatch(
+      /tickets? will|forecast|guarantee(d)? to sell/i,
+    );
+  });
+
   it("refuses on money before looking at taste", () => {
     const v = run(SAMPLE_OFFERS[3].line);
     expect(v.status).toBe("refused");

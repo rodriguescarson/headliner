@@ -4,6 +4,7 @@
  * Unknown acts resolve to nothing on purpose, so the abstention path is exercised without a key.
  */
 import type { Offer } from "@/lib/deal/offer-parser";
+import { nearbyCity } from "@/lib/geo/nearby";
 import type { CulturalEvidence } from "./evidence";
 
 type SampleAct = {
@@ -49,6 +50,7 @@ const ACTS: SampleAct[] = [
     popularity: 0.78,
     cities: {
       "denver, co": { mean: 0.24, max: 0.41, cells: 31 },
+      "salt lake city, ut": { mean: 0.52, max: 0.77, cells: 22 },
       "atlanta, ga": { mean: 0.69, max: 0.9, cells: 49 },
     },
     openers: ["Sample Local Comic A", "Sample Local Comic B"],
@@ -73,6 +75,7 @@ export function sampleEvidence(offer: Offer): CulturalEvidence {
     openers: [],
     sponsors: [],
     places: [],
+    altMarket: null,
     coverage: [],
     trace: [],
   };
@@ -112,6 +115,34 @@ export function sampleEvidence(offer: Offer): CulturalEvidence {
       ok: false,
       detail: `Sample mode has no cells for ${offer.city}.`,
     });
+  }
+  if (base.localAffinity?.label === "low") {
+    const altName = nearbyCity(offer.city);
+    const altCity = altName ? act.cities[norm(altName)] : undefined;
+    if (altName) {
+      base.altMarket = {
+        city: altName,
+        localAffinity: altCity
+          ? {
+              ...altCity,
+              label:
+                altCity.mean < 0.3
+                  ? "low"
+                  : altCity.mean > 0.6
+                    ? "strong"
+                    : "mid",
+            }
+          : null,
+        sharedTags: act.tags.slice(0, 3),
+      };
+      base.coverage.push({
+        code: "ALT_MARKET",
+        ok: !!altCity,
+        detail: altCity
+          ? `${altName}: ${altCity.cells} sample cells, mean ${altCity.mean}.`
+          : `${altName}: no sample cells.`,
+      });
+    }
   }
   base.demographics = {
     age: {

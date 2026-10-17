@@ -34,7 +34,14 @@ export type Fix =
       dealAtLow: DealMath;
       dealAtHigh: DealMath;
     }
-  | { kind: "market"; title: string; detail: string };
+  | {
+      kind: "market";
+      title: string;
+      detail: string;
+      altCity?: string;
+      altAffinity?: CulturalEvidence["localAffinity"];
+      sharedTags?: string[];
+    };
 
 export type Verdict = {
   status: VerdictStatus;
@@ -148,11 +155,22 @@ export function decide(offer: Offer, evidence: CulturalEvidence): Verdict {
     });
   }
   if (weakMarket) {
+    const alt = evidence.altMarket;
+    const altAff = alt?.localAffinity;
+    let detail =
+      "No routing alternative is configured for this city, so no comparison was run.";
+    if (alt && altAff) {
+      detail = `${alt.city} reads ${altAff.label} (mean ${altAff.mean} across ${altAff.cells} cells) against ${affinity?.mean} here. Same money, different room.`;
+    } else if (alt) {
+      detail = `${alt.city} was checked but its heatmap is too sparse to compare; no claim is made about it.`;
+    }
     fixes.push({
       kind: "market",
-      title: "Consider another routing city",
-      detail:
-        "Run the same offer against a nearby city and compare the two. (City comparison lands with the live key.)",
+      title: "Swap the market",
+      detail,
+      altCity: alt?.city,
+      altAffinity: altAff ?? undefined,
+      sharedTags: alt?.sharedTags,
     });
   }
 

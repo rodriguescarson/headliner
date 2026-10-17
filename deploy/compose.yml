@@ -1,0 +1,32 @@
+# Headliner on a single VPS: the app container plus Caddy terminating TLS for the subdomain.
+# Usage on the server:  DOMAIN=headliner.carsonrodrigues.com docker compose -f deploy/compose.yml up -d --build
+services:
+  app:
+    build:
+      context: ..
+    restart: unless-stopped
+    env_file: ../.env
+    environment:
+      HEADLINER_CACHE_DIR: /data/qloo
+    volumes:
+      - qloo-cache:/data/qloo
+    expose:
+      - "3000"
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN to the public hostname}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - app
+volumes:
+  qloo-cache:
+  caddy-data:
+  caddy-config:

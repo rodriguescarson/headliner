@@ -49,7 +49,9 @@ export class QlooClient {
       "https://hackathon.api.qloo.com",
     private readonly cache: CacheStore = defaultCache(),
     private readonly fetchImpl: typeof fetch = fetch,
-  ) {}
+  ) {
+    assertAllowedBaseUrl(baseUrl, fetchImpl !== fetch);
+  }
 
   static fromEnv(): QlooClient | null {
     const key = process.env.QLOO_API_KEY;
@@ -174,9 +176,10 @@ export class QlooClient {
     locationQuery: string,
     popularityMax: number,
     take = 10,
+    type: string = ENTITY.artist,
   ) {
     return this.insights({
-      "filter.type": ENTITY.artist,
+      "filter.type": type,
       "signal.interests.entities": entityIds,
       "signal.location.query": locationQuery,
       "filter.popularity.max": popularityMax,
@@ -237,6 +240,20 @@ export class QlooClient {
       "signal.interests.entities": entityId,
       "filter.type": type,
     });
+  }
+}
+
+/** The client only ever talks to Qloo over HTTPS. A misconfigured base URL must fail loudly, not leak the key elsewhere (OWASP A10). */
+function assertAllowedBaseUrl(baseUrl: string, testMode: boolean) {
+  const u = new URL(baseUrl);
+  if (testMode) return;
+  if (
+    u.protocol !== "https:" ||
+    !(u.hostname === "qloo.com" || u.hostname.endsWith(".qloo.com"))
+  ) {
+    throw new Error(
+      `QLOO_BASE_URL must be an https qloo.com host, got ${baseUrl}`,
+    );
   }
 }
 

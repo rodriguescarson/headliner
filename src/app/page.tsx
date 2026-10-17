@@ -1,29 +1,39 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { Lamp } from "@/components/console";
 import { OfferDesk } from "@/components/offer-desk";
 import { evidenceMode } from "@/lib/check";
 import { t } from "@/lib/i18n";
+import { LIVE_OFFERS } from "@/lib/offers";
 import { SAMPLE_OFFERS } from "@/lib/qloo/sample";
 import { RULES_VERSION } from "@/lib/rules";
+
+export const metadata: Metadata = { title: "The offer desk" };
 
 export default function Home() {
   const mode = evidenceMode();
   return (
-    <main className="flex-1 w-full px-4 py-8 md:px-10 md:py-12">
-      <div className="mx-auto w-full max-w-6xl">
-        <header className="mb-8">
-          <p className="text-sm font-medium text-muted">{t("app.name")}</p>
-          <h1 className="mt-1 text-3xl md:text-4xl font-semibold tracking-tight">
-            {t("desk.title")}
-          </h1>
-          <p className="mt-2 max-w-2xl text-base text-muted">
-            {t("desk.intro")}
-          </p>
-        </header>
-        <output
-          className={`mb-6 rounded-md border px-3 py-2 text-sm ${mode === "live" ? "border-ok/40 text-ok" : "border-warn/40 text-warn"}`}
-        >
-          {mode === "live" ? t("app.liveBanner") : t("app.sampleBanner")}
+    <main className="rail-grid flex-1 w-full px-4 py-6 md:px-8 md:py-8">
+      <div className="mx-auto w-full max-w-7xl">
+        <output className="on-ground mb-4 flex items-center gap-2">
+          <Lamp tone={mode === "live" ? "green" : "amber"} size={12} />
+          <span className="legend">
+            {mode === "live" ? t("app.liveBanner") : t("app.sampleBanner")}
+          </span>
         </output>
-        <OfferDesk samples={SAMPLE_OFFERS} rulesVersion={RULES_VERSION} />
+        <OfferDesk
+          samples={mode === "live" ? LIVE_OFFERS : SAMPLE_OFFERS}
+          samplesNote={mode === "live" ? t("desk.offersNote") : undefined}
+          rulesVersion={RULES_VERSION}
+        />
+        <p className="mt-8 ">
+          <Link
+            href="/suite"
+            className="text-lamp-blue underline-offset-4 hover:underline"
+          >
+            {t("desk.suiteLink")}
+          </Link>
+        </p>
       </div>
     </main>
   );

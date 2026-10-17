@@ -53,6 +53,51 @@ This probes every endpoint with 20 real acts (including five intentionally obscu
 
 Qloo responses are cached server-side (allowed by the hackathon terms, no time limit) and are never committed.
 
+## For judges and counterparties
+
+- **/suite**: runs every Qloo endpoint Headliner depends on, once, live, and shows status, latency and result counts. In sample mode it says nothing was called.
+- **MCP server** (read-only): a venue booker's or sponsor's agent can run the same check and read the same evidence, rulebook and trace.
+
+  ```bash
+  pnpm mcp                      # stdio transport
+  node scripts/mcp-smoke.mjs    # initialize, list tools, run check_offer
+  ```
+
+  Tools: `check_offer(line)`, `rulebook()`, `endpoint_suite()`.
+- **Market swap**: when the primary city reads weak, the same act is checked in a configured nearby metro (`src/lib/geo/nearby.ts`) and the two heatmaps are shown side by side with the shared taste tags from `/v2/analysis/compare`. If the alternative is too sparse to compare, the result says so and makes no claim.
+
+## Accounts, queue, pages
+
+- **Accounts** (optional): Supabase Auth with Google, Apple and email, cookie sessions refreshed in `src/proxy.ts`. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`; without them the desk runs and account links are hidden. Apple on web needs `NEXT_PUBLIC_AUTH_APPLE=true` once the Services ID is configured in Supabase.
+- **Queued checks**: `POST /api/jobs` returns a job id at once; the desk polls `GET /api/jobs/:id` and the id rides in the URL hash so a refresh resumes. The in-memory worker (`src/lib/jobs/store.ts`) is the development implementation behind a store interface.
+- **Pages**: `/terms`, `/privacy`, `/cookies`, `/support` (FAQ with schema.org), `/contact` (Resend when `RESEND_API_KEY` and `CONTACT_FROM` are set), `/llms.txt`, `/robots.txt`, `/sitemap.xml`, `/.well-known/security.txt`.
+
+## Design
+
+The Console: the offer desk is a channel strip. Deal math and Qloo signal are meter faces, the verdict is a lamp, fixes are patch points, the unknowables are an engraved stencil, the Qloo trace is the back panel. Tokens live in `src/app/globals.css` (light scene default, dark behind `data-theme="dark"`); contrast is measured with `node scripts/contrast.mjs`. Direction contract: `src/app/layout.tsx`.
+
+## Deploy (VPS, Docker + Caddy)
+
+```bash
+DOMAIN=headliner.example.com SSH_HOST=<ssh alias> ./deploy/deploy.sh
+```
+
+Needs Docker on the server, an A record for the domain, and a filled `.env` at `/opt/headliner/.env`. Caddy obtains the TLS certificate automatically. If the server already runs something on ports 80/443, point that proxy at the app container instead of starting the bundled Caddy.
+
+## Security (OWASP Top 10 pass, 2026-10-17)
+
+- **A01 access control**: no accounts, no user-owned records; nothing to escalate. Share links (planned) use unguessable ids.
+- **A02 cryptographic failures**: the Qloo key and gateway key live only in server env; the pipeline is `server-only`; the key is never in a URL, a response, a trace or a log. HSTS is set.
+- **A03 injection**: every request body is parsed as JSON, validated with Zod, length-capped; the offer line is bounded to 500 characters. Qloo parameters are sent as URL query values, never interpolated into paths.
+- **A04 insecure design**: per-client rate limits (30 checks/min, 10 model baselines/min, 5 suite runs/min), 4 KB body cap, same-origin check on POSTs, abstention instead of guessing. Limits are per server instance; on multi-instance hosting they bound abuse per instance.
+- **A05 misconfiguration**: nonce-based CSP with `strict-dynamic` (`src/proxy.ts`), `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, COOP, no `X-Powered-By`, `Cache-Control: no-store` on APIs. Verified in the browser with no CSP violations in dev.
+- **A06 vulnerable components**: `pnpm audit --prod` runs in CI; lockfile committed; no third-party scripts, fonts self-hosted.
+- **A07 authentication**: not applicable by design (no-login sandbox); revisit with persisted share links.
+- **A08 integrity**: no CDN scripts; dependencies pinned by lockfile; rulebook versioned and stamped on every verdict.
+- **A09 logging**: rejected requests and failures are logged as structured JSON with a hashed client key, never a raw IP or offer text.
+- **A10 SSRF**: the Qloo client refuses any base URL that is not an https `qloo.com` host.
+- `/.well-known/security.txt` carries the contact.
+
 ## Checks
 
 ```bash
