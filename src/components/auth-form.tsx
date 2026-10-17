@@ -7,16 +7,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { t } from "@/lib/i18n";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, type PublicSupabaseEnv } from "@/lib/supabase/client";
 
 type Mode = "signin" | "signup";
 
 export function AuthForm({
   mode,
   appleEnabled,
+  env,
 }: {
   mode: Mode;
   appleEnabled: boolean;
+  env: PublicSupabaseEnv | null;
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,7 +27,7 @@ export function AuthForm({
   const [busy, setBusy] = useState(false);
   const emailId = useId();
   const passId = useId();
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient(env));
   const redirectTo = () =>
     `${window.location.origin}/auth/callback?next=/account`;
 

@@ -1,10 +1,9 @@
 # Headliner on Carson's VPS, behind the shared supabase-caddy that already owns 80/443.
 # The app joins the headliner Supabase stack's network so Caddy can reach it by name.
-#   cd /opt/headliner && docker compose -f deploy/compose.yml up -d --build
+# The image is built off-box by deploy/deploy.sh; this file never builds.
 services:
   app:
-    build:
-      context: ..
+    image: ${HEADLINER_IMAGE:-headliner-app:latest}
     container_name: headliner-app
     restart: unless-stopped
     env_file: ../.env
@@ -16,6 +15,15 @@ services:
       - "3000"
     networks:
       - stack
+    # A hard ceiling so a runaway request can never starve the other stacks on this box.
+    mem_limit: 512m
+    memswap_limit: 512m
+    cpus: 1.0
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
 volumes:
   qloo-cache:
 networks:

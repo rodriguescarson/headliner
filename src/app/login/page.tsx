@@ -12,7 +12,11 @@ import {
 } from "@/components/ui/card";
 import { currentUser } from "@/lib/auth/session";
 import { t } from "@/lib/i18n";
-import { appleSignInEnabled, authEnabled } from "@/lib/supabase/env";
+import {
+  appleSignInEnabled,
+  authEnabled,
+  supabaseEnv,
+} from "@/lib/supabase/env";
 
 export const metadata: Metadata = { title: "Sign in" };
 
@@ -26,7 +30,11 @@ export default async function LoginPage() {
           <CardDescription>{t("auth.why")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <AuthForm mode="signin" appleEnabled={appleSignInEnabled()} />
+          <AuthForm
+            mode="signin"
+            appleEnabled={appleSignInEnabled()}
+            env={supabaseEnv()}
+          />
         </CardContent>
       </Card>
       <p className="mt-4 text-center text-sm text-muted-foreground">

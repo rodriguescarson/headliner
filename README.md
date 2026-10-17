@@ -97,7 +97,9 @@ The VPS already runs one self-hosted Supabase stack per product under `/root/sta
 2. Append `deploy/Caddyfile.snippet` to `/root/supabase/docker/Caddyfile`, validate, connect Caddy to `headliner_default`, reload.
 3. Add two A records to the VPS: `headliner.carsonrodrigues.com` and `headliner-api.carsonrodrigues.com`.
 4. Fill `/opt/headliner/.env` from `.env.example` (Qloo key, Supabase URL and anon key of the new stack, optional gateway and Resend keys).
-5. `SSH_HOST=root@<vps> ./deploy/deploy.sh` builds the image on the server and starts `headliner-app` on the stack's network.
+5. `SSH_HOST=root@<vps> ./deploy/deploy.sh` builds the image on your machine for the server's architecture, ships it over SSH, and starts `headliner-app` on the stack's network with a 512 MB memory ceiling.
+
+Never build on the VPS. It shares RAM with other production stacks, and a Next.js build peaks at one to two GiB. Public Supabase settings reach the browser from the server at request time, so the image carries no environment-specific values and the same image runs anywhere.
 
 ## Security (OWASP Top 10 pass, 2026-10-17)
 
