@@ -1,9 +1,11 @@
-# Headliner on a single VPS: the app container plus Caddy terminating TLS for the subdomain.
-# Usage on the server:  DOMAIN=headliner.carsonrodrigues.com docker compose -f deploy/compose.yml up -d --build
+# Headliner on Carson's VPS, behind the shared supabase-caddy that already owns 80/443.
+# The app joins the headliner Supabase stack's network so Caddy can reach it by name.
+#   cd /opt/headliner && docker compose -f deploy/compose.yml up -d --build
 services:
   app:
     build:
       context: ..
+    container_name: headliner-app
     restart: unless-stopped
     env_file: ../.env
     environment:
@@ -12,21 +14,11 @@ services:
       - qloo-cache:/data/qloo
     expose:
       - "3000"
-  caddy:
-    image: caddy:2-alpine
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      DOMAIN: ${DOMAIN:?set DOMAIN to the public hostname}
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy-data:/data
-      - caddy-config:/config
-    depends_on:
-      - app
+    networks:
+      - stack
 volumes:
   qloo-cache:
-  caddy-data:
-  caddy-config:
+networks:
+  stack:
+    name: headliner_default
+    external: true

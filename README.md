@@ -76,13 +76,15 @@ Qloo responses are cached server-side (allowed by the hackathon terms, no time l
 
 The Console: the offer desk is a channel strip. Deal math and Qloo signal are meter faces, the verdict is a lamp, fixes are patch points, the unknowables are an engraved stencil, the Qloo trace is the back panel. Tokens live in `src/app/globals.css` (light scene default, dark behind `data-theme="dark"`); contrast is measured with `node scripts/contrast.mjs`. Direction contract: `src/app/layout.tsx`.
 
-## Deploy (VPS, Docker + Caddy)
+## Deploy (Carson's VPS, behind the shared Caddy)
 
-```bash
-DOMAIN=headliner.example.com SSH_HOST=<ssh alias> ./deploy/deploy.sh
-```
+The VPS already runs one self-hosted Supabase stack per product under `/root/stacks/<name>` and a shared `supabase-caddy` that owns ports 80 and 443. Headliner follows the same pattern:
 
-Needs Docker on the server, an A record for the domain, and a filled `.env` at `/opt/headliner/.env`. Caddy obtains the TLS certificate automatically. If the server already runs something on ports 80/443, point that proxy at the app container instead of starting the bundled Caddy.
+1. Create the `headliner` Supabase stack with the server's `new-stack.sh`; it provides the `headliner_default` network and `headliner-supabase-kong`.
+2. Append `deploy/Caddyfile.snippet` to `/root/supabase/docker/Caddyfile`, validate, connect Caddy to `headliner_default`, reload.
+3. Add two A records to the VPS: `headliner.carsonrodrigues.com` and `headliner-api.carsonrodrigues.com`.
+4. Fill `/opt/headliner/.env` from `.env.example` (Qloo key, Supabase URL and anon key of the new stack, optional gateway and Resend keys).
+5. `SSH_HOST=root@<vps> ./deploy/deploy.sh` builds the image on the server and starts `headliner-app` on the stack's network.
 
 ## Security (OWASP Top 10 pass, 2026-10-17)
 
