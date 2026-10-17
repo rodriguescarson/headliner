@@ -29,7 +29,8 @@ const pairs = [
   ["blue (calm) on panel", "#2d5aa6", "#dfe4e9"],
   ["white on accent button", "#ffffff", "#2d5aa6"],
   ["ink on primary button", "#15181b", "#e0a526"],
-  ["placeholder on glass", "#6b655a", "#f3e9d2"],
+  ["placeholder on glass", "#5e5848", "#f3e9d2"],
+  ["placeholder on dark glass", "#5e5848", "#e9dfc8"],
   // dark scene
   ["cream ink on dark panel", "#eef0f2", "#1b2026"],
   ["secondary on dark panel", "#b7c0c9", "#1b2026"],
