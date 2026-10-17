@@ -8,6 +8,8 @@ if (!i18next.isInitialized) {
     lng: "en",
     fallbackLng: "en",
     interpolation: { escapeValue: false },
+    // Synchronous init: the client must have the locale before its first render, or hydration text mismatches.
+    initAsync: false,
   });
 }
 
