@@ -1,0 +1,36 @@
+{
+  "id": "headliner-rules",
+  "version": "1.0.0",
+  "updated": "2026-10-17",
+  "description": "Deterministic rulebook for the Headliner deal check. Every threshold that touches money lives here, never in a prompt.",
+  "money": {
+    "currency": "USD",
+    "defaultTaxPct": 0.08,
+    "defaultFeesPct": 0.1,
+    "refuseAboveBreakEvenPct": 0.85,
+    "warnAboveBreakEvenPct": 0.65,
+    "minNetPerTicket": 1
+  },
+  "evidence": {
+    "minHeatmapCells": 5,
+    "minSearchConfidence": 0.5,
+    "lowAffinityBelow": 0.3,
+    "strongAffinityAbove": 0.6,
+    "minOpenerCandidates": 1,
+    "minSponsorCandidates": 1
+  },
+  "assumptions": {
+    "sponsorActivationUsd": {
+      "low": 750,
+      "high": 1500,
+      "label": "Illustrative local activation range. Not a quote."
+    }
+  },
+  "cannotEstablish": [
+    "competing_shows_same_night",
+    "artist_radius_clause",
+    "actual_ticket_sales",
+    "venue_hold_status",
+    "artist_availability"
+  ]
+}

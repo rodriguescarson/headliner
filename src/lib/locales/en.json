@@ -1,0 +1,50 @@
+{
+  "app": {
+    "name": "Headliner",
+    "tagline": "Know whether the room makes sense before you sign the guarantee.",
+    "sampleBanner": "Sample mode: no Qloo key is configured. Evidence shown is illustrative, not Qloo data.",
+    "liveBanner": "Live mode: evidence comes from the Qloo API and is cached server-side."
+  },
+  "desk": {
+    "title": "The offer desk",
+    "intro": "Type the offer the way it arrives. The arithmetic is deterministic; Qloo supplies the cultural evidence; nothing is forecast.",
+    "placeholder": "Artist · City · 300 cap · $28 ticket · $3,500 guarantee + $1,200 room",
+    "submit": "Check this deal",
+    "checking": "Checking…",
+    "samples": "Load a sample offer",
+    "missing": "Could not read: {{fields}}. Add them to the line; the desk does not guess."
+  },
+  "verdict": {
+    "status": {
+      "cleared": "Cleared",
+      "fix_required": "Fix required",
+      "refused": "Refused",
+      "abstained": "Abstained"
+    },
+    "money": "Deal math",
+    "evidence": "Cultural evidence",
+    "cannot": "What this check cannot establish",
+    "fixes": "Smallest fix",
+    "trace": "Qloo calls made",
+    "rules": "Rulebook",
+    "breakEven": "Break-even",
+    "netPerTicket": "Net per ticket",
+    "fixedCosts": "Fixed costs",
+    "selloutNet": "Net at sellout",
+    "netAt": "Net at {{pct}} sold",
+    "affinity": "Local affinity",
+    "openers": "Local openers",
+    "sponsors": "Brand candidates",
+    "places": "Night-out places",
+    "tags": "Taste tags",
+    "demographics": "Audience skew",
+    "noTrace": "No calls were made (sample mode)."
+  },
+  "cannot": {
+    "competing_shows_same_night": "Competing shows on the same night",
+    "artist_radius_clause": "Artist radius clauses",
+    "actual_ticket_sales": "Actual ticket sales (affinity is evidence, not a forecast)",
+    "venue_hold_status": "Whether the venue hold is still open",
+    "artist_availability": "Artist availability on the date"
+  }
+}
