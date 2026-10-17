@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM node:24-alpine AS base
-RUN corepack enable
+# Pin pnpm explicitly; corepack's signed-download path breaks on some base images.
+RUN npm install -g pnpm@12.6.0
 WORKDIR /app
 
 FROM base AS deps

@@ -6,6 +6,8 @@ An independent promoter looks at an offer sheet at 10 PM: an act, a city, a venu
 
 Built for the [Qloo Agentic Hackathon](https://qloo.devpost.com) (Sep 30 – Oct 30, 2026). MIT licensed.
 
+**Live:** https://headliner.carsonrodrigues.com (sample mode until the Qloo key lands).
+
 ## What it does
 
 Type the offer the way it arrives:

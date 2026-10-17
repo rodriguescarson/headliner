@@ -43,11 +43,6 @@
     "vitest": "^5.0.5"
   },
   "packageManager": "pnpm@12.6.0",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
-  },
   "lint-staged": {
     "*.{ts,tsx,json,css,md}": "biome check --write --no-errors-on-unmatched"
   }
