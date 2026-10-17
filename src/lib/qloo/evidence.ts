@@ -215,10 +215,35 @@ export async function gatherEvidence(
   const openerType = (top.type ?? "").includes("person")
     ? "urn:entity:person"
     : ENTITY.artist;
+  // A scenario can put an opener on the bill; the combined bill becomes the signal for the market reads.
+  let billIds = [id];
+  if (offer.opener) {
+    const o = await client.search(offer.opener, [
+      ENTITY.artist,
+      "urn:entity:person",
+    ]);
+    const op = o.ok ? SearchResponse.safeParse(o.data) : undefined;
+    const first = op?.success ? op.data.results[0] : undefined;
+    const oid = first?.entity_id ?? first?.id;
+    if (oid) {
+      billIds = [id, oid];
+      coverage.push({
+        code: "BILL_OPENER_RESOLVED",
+        ok: true,
+        detail: `Opener "${offer.opener}" resolved to ${first?.name} (${oid}); market reads use the combined bill.`,
+      });
+    } else {
+      coverage.push({
+        code: "BILL_OPENER_UNRESOLVED",
+        ok: false,
+        detail: `Opener "${offer.opener}" did not resolve; market reads use the headliner alone.`,
+      });
+    }
+  }
 
   const [heat, demo, openers, brands, places, tags] = await Promise.all([
-    client.heatmap([id], offer.city),
-    client.demographics([id], offer.city),
+    client.heatmap(billIds, offer.city),
+    client.demographics(billIds, offer.city),
     client.openers([id], offer.city, popularityMax, 10, openerType),
     client.brands([id], offer.city),
     client.places([id], offer.city),

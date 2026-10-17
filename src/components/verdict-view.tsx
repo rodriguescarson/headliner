@@ -4,6 +4,7 @@ import type { Offer } from "@/lib/deal/offer-parser";
 import { t } from "@/lib/i18n";
 import type { Candidate } from "@/lib/qloo/evidence";
 import { rules } from "@/lib/rules";
+import type { Scenario } from "@/lib/scenario";
 import type { Fix, Verdict } from "@/lib/verdict/verdict";
 import {
   Lamp,
@@ -20,10 +21,12 @@ export function VerdictView({
   verdict,
   offer,
   baseline,
+  onScenario,
 }: {
   verdict: Verdict;
   offer: Offer;
   baseline?: BaselineComparison;
+  onScenario?: (scenario: Scenario) => void;
 }) {
   const d = verdict.deal;
   const ev = verdict.evidence;
@@ -108,7 +111,7 @@ export function VerdictView({
             <>
               <h2 className="legend">{t("verdict.fixes")}</h2>
               {verdict.fixes.map((f) => (
-                <FixView key={f.kind} fix={f} />
+                <FixView key={f.kind} fix={f} onScenario={onScenario} />
               ))}
             </>
           ) : (
@@ -285,7 +288,13 @@ function CandidateList({
   );
 }
 
-function FixView({ fix }: { fix: Fix }) {
+function FixView({
+  fix,
+  onScenario,
+}: {
+  fix: Fix;
+  onScenario?: (scenario: Scenario) => void;
+}) {
   const tone =
     fix.kind === "opener" ? "blue" : fix.kind === "sponsor" ? "amber" : "green";
   return (
@@ -313,6 +322,50 @@ function FixView({ fix }: { fix: Fix }) {
         <p className="mt-2 text-legend">
           {t("verdict.sharedTags")}: {fix.sharedTags.join(", ")}
         </p>
+      )}
+      {onScenario && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {fix.kind === "market" && fix.altCity && (
+            <ScenarioButton
+              label={t("scenario.market", { city: fix.altCity })}
+              onClick={() => onScenario({ kind: "market", city: fix.altCity })}
+            />
+          )}
+          {fix.kind === "opener" && fix.candidates[0] && (
+            <ScenarioButton
+              label={t("scenario.opener", { opener: fix.candidates[0].name })}
+              onClick={() =>
+                onScenario({ kind: "opener", opener: fix.candidates[0].name })
+              }
+            />
+          )}
+          {fix.kind === "sponsor" && (
+            <>
+              <ScenarioButton
+                label={t("scenario.sponsor", {
+                  amount: money(fix.assumption.low),
+                })}
+                onClick={() =>
+                  onScenario({
+                    kind: "sponsor",
+                    sponsorOffset: fix.assumption.low,
+                  })
+                }
+              />
+              <ScenarioButton
+                label={t("scenario.sponsor", {
+                  amount: money(fix.assumption.high),
+                })}
+                onClick={() =>
+                  onScenario({
+                    kind: "sponsor",
+                    sponsorOffset: fix.assumption.high,
+                  })
+                }
+              />
+            </>
+          )}
+        </div>
       )}
     </PatchPoint>
   );
@@ -391,5 +444,27 @@ function OverlapList({
         ))}
       </ul>
     </div>
+  );
+}
+
+function ScenarioButton({
+  label,
+  onClick,
+}: {
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="inline-flex h-9 items-center gap-2 rounded-md border border-rail bg-panel-raised px-3 font-condensed font-semibold uppercase tracking-wider shadow-panel transition-transform duration-150 hover:-translate-y-px"
+    >
+      <span
+        aria-hidden
+        className="inline-block h-2 w-2 rounded-full bg-cap-blue"
+      />
+      {label}
+    </button>
   );
 }

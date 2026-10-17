@@ -182,6 +182,14 @@ export function sampleEvidence(offer: Offer): CulturalEvidence {
     ok: true,
     detail: `${base.openers.length} sample opener candidates.`,
   });
+  if (offer.opener) {
+    base.coverage.push({
+      code: "BILL_OPENER_UNRESOLVED",
+      ok: false,
+      detail:
+        "Sample mode cannot evaluate a combined bill; the market read is unchanged.",
+    });
+  }
   base.coverage.push({
     code: "SPONSORS",
     ok: true,

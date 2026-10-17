@@ -22,6 +22,8 @@ Headliner answers **Cleared**, **Fix required**, **Refused** or **Abstained**, a
 
 When the money is tight or the market reads weak, it prescribes the smallest fix: a local opener Qloo says shares the audience, a sponsor offset shown as a labelled rulebook assumption (never a quote), or a swap to a nearby metro with both heatmaps side by side and the shared taste tags from `/v2/analysis/compare`.
 
+**Scenarios.** Every fix is one click away from being tested: swap the market, put the opener on the bill, apply the sponsor offset. The changed offer runs through the same arithmetic and the same Qloo calls, and the two verdicts sit side by side with a list of exactly what moved and why. The promoter sees how the recommendation changes when the booking changes, with predicted demand never standing in for observed affinity.
+
 When the signal is not there, it says so. An act Qloo cannot resolve, or a city with fewer than five heatmap cells, produces an abstention naming the exact missing signal. It does not guess.
 
 ## How Qloo is used

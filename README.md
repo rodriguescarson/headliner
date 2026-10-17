@@ -55,6 +55,10 @@ This probes every endpoint with 20 real acts (including five intentionally obscu
 
 Qloo responses are cached server-side (allowed by the hackathon terms, no time limit) and are never committed.
 
+## Scenario compare
+
+Every fix carries a one-click scenario: swap the market to the compared metro, put the suggested opener on the bill, or apply the rulebook's sponsor offset. The desk runs the changed offer as a second queued check and shows the two verdicts side by side with a deterministic list of what changed and why (`src/lib/verdict/diff.ts`). On the live API a combined bill becomes the signal for the market reads; in sample mode the opener scenario says plainly that it cannot be evaluated.
+
 ## For judges and counterparties
 
 - **/suite**: runs every Qloo endpoint Headliner depends on, once, live, and shows status, latency and result counts. In sample mode it says nothing was called.

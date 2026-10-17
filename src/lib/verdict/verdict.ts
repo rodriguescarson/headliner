@@ -64,6 +64,7 @@ export function toDealInput(offer: Offer): DealInput {
     venueCost: offer.venueCost,
     productionCost: offer.productionCost,
     marketingBudget: offer.marketingBudget,
+    sponsorOffset: offer.sponsorOffset,
   };
 }
 

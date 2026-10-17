@@ -5,7 +5,9 @@ import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import type { CheckResponse } from "@/lib/check";
 import { t } from "@/lib/i18n";
 import type { JobRecord } from "@/lib/jobs/store";
+import type { Scenario } from "@/lib/scenario";
 import { Legend, Screws } from "./console";
+import { ScenarioCompare } from "./scenario-compare";
 import { VerdictView } from "./verdict-view";
 
 type Props = {
@@ -21,6 +23,11 @@ export function OfferDesk({ samples, samplesNote, rulesVersion }: Props) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [result, setResult] = useState<CheckResponse | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
+  const [scenario, setScenario] = useState<Scenario | null>(null);
+  const [scenarioResult, setScenarioResult] = useState<CheckResponse | null>(
+    null,
+  );
+  const [scenarioBusy, setScenarioBusy] = useState(false);
   const inputId = useId();
   const resultRef = useRef<HTMLDivElement>(null);
   const busy = phase === "queued" || phase === "running";
@@ -74,6 +81,8 @@ export function OfferDesk({ samples, samplesNote, rulesVersion }: Props) {
     e.preventDefault();
     if (!line.trim() || busy) return;
     setResult(null);
+    setScenario(null);
+    setScenarioResult(null);
     setPhase("queued");
     const res = await fetch("/api/jobs", {
       method: "POST",
@@ -97,6 +106,42 @@ export function OfferDesk({ samples, samplesNote, rulesVersion }: Props) {
     }
     window.history.replaceState(null, "", `#job=${body.id}`);
     setJobId(body.id);
+  }
+
+  async function runScenario(sc: Scenario) {
+    if (!result?.ok || scenarioBusy) return;
+    setScenario(sc);
+    setScenarioResult(null);
+    setScenarioBusy(true);
+    try {
+      const res = await fetch("/api/jobs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ line, scenario: sc }),
+      });
+      const body = (await res.json()) as {
+        ok: boolean;
+        id?: string;
+        error?: string;
+      };
+      if (!res.ok || !body.id) throw new Error(body.error ?? "scenario");
+      for (let i = 0; i < 60; i += 1) {
+        const job = (await (
+          await fetch(`/api/jobs/${body.id}`)
+        ).json()) as JobRecord;
+        if (job.status === "done" && job.result) {
+          setScenarioResult(job.result);
+          return;
+        }
+        if (job.status === "failed") throw new Error(job.error ?? "scenario");
+        await new Promise((r) => setTimeout(r, 700));
+      }
+      throw new Error("timeout");
+    } catch {
+      setScenarioResult({ ok: false, error: t("auth.error") });
+    } finally {
+      setScenarioBusy(false);
+    }
   }
 
   return (
@@ -180,11 +225,36 @@ export function OfferDesk({ samples, samplesNote, rulesVersion }: Props) {
           <p className="on-ground">{t("desk.empty")}</p>
         )}
         {busy && <VerdictSkeleton />}
+        {result?.ok && scenario && (
+          <div className="mb-6">
+            {scenarioBusy && (
+              <p className="on-ground legend">{t("scenario.running")}</p>
+            )}
+            {scenarioResult && !scenarioResult.ok && (
+              <p className="on-ground text-lamp-red" role="alert">
+                {scenarioResult.error}
+              </p>
+            )}
+            {scenarioResult?.ok && (
+              <ScenarioCompare
+                base={result.verdict}
+                next={scenarioResult.verdict}
+                scenario={scenario}
+                offer={result.offer}
+                onClose={() => {
+                  setScenario(null);
+                  setScenarioResult(null);
+                }}
+              />
+            )}
+          </div>
+        )}
         {result?.ok && (
           <VerdictView
             verdict={result.verdict}
             offer={result.offer}
             baseline={result.baseline}
+            onScenario={runScenario}
           />
         )}
       </div>

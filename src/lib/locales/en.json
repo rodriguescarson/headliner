@@ -147,5 +147,19 @@
     "send": "Send",
     "sent": "Sent. You will hear back within two working days.",
     "fallback": "Or email {{email}} directly."
+  },
+  "scenario": {
+    "title": "Scenario",
+    "intro": "Same arithmetic, same evidence calls, one change.",
+    "base": "As written",
+    "running": "Running the scenario…",
+    "close": "Back to the offer as written",
+    "changed": "What changed and why",
+    "market": "Swap the market to {{city}}",
+    "opener": "Put {{opener}} on the bill",
+    "sponsor": "Apply a {{amount}} sponsor offset",
+    "breakEven": "Break-even",
+    "affinity": "Local affinity",
+    "verdict": "Verdict"
   }
 }

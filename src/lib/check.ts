@@ -7,12 +7,14 @@ import {
 import { QlooClient } from "@/lib/qloo/client";
 import { type CulturalEvidence, gatherEvidence } from "@/lib/qloo/evidence";
 import { sampleEvidence } from "@/lib/qloo/sample";
+import { applyScenario, type Scenario } from "@/lib/scenario";
 import { decide, type Verdict } from "@/lib/verdict/verdict";
 
 export type CheckRequest = {
   line?: string;
   offer?: unknown;
   baseline?: boolean;
+  scenario?: Scenario;
 };
 export type CheckResponse =
   | {
@@ -21,6 +23,7 @@ export type CheckResponse =
       offer: Offer;
       verdict: Verdict;
       baseline?: BaselineComparison;
+      scenario?: Scenario;
     }
   | { ok: false; error: string; missing?: string[] };
 
@@ -53,6 +56,7 @@ export async function runCheck(req: CheckRequest): Promise<CheckResponse> {
     return { ok: false, error: "Provide an offer line or offer fields." };
   }
 
+  if (req.scenario) offer = applyScenario(offer, req.scenario);
   const client = QlooClient.fromEnv();
   let evidence: CulturalEvidence;
   if (client) {
@@ -70,5 +74,6 @@ export async function runCheck(req: CheckRequest): Promise<CheckResponse> {
     offer,
     verdict,
     baseline,
+    scenario: req.scenario,
   };
 }

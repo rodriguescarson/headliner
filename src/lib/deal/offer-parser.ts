@@ -14,6 +14,9 @@ export const OfferSchema = z.object({
   venueCost: z.number().nonnegative().default(0),
   productionCost: z.number().nonnegative().default(0),
   marketingBudget: z.number().nonnegative().default(0),
+  /** Scenario-only fields: an opener added to the bill and a sponsor offset applied to fixed costs. */
+  opener: z.string().trim().min(1).max(120).optional(),
+  sponsorOffset: z.number().nonnegative().max(1_000_000).optional(),
   date: z.string().optional(),
 });
 export type Offer = z.infer<typeof OfferSchema>;

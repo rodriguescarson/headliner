@@ -1,5 +1,6 @@
 import { parseOfferLine } from "@/lib/deal/offer-parser";
 import { jobStore } from "@/lib/jobs/store";
+import { ScenarioSchema } from "@/lib/scenario";
 import { guardJson } from "@/lib/security/guard";
 
 /** Enqueue a check. Validation happens here so a bad line fails fast instead of occupying the queue. */
@@ -10,7 +11,11 @@ export async function POST(request: Request) {
     windowMs: 60_000,
   });
   if (!guard.ok) return guard.response;
-  const b = guard.body as { line?: unknown; baseline?: unknown };
+  const b = guard.body as {
+    line?: unknown;
+    baseline?: unknown;
+    scenario?: unknown;
+  };
   const line = typeof b.line === "string" ? b.line.slice(0, 500) : "";
   const parsed = parseOfferLine(line);
   if (!parsed.ok)
@@ -29,7 +34,21 @@ export async function POST(request: Request) {
     );
     if (!extra.ok) return extra.response;
   }
-  const job = await jobStore().enqueue({ line, baseline: b.baseline === true });
+  let scenario: ReturnType<typeof ScenarioSchema.parse> | undefined;
+  if (b.scenario !== undefined) {
+    const sc = ScenarioSchema.safeParse(b.scenario);
+    if (!sc.success)
+      return Response.json(
+        { ok: false, error: "Scenario invalid." },
+        { status: 422 },
+      );
+    scenario = sc.data;
+  }
+  const job = await jobStore().enqueue({
+    line,
+    baseline: b.baseline === true,
+    scenario,
+  });
   return Response.json(
     { ok: true, id: job.id, status: job.status },
     { status: 202 },

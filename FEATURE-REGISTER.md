@@ -22,6 +22,8 @@ Standard: `~/PRODUCT-ENGINEERING-STANDARD.md`. Context: Qloo Agentic Hackathon e
 | F15 | Security hardening (OWASP pass) | Public demo on the open internet | P0 | — | C4, C6, C7 | — | built, verified | Nonce CSP, static headers, rate limits, same-origin POST check, body caps, base-URL allowlist, structured logs | curl header checks; 403/413/429 observed; production console clean |
 | F16 | Design system: The Console | Judge reads the mechanism in one screen | P0 | — | C13, C43, C29 | — | built, finish review closed (two fix rounds; every visual finding resolved; seed provenance recorded as a gap in DESIGN.md) | Tokens, fonts, icons, meters, lamps, one body size, rail grid; contrast AA on every pair | `scripts/contrast.mjs`; `.impeccable/review/*` captures; detector: two advisory highlight values, both recorded; reviewer verdict passes 2026-10-17 |
 
+| F17 | Scenario compare | A promoter asks what changes if the booking changes | P0 | anonymous: run | C13, C7 | F2, F3, F5 | built, deployed | Market, opener and sponsor scenarios re-run the same check; two verdicts side by side with a deterministic diff; invalid scenarios rejected | `src/lib/verdict/diff.test.ts` (3 tests); API runs of all three kinds 2026-10-17; browser run of the sponsor compare |
+
 **Not applicable, and why**
 - B1 Auth: now built (F13); running a check still needs no account by design.
 - B3 RBAC, B4 CRUD, B5 soft delete: no user-owned records yet. Revisit with F10.

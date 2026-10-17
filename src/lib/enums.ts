@@ -34,8 +34,13 @@ export const COVERAGE_CODE = [
   "OPENERS",
   "SPONSORS",
   "ALT_MARKET",
+  "BILL_OPENER_RESOLVED",
+  "BILL_OPENER_UNRESOLVED",
 ] as const;
 export type CoverageCode = (typeof COVERAGE_CODE)[number];
+
+export const SCENARIO_KIND = ["market", "opener", "sponsor"] as const;
+export type ScenarioKind = (typeof SCENARIO_KIND)[number];
 
 /** Lamp colour per verdict: the one place the mapping lives. */
 export const STATUS_TONE: Record<
