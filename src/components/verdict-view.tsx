@@ -14,6 +14,8 @@ import {
   Stencil,
   VerdictLamp,
 } from "./console";
+import { CountUp } from "./motion/count-up";
+import { Reveal } from "./motion/reveal";
 
 const affinityIndex = { low: 0.18, mid: 0.5, strong: 0.84 } as const;
 
@@ -45,7 +47,17 @@ export function VerdictView({
           legend={t("verdict.money")}
           value={be === null ? null : Math.min(be, 1.2) / 1.2}
           reading={
-            be === null ? "—" : `${d.breakEvenTickets} / ${d.inputs.capacity}`
+            be === null ? (
+              "—"
+            ) : (
+              <>
+                <CountUp
+                  value={d.breakEvenTickets}
+                  format={(n) => String(Math.round(n))}
+                />{" "}
+                / {d.inputs.capacity}
+              </>
+            )
           }
           sub={
             be === null ? undefined : `${pct(be)} ${t("verdict.ofCapacity")}`
@@ -86,7 +98,13 @@ export function VerdictView({
         <Meter
           legend={t("verdict.signal")}
           value={aff ? affinityIndex[aff.label] : null}
-          reading={aff ? `${aff.mean}` : "—"}
+          reading={
+            aff ? (
+              <CountUp value={aff.mean} format={(n) => n.toFixed(2)} />
+            ) : (
+              "—"
+            )
+          }
           sub={
             aff
               ? `${aff.label} · ${t("verdict.cells", { count: aff.cells })}`
@@ -110,9 +128,11 @@ export function VerdictView({
           {verdict.fixes.length > 0 ? (
             <>
               <h2 className="legend">{t("verdict.fixes")}</h2>
-              {verdict.fixes.map((f) => (
-                <FixView key={f.kind} fix={f} onScenario={onScenario} />
-              ))}
+              <Reveal className="grid gap-3">
+                {verdict.fixes.map((f) => (
+                  <FixView key={f.kind} fix={f} onScenario={onScenario} />
+                ))}
+              </Reveal>
             </>
           ) : (
             <MoneyTable verdict={verdict} />

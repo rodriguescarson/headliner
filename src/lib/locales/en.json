@@ -187,5 +187,25 @@
     "state": "State",
     "failed": "Failed",
     "notRun": "Not run"
+  },
+  "story": {
+    "title": "How the desk reads a deal",
+    "intro": "Three columns, kept strictly apart. A promoter can trust each one for what it is.",
+    "money": {
+      "title": "Money is code",
+      "body": "Break-even, net per ticket and net at sellout come from arithmetic against a versioned rulebook. No model touches a dollar figure, and the rulebook version is stamped on every verdict."
+    },
+    "taste": {
+      "title": "Taste is evidence",
+      "body": "Qloo supplies the cultural read: the act resolved to an entity, affinity across the metro's heatmap cells, who the audience is, which local acts share it, which brands they already buy. Every call is on the back panel."
+    },
+    "unknown": {
+      "title": "The unknowable is named",
+      "body": "Competing shows, radius clauses, actual sales, the hold, the date. The desk lists what no signal can establish, and it abstains out loud when the signal itself is missing."
+    },
+    "scenario": {
+      "title": "Change one thing",
+      "body": "Swap the market, put the opener on the bill, apply a sponsor offset. The same check runs again and the two verdicts sit side by side with exactly what moved and why."
+    }
   }
 }

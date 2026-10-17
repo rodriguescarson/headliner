@@ -9,6 +9,7 @@ import type { VerdictStatus } from "@/lib/enums";
 import { t } from "@/lib/i18n";
 import type { JobRecord } from "@/lib/jobs/store";
 import { Lamp, Screws, VerdictLamp } from "./console";
+import { useFlipIn } from "./motion/reveal";
 
 type Row = { label: string; line: string };
 type RowState =
@@ -177,7 +178,7 @@ export function OffersBoard({ rows, note }: { rows: Row[]; note?: string }) {
                       ? (s.affinity ?? t("verdict.noSignal"))
                       : "—"}
                   </td>
-                  <td className="px-3 py-2">
+                  <StateCell phase={s.phase}>
                     {s.phase === "done" ? (
                       <VerdictLamp
                         status={s.status}
@@ -199,7 +200,7 @@ export function OffersBoard({ rows, note }: { rows: Row[]; note?: string }) {
                         size={12}
                       />
                     )}
-                  </td>
+                  </StateCell>
                 </tr>
               );
             })}
@@ -207,5 +208,23 @@ export function OffersBoard({ rows, note }: { rows: Row[]; note?: string }) {
         </table>
       </div>
     </div>
+  );
+}
+
+function StateCell({
+  phase,
+  children,
+}: {
+  phase: RowState["phase"];
+  children: React.ReactNode;
+}) {
+  const ref = useFlipIn([phase]);
+  return (
+    <td
+      ref={ref as React.RefObject<HTMLTableCellElement>}
+      className="px-3 py-2"
+    >
+      {children}
+    </td>
   );
 }

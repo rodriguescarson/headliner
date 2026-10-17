@@ -126,7 +126,7 @@ export function Meter({
 }: {
   legend: string;
   value: number | null;
-  reading: string;
+  reading: ReactNode;
   sub?: string;
   zones: MeterZone[];
   ticks?: number[];
@@ -162,9 +162,9 @@ export function Meter({
         viewBox="0 0 240 150"
         className="mt-1 w-full"
         role="img"
-        aria-label={`${legend}: ${reading}`}
+        aria-label={legend}
       >
-        <title>{`${legend}: ${reading}`}</title>
+        <title>{legend}</title>
         {/* scale arc */}
         <path
           d={arc(0, 1, r)}

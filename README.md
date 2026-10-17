@@ -87,6 +87,8 @@ Every fix carries a one-click scenario: swap the market to the compared metro, p
 
 The Console: the offer desk is a channel strip. Deal math and Qloo signal are meter faces, the verdict is a lamp, fixes are patch points, the unknowables are an engraved stencil, the Qloo trace is the back panel. Tokens live in `src/app/globals.css` (light scene default, dark behind `data-theme="dark"`); contrast is measured with `node scripts/contrast.mjs`. Direction contract: `src/app/layout.tsx`.
 
+Motion (`src/components/motion/`): one orchestrated moment per surface. GSAP drives the count-up readings beside the needle swing, the patch-bay reveal and the board rows flipping in as checks land; a Vanta NET backdrop in the console's inks sits behind the hero strip (lazy, transparent over the rail grid); Lenis smooth-scrolls the home and share pages. Every piece is off under `prefers-reduced-motion`.
+
 ## Deploy (Carson's VPS, behind the shared Caddy)
 
 The VPS already runs one self-hosted Supabase stack per product under `/root/stacks/<name>` and a shared `supabase-caddy` that owns ports 80 and 443. Headliner follows the same pattern:
