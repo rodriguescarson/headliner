@@ -4,13 +4,7 @@ import Link from "next/link";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -23,11 +17,11 @@ import { ScenarioCompare } from "./scenario-compare";
 import { ShareButton } from "./share-button";
 import { VerdictView } from "./verdict-view";
 
-type Props = { rulesVersion: string };
+type Props = { rulesVersion: string; initialLine?: string };
 type Phase = "idle" | "queued" | "running" | "done";
 
-export function OfferDesk({ rulesVersion }: Props) {
-  const [line, setLine] = useState("");
+export function OfferDesk({ rulesVersion, initialLine = "" }: Props) {
+  const [line, setLine] = useState(initialLine);
   const [baseline, setBaseline] = useState(false);
   const [phase, setPhase] = useState<Phase>("idle");
   const [result, setResult] = useState<CheckResponse | null>(null);
@@ -76,13 +70,11 @@ export function OfferDesk({ rulesVersion }: Props) {
 
   useEffect(() => {
     const fromHash = window.location.hash.match(/^#job=([A-Za-z0-9_-]{6,})$/);
-    const fromQuery = new URLSearchParams(window.location.search).get("line");
-    if (fromQuery && !line) setLine(fromQuery.slice(0, 500));
     if (fromHash && !jobId) {
       setJobId(fromHash[1]);
       setPhase("queued");
     }
-  }, [jobId, line]);
+  }, [jobId]);
 
   useEffect(() => {
     if (phase === "done" && result?.ok)
@@ -165,16 +157,12 @@ export function OfferDesk({ rulesVersion }: Props) {
 
   return (
     <div className="grid gap-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">{t("desk.title")}</CardTitle>
-          <CardDescription>{t("desk.intro")}</CardDescription>
-        </CardHeader>
+      <Card className="mx-auto w-full max-w-3xl shadow-sm">
         <CardContent>
           <form onSubmit={submit} className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor={inputId} className="sr-only">
-                {t("desk.intro")}
+                {t("desk.strip")}
               </Label>
               <Textarea
                 id={inputId}
@@ -182,7 +170,7 @@ export function OfferDesk({ rulesVersion }: Props) {
                 onChange={(e) => setLine(e.target.value)}
                 placeholder={t("desk.placeholder")}
                 rows={2}
-                className="min-h-20 resize-y text-base"
+                className="min-h-24 resize-y text-base md:text-base"
               />
             </div>
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -206,7 +194,7 @@ export function OfferDesk({ rulesVersion }: Props) {
                 >
                   {t("desk.board")}
                 </Link>
-                <Button type="submit" disabled={busy || !line.trim()}>
+                <Button type="submit" size="lg" disabled={busy || !line.trim()}>
                   {submitLabel}
                 </Button>
               </div>
@@ -224,10 +212,20 @@ export function OfferDesk({ rulesVersion }: Props) {
         </CardContent>
       </Card>
 
-      <div ref={resultRef} className="grid gap-6">
-        {phase === "idle" && !result && (
-          <p className="text-sm text-muted-foreground">{t("desk.empty")}</p>
-        )}
+      <p className="mx-auto flex w-full max-w-3xl flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+        <span>
+          {t("desk.rules")} <span className="font-mono">{rulesVersion}</span>
+        </span>
+        <span aria-hidden="true">·</span>
+        <Link
+          href="/suite"
+          className="underline-offset-4 hover:text-foreground hover:underline"
+        >
+          {t("desk.suiteLink")}
+        </Link>
+      </p>
+
+      <div ref={resultRef} className="grid scroll-mt-20 gap-6">
         {busy && <VerdictSkeleton />}
         {result?.ok && scenario && (
           <div>
@@ -265,24 +263,18 @@ export function OfferDesk({ rulesVersion }: Props) {
         )}
         {result?.ok && jobId && <ShareButton jobId={jobId} />}
       </div>
-
-      <p className="text-sm text-muted-foreground">
-        {t("desk.rules")} <span className="ml-1 font-mono">{rulesVersion}</span>
-      </p>
     </div>
   );
 }
 
 function VerdictSkeleton() {
   return (
-    <div
-      className="grid gap-4 md:grid-cols-3"
-      aria-busy="true"
-      aria-live="polite"
-    >
-      {[0, 1, 2].map((i) => (
-        <Skeleton key={i} className="h-56 rounded-xl" />
-      ))}
+    <div className="grid gap-4" aria-busy="true" aria-live="polite">
+      <Skeleton className="h-40 rounded-xl" />
+      <div className="grid gap-4 md:grid-cols-2">
+        <Skeleton className="h-56 rounded-xl" />
+        <Skeleton className="h-56 rounded-xl" />
+      </div>
     </div>
   );
 }

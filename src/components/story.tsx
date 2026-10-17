@@ -7,14 +7,17 @@ const steps = ["money", "taste", "unknown", "scenario"] as const;
 /** The short story under the desk: what each part of a verdict is. Reads after the task, never before it. */
 export function Story() {
   return (
-    <section className="mt-14">
+    <section className="mt-20">
       <h2 className="text-xl font-semibold tracking-tight">
         {t("story.title")}
       </h2>
       <p className="mt-1 max-w-[65ch] text-muted-foreground">
         {t("story.intro")}
       </p>
-      <Reveal className="mt-6 grid gap-4 md:grid-cols-2" stagger={0.1}>
+      <Reveal
+        className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4"
+        stagger={0.1}
+      >
         {steps.map((key) => (
           <Card key={key}>
             <CardHeader>

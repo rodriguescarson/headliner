@@ -72,7 +72,8 @@
     "noTrace": "No calls were made (sample mode).",
     "sharedTags": "Shared taste tags",
     "warnAbove": "warn above {{warn}}, refuse above {{refuse}}",
-    "netTitle": "Net by tickets sold"
+    "netTitle": "Net by tickets sold",
+    "noSignalTitle": "No signal for this city"
   },
   "cannot": {
     "competing_shows_same_night": "Competing shows on the same night",
@@ -242,5 +243,10 @@
     "deleteButton": "Delete my account",
     "deleting": "Deleting…",
     "cancel": "Cancel"
+  },
+  "home": {
+    "title": "Check a show offer before you sign it",
+    "subtitle": "Paste the offer line. Headliner runs the deal math against a versioned rulebook, pulls audience evidence from Qloo, and lists what no data can tell you.",
+    "meta": "Rulebook {{version}}"
   }
 }

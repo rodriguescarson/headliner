@@ -30,6 +30,13 @@ import { CountUp } from "./motion/count-up";
 import { Reveal } from "./motion/reveal";
 import { Dot, Stat, StatusBadge, type Tone } from "./status";
 
+const statusEdge: Record<Verdict["status"], string> = {
+  cleared: "border-t-success",
+  fix_required: "border-t-warning",
+  refused: "border-t-destructive",
+  abstained: "border-t-info",
+};
+
 const fixTone: Record<Fix["kind"], Tone> = {
   opener: "info",
   sponsor: "warning",
@@ -66,35 +73,38 @@ export function VerdictView({
 
   return (
     <section aria-live="polite" className="grid gap-4">
-      <div className="grid gap-4 md:grid-cols-3">
-        {/* Verdict */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <StatusBadge status={verdict.status} />
-            </div>
-            <CardTitle className="text-xl text-balance">
-              {verdict.headline}
-            </CardTitle>
-            <CardDescription>
-              {offer.artist} · {offer.city} · {offer.capacity} cap ·{" "}
-              {money(offer.ticketPrice)} · {money(offer.guarantee)} guarantee
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="grid gap-1.5 text-sm">
-              {verdict.reasons.map((r) => (
-                <li key={r}>{r}</li>
-              ))}
-              {verdict.abstentions.map((a) => (
-                <li key={a.code} className="text-muted-foreground">
-                  <Dot tone="info">{a.message}</Dot>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+      {/* Verdict: the answer leads, full width */}
+      <Card className={cn("border-t-4", statusEdge[verdict.status])}>
+        <CardHeader>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <StatusBadge status={verdict.status} />
+            <span className="font-mono text-xs text-muted-foreground">
+              {verdict.rulesVersion}
+            </span>
+          </div>
+          <CardTitle className="text-2xl font-semibold tracking-tight text-balance">
+            {verdict.headline}
+          </CardTitle>
+          <CardDescription>
+            {offer.artist} · {offer.city} · {offer.capacity} cap ·{" "}
+            {money(offer.ticketPrice)} · {money(offer.guarantee)} guarantee
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ul className="grid gap-1.5 text-sm">
+            {verdict.reasons.map((r) => (
+              <li key={r}>{r}</li>
+            ))}
+            {verdict.abstentions.map((a) => (
+              <li key={a.code} className="text-muted-foreground">
+                <Dot tone="info">{a.message}</Dot>
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
 
+      <div className="grid gap-4 md:grid-cols-2">
         {/* Deal economics */}
         <Card>
           <CardHeader>
@@ -167,16 +177,18 @@ export function VerdictView({
                   </Badge>
                 </>
               ) : (
-                "—"
+                <span className="text-lg text-muted-foreground">
+                  {t("verdict.noSignalTitle")}
+                </span>
               )}
             </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-3">
-            <p className="text-sm text-muted-foreground">
-              {aff
-                ? t("verdict.cells", { count: aff.cells })
-                : t("verdict.noSignal")}
-            </p>
+            {aff && (
+              <p className="text-sm text-muted-foreground">
+                {t("verdict.cells", { count: aff.cells })}
+              </p>
+            )}
             {ev.entity && (
               <div className="grid gap-1.5 border-t pt-3">
                 <Stat

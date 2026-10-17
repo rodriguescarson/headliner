@@ -32,7 +32,7 @@ export function Mark({
       <path
         d="M40.6 15.9 A22 22 0 0 1 52 40"
         fill="none"
-        stroke="var(--warning)"
+        stroke="var(--primary)"
         strokeWidth="2.5"
         strokeLinecap="round"
       />
