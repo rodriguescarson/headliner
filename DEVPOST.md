@@ -78,5 +78,5 @@ Interface patterns were benchmarked against shipped products (Gemini and Copilot
 
 ## Repo and demo
 
-- Repo: `[URL]` (MIT)
+- Repo: https://github.com/rodriguescarson/headliner (MIT)
 - Demo: https://headliner.carsonrodrigues.com (no sign-in needed to run a check)
