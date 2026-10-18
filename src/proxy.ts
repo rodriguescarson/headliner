@@ -1,0 +1,54 @@
+import { type NextRequest, NextResponse } from "next/server";
+import { createProxyClient } from "@/lib/supabase/proxy";
+
+/**
+ * Per-request nonce-based Content Security Policy for page routes (OWASP A05).
+ * API routes are JSON only and get the static headers from next.config.ts instead.
+ */
+// style-src-attr allows inline style attributes only: Base UI hides form inputs and positions dialogs that way.
+// Inline <style> elements still need the nonce, so a style injection cannot load external resources.
+export async function proxy(request: NextRequest) {
+  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+  const isDev = process.env.NODE_ENV === "development";
+  const csp = `
+    default-src 'self';
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ""};
+    style-src-elem 'self' 'nonce-${nonce}'${isDev ? " 'unsafe-inline'" : ""};
+    style-src-attr 'unsafe-inline';
+    img-src 'self' blob: data:;
+    font-src 'self';
+    connect-src 'self';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+    upgrade-insecure-requests;
+  `
+    .replace(/\s{2,}/g, " ")
+    .trim();
+
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-nonce", nonce);
+  requestHeaders.set("Content-Security-Policy", csp);
+
+  // Session refresh (cookies rotate here) before the page renders; the CSP rides on whichever response we return.
+  let response = NextResponse.next({ request: { headers: requestHeaders } });
+  const supabase = createProxyClient(request, (refreshed) => {
+    response = refreshed;
+  });
+  if (supabase) await supabase.auth.getUser();
+  response.headers.set("Content-Security-Policy", csp);
+  return response;
+}
+
+export const config = {
+  matcher: [
+    {
+      source: "/((?!api|_next/static|_next/image|favicon.ico|\\.well-known).*)",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
+      ],
+    },
+  ],
+};

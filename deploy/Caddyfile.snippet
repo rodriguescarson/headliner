@@ -1,0 +1,13 @@
+# Append to /root/supabase/docker/Caddyfile on the VPS, then:
+#   docker exec supabase-caddy caddy validate --config /etc/caddy/Caddyfile
+#   docker network connect headliner_default supabase-caddy   # once
+#   docker exec supabase-caddy caddy reload --config /etc/caddy/Caddyfile
+
+headliner.carsonrodrigues.com {
+    encode zstd gzip
+    reverse_proxy headliner-app:3000
+}
+
+headliner-api.carsonrodrigues.com {
+    reverse_proxy headliner-supabase-kong:8000
+}

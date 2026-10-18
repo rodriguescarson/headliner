@@ -1,0 +1,16 @@
+# Headliner
+
+> Headliner checks a live-show offer before the guarantee is signed: deterministic deal math (break-even, net per ticket, sellout net) against a versioned rulebook, cultural evidence from the Qloo API (local affinity, demographics, local openers, brand sponsors, night-out places), and an explicit list of what the check cannot establish. Verdicts: Cleared, Fix required, Refused, Abstained. Affinity is evidence, never a ticket forecast.
+
+Operated by Carson Rodrigues, Goa, India. Built for the Qloo Agentic Hackathon (October 2026). MIT licensed.
+
+## Pages
+- /: the offer desk (no account needed)
+- /suite: live Qloo endpoint suite
+- /support: FAQ and contact
+- /terms, /privacy, /cookies
+
+## Facts
+- Rulebook refuses a deal above 85% break-even of capacity and warns above 65%.
+- Sample mode (no Qloo key) shows labelled illustrative data that is not Qloo data.
+- A read-only MCP server exposes check_offer, rulebook and endpoint_suite.

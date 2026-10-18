@@ -1,0 +1,254 @@
+{
+  "app": {
+    "name": "Headliner",
+    "tagline": "Know whether the room makes sense before you sign the guarantee.",
+    "sampleBanner": "Sample mode: illustrative evidence, no Qloo key",
+    "liveBanner": "Live: Qloo evidence, cached server-side"
+  },
+  "nav": {
+    "label": "Primary",
+    "suite": "API status",
+    "signIn": "Sign in",
+    "account": "Settings",
+    "board": "Offers"
+  },
+  "footer": {
+    "label": "Legal and support",
+    "operator": "© {{year}} Headliner · Operated by {{operator}}, {{place}}",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "cookies": "Cookies",
+    "support": "Support",
+    "contact": "Contact"
+  },
+  "desk": {
+    "title": "Check a deal",
+    "intro": "Type the offer the way it arrives. The arithmetic is deterministic, Qloo supplies the audience evidence, and nothing is forecast.",
+    "strip": "Offer",
+    "placeholder": "Artist · City · 300 cap · $28 ticket · $3,500 guarantee + $1,200 room",
+    "submit": "Check the deal",
+    "checking": "Checking…",
+    "queued": "Queued",
+    "running": "Running the check…",
+    "samples": "Load an offer",
+    "offersNote": "Acts and cities are real. Offer terms are illustrative deal shapes, not claims about any act's fees.",
+    "missing": "Could not read: {{fields}}. Add them to the line; the desk does not guess.",
+    "baselineToggle": "Also run it without Qloo and measure the overlap",
+    "suiteLink": "See the API calls behind a check",
+    "empty": "Type an offer above or pick one from the offers list.",
+    "rules": "Rulebook",
+    "board": "Try a sample offer",
+    "enterHint": "Enter to check, Shift+Enter for a new line"
+  },
+  "verdict": {
+    "status": {
+      "cleared": "Cleared",
+      "fix_required": "Fix required",
+      "refused": "Refused",
+      "abstained": "Abstained"
+    },
+    "money": "Deal economics",
+    "signal": "Audience evidence",
+    "evidence": "Evidence detail",
+    "cannot": "Outside this check",
+    "fixes": "Suggested fixes",
+    "trace": "API calls",
+    "breakEven": "Break-even",
+    "ofCapacity": "of capacity",
+    "netPerTicket": "Net per ticket",
+    "fixedCosts": "Fixed costs",
+    "selloutNet": "Net at sellout",
+    "netAt": "Net at {{pct}} sold",
+    "affinity": "Local affinity",
+    "affinityScale": ["low", "mid", "strong"],
+    "cells": "{{count}} cells",
+    "noSignal": "No signal",
+    "entity": "Resolved act",
+    "openers": "Local openers",
+    "sponsors": "Brand candidates",
+    "places": "Night-out places",
+    "tags": "Taste tags",
+    "demographics": "Audience skew",
+    "coverage": "Coverage",
+    "noTrace": "No calls were made (sample mode).",
+    "sharedTags": "Shared taste tags",
+    "warnAbove": "warn above {{warn}}, refuse above {{refuse}}",
+    "netTitle": "Net by tickets sold",
+    "noSignalTitle": "No signal for this city"
+  },
+  "cannot": {
+    "competing_shows_same_night": "Competing shows on the same night",
+    "artist_radius_clause": "Artist radius clauses",
+    "actual_ticket_sales": "Actual ticket sales (affinity is evidence, not a forecast)",
+    "venue_hold_status": "Whether the venue hold is still open",
+    "artist_availability": "Artist availability on the date"
+  },
+  "baseline": {
+    "title": "Without Qloo",
+    "affinity": "Model's affinity guess",
+    "agrees": "agrees with Qloo",
+    "disagrees": "disagrees with Qloo",
+    "overlap": "overlap",
+    "modelOnly": "model only",
+    "qlooOnly": "Qloo only"
+  },
+  "suite": {
+    "title": "API status",
+    "intro": "Runs every Qloo endpoint Headliner depends on, once, against one well-known act, and shows status, latency and result counts. With a key these are live calls.",
+    "run": "Run the suite",
+    "running": "Running…",
+    "endpoint": "Endpoint",
+    "status": "Status",
+    "latency": "Latency",
+    "results": "Results",
+    "params": "Parameters"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Create an account",
+    "signOut": "Sign out",
+    "email": "Email",
+    "password": "Password",
+    "google": "Continue with Google",
+    "apple": "Continue with Apple",
+    "or": "or with email",
+    "noAccount": "No account yet?",
+    "haveAccount": "Already have an account?",
+    "forgot": "Forgot your password?",
+    "reset": "Send a reset link",
+    "resetSent": "If that address has an account, a reset link is on its way.",
+    "checkEmail": "Check your email to confirm the account, then sign in.",
+    "disabled": "Accounts are not configured on this deployment. The desk works without one.",
+    "error": "That did not work. Check the details and try again.",
+    "why": "An account saves your checks and lets you share a verdict with a co-promoter. Running a check never needs one.",
+    "account": "Your account",
+    "signedInAs": "Signed in as",
+    "delete": "Delete account and data",
+    "deleteHelp": "Email {{email}} from your account address with the subject \"Delete my account\" and it is done within 7 days.",
+    "export": "Export my data",
+    "exportHelp": "Same address, subject \"Export my data\"."
+  },
+  "legal": {
+    "updated": "Last updated {{date}}",
+    "contact": "Questions: {{email}}"
+  },
+  "support": {
+    "title": "Support",
+    "intro": "Headliner is operated by one person; email is answered within two working days.",
+    "faq": "Common questions",
+    "q1": "Does Headliner predict ticket sales?",
+    "a1": "No. The deal math is arithmetic on the numbers you type. Qloo affinity is cultural evidence about an act's audience in a place. Neither is a forecast, and the result lists what the check cannot establish.",
+    "q2": "What is sample mode?",
+    "a2": "Without a Qloo key the desk shows clearly labelled sample evidence so the flow can be tried. Nothing in sample mode comes from Qloo.",
+    "q3": "Do I need an account?",
+    "a3": "No. Accounts save checks and share verdicts; running a check is open to everyone.",
+    "q4": "Where does my offer go?",
+    "a4": "To the server for the check, then to Qloo as entity and city names. Offer lines are not stored unless you save them to an account."
+  },
+  "contact": {
+    "title": "Contact",
+    "intro": "For anything about Headliner, the hackathon entry, or a partnership.",
+    "email": "Email",
+    "message": "Message",
+    "send": "Send",
+    "sent": "Sent. You will hear back within two working days.",
+    "fallback": "Or email {{email}} directly."
+  },
+  "scenario": {
+    "title": "Scenario",
+    "intro": "Same arithmetic, same evidence calls, one change.",
+    "base": "As written",
+    "running": "Running the scenario…",
+    "close": "Back to the offer as written",
+    "changed": "What changed and why",
+    "market": "Swap the market to {{city}}",
+    "opener": "Put {{opener}} on the bill",
+    "sponsor": "Apply a {{amount}} sponsor offset",
+    "breakEven": "Break-even",
+    "affinity": "Local affinity",
+    "verdict": "Verdict"
+  },
+  "share": {
+    "title": "Shared result",
+    "runYourself": "Run this offer yourself",
+    "make": "Share this result",
+    "making": "Making the link…",
+    "copy": "Copy link",
+    "copied": "Copied"
+  },
+  "board": {
+    "title": "Offers",
+    "intro": "Every pre-seeded offer in one list. Run them all and each row fills in with its result.",
+    "runAll": "Run all offers",
+    "running": "Running…",
+    "act": "Act",
+    "city": "City",
+    "cap": "Cap",
+    "ticket": "Ticket",
+    "guarantee": "Guarantee",
+    "breakEven": "Break-even",
+    "signal": "Signal",
+    "state": "State",
+    "failed": "Failed",
+    "notRun": "Not run",
+    "checked": "{{done}} of {{total}} checked"
+  },
+  "story": {
+    "title": "How a check works",
+    "intro": "Three columns, kept strictly apart. A promoter can trust each one for what it is.",
+    "money": {
+      "title": "Economics are arithmetic",
+      "body": "Break-even, net per ticket and net at sellout come from arithmetic against a versioned rulebook. No model touches a dollar figure, and the rulebook version is stamped on every verdict."
+    },
+    "taste": {
+      "title": "Audience is evidence",
+      "body": "Qloo supplies the cultural read: the act resolved to an entity, affinity across the metro's heatmap cells, who the audience is, which local acts share it, which brands they already buy. Every call is on the back panel."
+    },
+    "unknown": {
+      "title": "Limits are stated",
+      "body": "Competing shows, radius clauses, actual sales, the hold, the date. The desk lists what no signal can establish, and it abstains out loud when the signal itself is missing."
+    },
+    "scenario": {
+      "title": "Change one thing",
+      "body": "Swap the market, put the opener on the bill, apply a sponsor offset. The same check runs again and the two verdicts sit side by side with exactly what moved and why."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "appearanceHelp": "Light is the default. Dark keeps the cream readings on a dark panel.",
+    "theme": "Theme",
+    "themes": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "notifications": "Email notifications",
+    "notificationsHelp": "Account mail (confirmation, password reset) always sends. These are the optional ones.",
+    "notifyVerdict": "Verdict mail for saved checks",
+    "notifyVerdictHelp": "A copy of each verdict you share, with its link. Coming once shares can be saved to an account.",
+    "notifyProduct": "Product updates",
+    "notifyProductHelp": "Rare, plain, from headliner@carsonrodrigues.com. Unsubscribe here any time.",
+    "save": "Save settings",
+    "saving": "Saving…",
+    "status": {
+      "saved": "Saved",
+      "save_failed": "Could not save. Try again.",
+      "signed_out": "Your session ended. Sign in again."
+    },
+    "export": "Export my data",
+    "exportHelp": "Everything Headliner holds about you, as one JSON file: account, settings, and the verdicts you shared while signed in.",
+    "exportButton": "Download JSON",
+    "delete": "Delete account and data",
+    "deleteHelp": "Removes your account from the sign-in service and retires your settings and shared links. Shared links stop working immediately. This cannot be undone.",
+    "deleteConfirmLabel": "Type DELETE to confirm",
+    "deleteButton": "Delete my account",
+    "deleting": "Deleting…",
+    "cancel": "Cancel"
+  },
+  "home": {
+    "title": "Check a show offer before you sign it",
+    "subtitle": "Paste the offer line. The money is arithmetic, the audience evidence comes from Qloo, and the unknowns are named.",
+    "meta": "Rulebook {{version}}"
+  }
+}

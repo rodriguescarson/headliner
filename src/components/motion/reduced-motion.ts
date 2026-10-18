@@ -1,0 +1,16 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+/** True when the visitor asked for reduced motion. Every authored motion checks this first. */
+export function usePrefersReducedMotion(): boolean {
+  const [reduced, setReduced] = useState(true);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => setReduced(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+  return reduced;
+}

@@ -1,0 +1,640 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-17T08:12:08.551Z",
+  "title": "Design System: Headliner",
+  "extensions": {
+    "colorMeta": {
+      "panel": {
+        "role": "neutral",
+        "displayName": "Marine Panel",
+        "canonical": "#8a97a5",
+        "darkScene": "#1b2026",
+        "tonalRamp": [
+          "oklch(15.0% 0.026 250.2)",
+          "oklch(26.4% 0.026 250.2)",
+          "oklch(37.9% 0.026 250.2)",
+          "oklch(49.3% 0.026 250.2)",
+          "oklch(60.7% 0.026 250.2)",
+          "oklch(72.1% 0.026 250.2)",
+          "oklch(83.6% 0.026 250.2)",
+          "oklch(95.0% 0.026 250.2)"
+        ]
+      },
+      "panel-raised": {
+        "role": "neutral",
+        "displayName": "Raised Plate",
+        "canonical": "#e6ebf0",
+        "darkScene": "#232a31",
+        "tonalRamp": [
+          "oklch(15.0% 0.009 247.9)",
+          "oklch(26.4% 0.009 247.9)",
+          "oklch(37.9% 0.009 247.9)",
+          "oklch(49.3% 0.009 247.9)",
+          "oklch(60.7% 0.009 247.9)",
+          "oklch(72.1% 0.009 247.9)",
+          "oklch(83.6% 0.009 247.9)",
+          "oklch(95.0% 0.009 247.9)"
+        ]
+      },
+      "panel-deep": {
+        "role": "neutral",
+        "displayName": "Deep Panel",
+        "canonical": "#4f5f70",
+        "darkScene": "#0f1317",
+        "tonalRamp": [
+          "oklch(15.0% 0.034 250.1)",
+          "oklch(26.4% 0.034 250.1)",
+          "oklch(37.9% 0.034 250.1)",
+          "oklch(49.3% 0.034 250.1)",
+          "oklch(60.7% 0.034 250.1)",
+          "oklch(72.1% 0.034 250.1)",
+          "oklch(83.6% 0.034 250.1)",
+          "oklch(95.0% 0.034 250.1)"
+        ]
+      },
+      "panel-deep-ink": {
+        "role": "neutral",
+        "displayName": "Deep Panel Ink",
+        "canonical": "#f1f4f7",
+        "darkScene": "#eef0f2",
+        "tonalRamp": [
+          "oklch(15.0% 0.005 247.9)",
+          "oklch(26.4% 0.005 247.9)",
+          "oklch(37.9% 0.005 247.9)",
+          "oklch(49.3% 0.005 247.9)",
+          "oklch(60.7% 0.005 247.9)",
+          "oklch(72.1% 0.005 247.9)",
+          "oklch(83.6% 0.005 247.9)",
+          "oklch(95.0% 0.005 247.9)"
+        ]
+      },
+      "rail": {
+        "role": "neutral",
+        "displayName": "Rail",
+        "canonical": "#6f7d8b",
+        "darkScene": "#353e47",
+        "tonalRamp": [
+          "oklch(15.0% 0.027 248.3)",
+          "oklch(26.4% 0.027 248.3)",
+          "oklch(37.9% 0.027 248.3)",
+          "oklch(49.3% 0.027 248.3)",
+          "oklch(60.7% 0.027 248.3)",
+          "oklch(72.1% 0.027 248.3)",
+          "oklch(83.6% 0.027 248.3)",
+          "oklch(95.0% 0.027 248.3)"
+        ]
+      },
+      "glass": {
+        "role": "neutral",
+        "displayName": "Meter Glass",
+        "canonical": "#f3e9d2",
+        "darkScene": "#e9dfc8",
+        "tonalRamp": [
+          "oklch(15.0% 0.032 87.3)",
+          "oklch(26.4% 0.032 87.3)",
+          "oklch(37.9% 0.032 87.3)",
+          "oklch(49.3% 0.032 87.3)",
+          "oklch(60.7% 0.032 87.3)",
+          "oklch(72.1% 0.032 87.3)",
+          "oklch(83.6% 0.032 87.3)",
+          "oklch(95.0% 0.032 87.3)"
+        ]
+      },
+      "glass-edge": {
+        "role": "neutral",
+        "displayName": "Glass Edge",
+        "canonical": "#cbbfa3",
+        "darkScene": "#a79b7f",
+        "tonalRamp": [
+          "oklch(15.0% 0.040 87.6)",
+          "oklch(26.4% 0.040 87.6)",
+          "oklch(37.9% 0.040 87.6)",
+          "oklch(49.3% 0.040 87.6)",
+          "oklch(60.7% 0.040 87.6)",
+          "oklch(72.1% 0.040 87.6)",
+          "oklch(83.6% 0.040 87.6)",
+          "oklch(95.0% 0.040 87.6)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#15181b",
+        "darkScene": "#eef0f2",
+        "tonalRamp": [
+          "oklch(15.0% 0.008 248.2)",
+          "oklch(26.4% 0.008 248.2)",
+          "oklch(37.9% 0.008 248.2)",
+          "oklch(49.3% 0.008 248.2)",
+          "oklch(60.7% 0.008 248.2)",
+          "oklch(72.1% 0.008 248.2)",
+          "oklch(83.6% 0.008 248.2)",
+          "oklch(95.0% 0.008 248.2)"
+        ]
+      },
+      "legend": {
+        "role": "neutral",
+        "displayName": "Legend",
+        "canonical": "#3f4a55",
+        "darkScene": "#b7c0c9",
+        "tonalRamp": [
+          "oklch(15.0% 0.023 248.4)",
+          "oklch(26.4% 0.023 248.4)",
+          "oklch(37.9% 0.023 248.4)",
+          "oklch(49.3% 0.023 248.4)",
+          "oklch(60.7% 0.023 248.4)",
+          "oklch(72.1% 0.023 248.4)",
+          "oklch(83.6% 0.023 248.4)",
+          "oklch(95.0% 0.023 248.4)"
+        ]
+      },
+      "legend-ground": {
+        "role": "neutral",
+        "displayName": "Legend on Ground",
+        "canonical": "#15181b",
+        "darkScene": "#eef0f2",
+        "tonalRamp": [
+          "oklch(15.0% 0.008 248.2)",
+          "oklch(26.4% 0.008 248.2)",
+          "oklch(37.9% 0.008 248.2)",
+          "oklch(49.3% 0.008 248.2)",
+          "oklch(60.7% 0.008 248.2)",
+          "oklch(72.1% 0.008 248.2)",
+          "oklch(83.6% 0.008 248.2)",
+          "oklch(95.0% 0.008 248.2)"
+        ]
+      },
+      "legend-on-glass": {
+        "role": "neutral",
+        "displayName": "Legend on Glass",
+        "canonical": "#4a4335",
+        "darkScene": "#4a4335",
+        "tonalRamp": [
+          "oklch(15.0% 0.025 84.5)",
+          "oklch(26.4% 0.025 84.5)",
+          "oklch(37.9% 0.025 84.5)",
+          "oklch(49.3% 0.025 84.5)",
+          "oklch(60.7% 0.025 84.5)",
+          "oklch(72.1% 0.025 84.5)",
+          "oklch(83.6% 0.025 84.5)",
+          "oklch(95.0% 0.025 84.5)"
+        ]
+      },
+      "placeholder": {
+        "role": "neutral",
+        "displayName": "Placeholder",
+        "canonical": "#5e5848",
+        "darkScene": "#5e5848",
+        "tonalRamp": [
+          "oklch(15.0% 0.019 82.8)",
+          "oklch(26.4% 0.019 82.8)",
+          "oklch(37.9% 0.019 82.8)",
+          "oklch(49.3% 0.019 82.8)",
+          "oklch(60.7% 0.019 82.8)",
+          "oklch(72.1% 0.019 82.8)",
+          "oklch(83.6% 0.019 82.8)",
+          "oklch(95.0% 0.019 82.8)"
+        ]
+      },
+      "lamp-red": {
+        "role": "secondary",
+        "displayName": "Red Lamp",
+        "canonical": "#b3202f",
+        "darkScene": "#ff7b86",
+        "tonalRamp": [
+          "oklch(15.0% 0.160 22.3)",
+          "oklch(26.4% 0.160 22.3)",
+          "oklch(37.9% 0.160 22.3)",
+          "oklch(49.3% 0.160 22.3)",
+          "oklch(60.7% 0.160 22.3)",
+          "oklch(72.1% 0.160 22.3)",
+          "oklch(83.6% 0.160 22.3)",
+          "oklch(95.0% 0.160 22.3)"
+        ]
+      },
+      "lamp-green": {
+        "role": "secondary",
+        "displayName": "Green Lamp",
+        "canonical": "#176a3c",
+        "darkScene": "#6ed19a",
+        "tonalRamp": [
+          "oklch(15.0% 0.107 153.8)",
+          "oklch(26.4% 0.107 153.8)",
+          "oklch(37.9% 0.107 153.8)",
+          "oklch(49.3% 0.107 153.8)",
+          "oklch(60.7% 0.107 153.8)",
+          "oklch(72.1% 0.107 153.8)",
+          "oklch(83.6% 0.107 153.8)",
+          "oklch(95.0% 0.107 153.8)"
+        ]
+      },
+      "lamp-amber": {
+        "role": "primary",
+        "displayName": "Amber Lamp",
+        "canonical": "#8a5a00",
+        "darkScene": "#f2c35c",
+        "tonalRamp": [
+          "oklch(15.0% 0.108 73.3)",
+          "oklch(26.4% 0.108 73.3)",
+          "oklch(37.9% 0.108 73.3)",
+          "oklch(49.3% 0.108 73.3)",
+          "oklch(60.7% 0.108 73.3)",
+          "oklch(72.1% 0.108 73.3)",
+          "oklch(83.6% 0.108 73.3)",
+          "oklch(95.0% 0.108 73.3)"
+        ]
+      },
+      "lamp-blue": {
+        "role": "secondary",
+        "displayName": "Blue Lamp",
+        "canonical": "#2d5aa6",
+        "darkScene": "#8fb4f0",
+        "tonalRamp": [
+          "oklch(15.0% 0.132 260.2)",
+          "oklch(26.4% 0.132 260.2)",
+          "oklch(37.9% 0.132 260.2)",
+          "oklch(49.3% 0.132 260.2)",
+          "oklch(60.7% 0.132 260.2)",
+          "oklch(72.1% 0.132 260.2)",
+          "oklch(83.6% 0.132 260.2)",
+          "oklch(95.0% 0.132 260.2)"
+        ]
+      },
+      "cap-red": {
+        "role": "secondary",
+        "displayName": "Red Cap",
+        "canonical": "#d7263d",
+        "darkScene": "#d7263d",
+        "tonalRamp": [
+          "oklch(15.0% 0.160 21.1)",
+          "oklch(26.4% 0.160 21.1)",
+          "oklch(37.9% 0.160 21.1)",
+          "oklch(49.3% 0.160 21.1)",
+          "oklch(60.7% 0.160 21.1)",
+          "oklch(72.1% 0.160 21.1)",
+          "oklch(83.6% 0.160 21.1)",
+          "oklch(95.0% 0.160 21.1)"
+        ]
+      },
+      "cap-green": {
+        "role": "secondary",
+        "displayName": "Green Cap",
+        "canonical": "#2e9e5b",
+        "darkScene": "#2e9e5b",
+        "tonalRamp": [
+          "oklch(15.0% 0.141 152.7)",
+          "oklch(26.4% 0.141 152.7)",
+          "oklch(37.9% 0.141 152.7)",
+          "oklch(49.3% 0.141 152.7)",
+          "oklch(60.7% 0.141 152.7)",
+          "oklch(72.1% 0.141 152.7)",
+          "oklch(83.6% 0.141 152.7)",
+          "oklch(95.0% 0.141 152.7)"
+        ]
+      },
+      "cap-amber": {
+        "role": "primary",
+        "displayName": "Amber Cap",
+        "canonical": "#e0a526",
+        "darkScene": "#e0a526",
+        "tonalRamp": [
+          "oklch(15.0% 0.147 80.8)",
+          "oklch(26.4% 0.147 80.8)",
+          "oklch(37.9% 0.147 80.8)",
+          "oklch(49.3% 0.147 80.8)",
+          "oklch(60.7% 0.147 80.8)",
+          "oklch(72.1% 0.147 80.8)",
+          "oklch(83.6% 0.147 80.8)",
+          "oklch(95.0% 0.147 80.8)"
+        ]
+      },
+      "cap-blue": {
+        "role": "secondary",
+        "displayName": "Blue Cap",
+        "canonical": "#3a6fd8",
+        "darkScene": "#3a6fd8",
+        "tonalRamp": [
+          "oklch(15.0% 0.160 262.2)",
+          "oklch(26.4% 0.160 262.2)",
+          "oklch(37.9% 0.160 262.2)",
+          "oklch(49.3% 0.160 262.2)",
+          "oklch(60.7% 0.160 262.2)",
+          "oklch(72.1% 0.160 262.2)",
+          "oklch(83.6% 0.160 262.2)",
+          "oklch(95.0% 0.160 262.2)"
+        ]
+      },
+      "action": {
+        "role": "primary",
+        "displayName": "Amber Cap (action)",
+        "canonical": "#e0a526",
+        "darkScene": "#e0a526",
+        "tonalRamp": [
+          "oklch(15.0% 0.147 80.8)",
+          "oklch(26.4% 0.147 80.8)",
+          "oklch(37.9% 0.147 80.8)",
+          "oklch(49.3% 0.147 80.8)",
+          "oklch(60.7% 0.147 80.8)",
+          "oklch(72.1% 0.147 80.8)",
+          "oklch(83.6% 0.147 80.8)",
+          "oklch(95.0% 0.147 80.8)"
+        ]
+      },
+      "action-ink": {
+        "role": "primary",
+        "displayName": "Action Ink",
+        "canonical": "#15181b",
+        "darkScene": "#15181b",
+        "tonalRamp": [
+          "oklch(15.0% 0.008 248.2)",
+          "oklch(26.4% 0.008 248.2)",
+          "oklch(37.9% 0.008 248.2)",
+          "oklch(49.3% 0.008 248.2)",
+          "oklch(60.7% 0.008 248.2)",
+          "oklch(72.1% 0.008 248.2)",
+          "oklch(83.6% 0.008 248.2)",
+          "oklch(95.0% 0.008 248.2)"
+        ]
+      },
+      "focus": {
+        "role": "secondary",
+        "displayName": "Focus Ring",
+        "canonical": "#2d5aa6",
+        "darkScene": "#8fb4f0",
+        "tonalRamp": [
+          "oklch(15.0% 0.132 260.2)",
+          "oklch(26.4% 0.132 260.2)",
+          "oklch(37.9% 0.132 260.2)",
+          "oklch(49.3% 0.132 260.2)",
+          "oklch(60.7% 0.132 260.2)",
+          "oklch(72.1% 0.132 260.2)",
+          "oklch(83.6% 0.132 260.2)",
+          "oklch(95.0% 0.132 260.2)"
+        ]
+      },
+      "rail-line": {
+        "role": "neutral",
+        "displayName": "Rail Line",
+        "canonical": "rgba(21, 24, 27, 0.14)",
+        "darkScene": "rgba(255, 255, 255, 0.07)",
+        "tonalRamp": [
+          "oklch(15.0% 0.008 248.2)",
+          "oklch(26.4% 0.008 248.2)",
+          "oklch(37.9% 0.008 248.2)",
+          "oklch(49.3% 0.008 248.2)",
+          "oklch(60.7% 0.008 248.2)",
+          "oklch(72.1% 0.008 248.2)",
+          "oklch(83.6% 0.008 248.2)",
+          "oklch(95.0% 0.008 248.2)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles and the verdict status beside its 32px lamp; uppercase; once per screen."
+      },
+      "reading": {
+        "displayName": "Reading",
+        "purpose": "The figure under a meter pivot, always #15181b on cream glass."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Patch-point titles and legal section headings; uppercase."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All running text at the single 15px size."
+      },
+      "legend": {
+        "displayName": "Legend",
+        "purpose": "The engraved label: module headings, captions, form labels, table heads; uppercase; renders in the 500 face."
+      },
+      "control": {
+        "displayName": "Control",
+        "purpose": "Button labels; uppercase."
+      },
+      "entry": {
+        "displayName": "Entry",
+        "purpose": "The offer textarea only."
+      }
+    },
+    "shadows": [
+      {
+        "name": "plate",
+        "value": "0 1px 0 rgba(255,255,255,0.55) inset, 0 2px 6px rgba(21,24,27,0.14)",
+        "darkScene": "0 1px 0 rgba(255,255,255,0.06) inset, 0 2px 8px rgba(0,0,0,0.45)",
+        "purpose": "Every raised module and the primary button (--shadow)."
+      },
+      {
+        "name": "glass",
+        "value": "inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -2px 6px rgba(74,67,53,0.12), 0 1px 2px rgba(21,24,27,0.18)",
+        "purpose": "Meter faces and text inputs; not redefined for the dark scene."
+      },
+      {
+        "name": "screw",
+        "value": "0 1px 0 rgba(255,255,255,0.5)",
+        "purpose": "The highlight under each 6px screw hole."
+      },
+      {
+        "name": "engrave",
+        "value": "0 1px 0 rgba(255,255,255,0.6)",
+        "darkScene": "0 -1px 0 rgba(0,0,0,0.5)",
+        "purpose": "text-shadow on legends over plates and ground (--engrave); 35% white variant inside .on-ground."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The only easing; needle settle and lamp warm-up."
+      },
+      {
+        "name": "needle-settle",
+        "value": "transform 700ms var(--ease-out)",
+        "purpose": "The needle swinging to its value; off under reduced motion."
+      },
+      {
+        "name": "lamp-warm",
+        "value": "450ms var(--ease-out) both; brightness 0.6 to 1, scale 0.94 to 1",
+        "purpose": "A lamp lighting; off under reduced motion."
+      },
+      {
+        "name": "button-lift",
+        "value": "transform 150ms; translateY(-1px) on hover",
+        "purpose": "The desk's primary button only."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "md",
+        "value": "48rem"
+      }
+    ],
+    "layout": {
+      "rootFontSize": "15px",
+      "container": "80rem",
+      "railGrid": "96px",
+      "gutter": "1rem (2rem from md)",
+      "readMeasure": "72ch"
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one amber action on a screen: Run the check, Sign in, Run suite. Condensed, uppercase, a lucide icon at stroke 2.25 leading.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><polygon points=\"6 3 20 12 6 21 6 3\"/></svg>Check the deal</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 3rem; padding: 0 1.25rem; background: var(--action, #e0a526); color: var(--action-ink, #15181b); border: none; border-radius: 0.375rem; font-family: var(--font-barlow-condensed, 'Barlow Condensed', 'Barlow', sans-serif); font-size: 1rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; box-shadow: var(--shadow, 0 1px 0 rgba(255,255,255,0.55) inset, 0 2px 6px rgba(21,24,27,0.14)); cursor: pointer; transition: transform 150ms; } .ds-btn-primary:hover { transform: translateY(-1px); } .ds-btn-primary:active { transform: translateY(0); } .ds-btn-primary:focus-visible { outline: 2px solid var(--focus, #2d5aa6); outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }"
+    },
+    {
+      "name": "Plate Button",
+      "kind": "button",
+      "refersTo": "button-plate",
+      "description": "Secondary action as a raised plate: Google and Apple sign-in, sign-out. Body weight 500, no screws, no hover movement.",
+      "html": "<button class=\"ds-btn-plate\" type=\"button\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M16.4 12.7c0-2.5 2-3.6 2.1-3.7-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.9-1.7 0-3.3 1-4.2 2.5-1.8 3.1-.5 7.8 1.3 10.3.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8s2 .8 3.3.8c1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9-.1 0-2.8-1.1-2.8-4.3zM14 5.4c.7-.8 1.2-2 1-3.2-1 0-2.3.7-3 1.6-.6.7-1.2 1.9-1.1 3.1 1.2.1 2.3-.6 3.1-1.5z\"/></svg>Continue with Apple</button>",
+      "css": ".ds-btn-plate { display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; height: 2.75rem; padding: 0 1rem; background: var(--panel-raised, #e6ebf0); color: var(--ink, #15181b); border: 1px solid var(--rail, #6f7d8b); border-radius: 6px; box-shadow: var(--shadow, 0 1px 0 rgba(255,255,255,0.55) inset, 0 2px 6px rgba(21,24,27,0.14)); font-family: var(--font-barlow, 'Barlow', system-ui, sans-serif); font-size: 15px; font-weight: 500; cursor: pointer; } .ds-btn-plate:focus-visible { outline: 2px solid var(--focus, #2d5aa6); outline-offset: 2px; } .ds-btn-plate:disabled { opacity: 0.5; }"
+    },
+    {
+      "name": "Glass Input",
+      "kind": "input",
+      "refersTo": "input-glass",
+      "description": "Single-line text field on cream glass: email, password. Dark ink, brown placeholder, the global blue focus ring.",
+      "html": "<label class=\"ds-legend ds-field-label\" for=\"ds-email\">Email</label><input class=\"ds-input-glass\" id=\"ds-email\" type=\"email\" placeholder=\"you@venue.com\">",
+      "css": ".ds-legend { font-family: var(--font-barlow-condensed, 'Barlow Condensed', 'Barlow', sans-serif); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--legend, #3f4a55); text-shadow: var(--engrave, 0 1px 0 rgba(255,255,255,0.6)); } .ds-field-label { display: block; margin-bottom: 0.75rem; } .ds-input-glass { display: block; width: 100%; height: 2.75rem; padding: 0 0.75rem; background: var(--glass, #f3e9d2); color: #15181b; border: 1px solid var(--glass-edge, #cbbfa3); border-radius: 6px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -2px 6px rgba(74,67,53,0.12), 0 1px 2px rgba(21,24,27,0.18); font-family: var(--font-barlow, 'Barlow', system-ui, sans-serif); font-size: 15px; caret-color: var(--lamp-blue, #2d5aa6); outline: none; } .ds-input-glass::placeholder { color: var(--placeholder, #5e5848); } .ds-input-glass:focus-visible { outline: 2px solid var(--focus, #2d5aa6); outline-offset: 2px; }"
+    },
+    {
+      "name": "Offer Entry",
+      "kind": "input",
+      "refersTo": "entry-glass",
+      "description": "The scribble strip: the offer textarea in Entry type (condensed 1.125rem), two rows, vertically resizable. The loudest text on the first viewport.",
+      "html": "<textarea class=\"ds-entry-glass\" rows=\"2\" placeholder=\"Khruangbin, Austin, 1200 cap, $38, $25k guarantee, $9k room\"></textarea>",
+      "css": ".ds-entry-glass { display: block; width: 100%; padding: 0.75rem 1rem; resize: vertical; background: var(--glass, #f3e9d2); color: #15181b; border: 1px solid var(--glass-edge, #cbbfa3); border-radius: 6px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -2px 6px rgba(74,67,53,0.12), 0 1px 2px rgba(21,24,27,0.18); font-family: var(--font-barlow-condensed, 'Barlow Condensed', 'Barlow', sans-serif); font-size: 1.125rem; font-weight: 500; line-height: 1.75rem; caret-color: var(--lamp-blue, #2d5aa6); outline: none; } .ds-entry-glass::placeholder { color: var(--placeholder, #5e5848); } .ds-entry-glass:focus-visible { outline: 2px solid var(--focus, #2d5aa6); outline-offset: 2px; }"
+    },
+    {
+      "name": "Engraved Legend",
+      "kind": "custom",
+      "refersTo": "legend-engraved",
+      "description": "The console's label voice: condensed 0.75rem, 0.12em, uppercase, engraved. Used as the heading of every module, never as a kicker above a larger title.",
+      "html": "<h2 class=\"ds-legend\">Deal math</h2>",
+      "css": ".ds-legend { font-family: var(--font-barlow-condensed, 'Barlow Condensed', 'Barlow', sans-serif); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--legend, #3f4a55); text-shadow: var(--engrave, 0 1px 0 rgba(255,255,255,0.6)); }"
+    },
+    {
+      "name": "Verdict Lamp",
+      "kind": "chip",
+      "refersTo": "legend-engraved",
+      "description": "A lit lamp with its status written beside it. Tone follows STATUS_TONE: cleared green, fix_required amber, refused red, abstained blue.",
+      "html": "<span class=\"ds-lamp\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" class=\"ds-lamp-cap\"><circle cx=\"8\" cy=\"8\" r=\"7.5\" fill=\"var(--panel-deep, #4f5f70)\"/><circle cx=\"8\" cy=\"8\" r=\"5.5\" fill=\"var(--cap-amber, #e0a526)\"/><circle cx=\"6.2\" cy=\"6\" r=\"1.6\" fill=\"rgba(255,255,255,0.55)\"/></svg><span class=\"ds-legend\">Fix required</span></span>",
+      "css": ".ds-legend { font-family: var(--font-barlow-condensed, 'Barlow Condensed', 'Barlow', sans-serif); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--legend, #3f4a55); text-shadow: var(--engrave, 0 1px 0 rgba(255,255,255,0.6)); } .ds-lamp { display: inline-flex; align-items: center; gap: 0.5rem; } .ds-lamp-cap { transform-origin: center; animation: ds-lamp-warm 450ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both; } @keyframes ds-lamp-warm { from { filter: brightness(0.6); transform: scale(0.94); } to { filter: brightness(1); transform: scale(1); } } @media (prefers-reduced-motion: reduce) { .ds-lamp-cap { animation: none; } }"
+    },
+    {
+      "name": "Meter",
+      "kind": "custom",
+      "refersTo": "meter-glass",
+      "description": "The signature VU meter on cream glass: 120-degree scale, zone band, ink ticks, a needle that settles over 700ms, the reading printed under the pivot.",
+      "html": "<figure class=\"ds-meter\"><span class=\"ds-screw\" aria-hidden=\"true\"></span><span class=\"ds-screw\" aria-hidden=\"true\"></span><span class=\"ds-screw\" aria-hidden=\"true\"></span><span class=\"ds-screw\" aria-hidden=\"true\"></span><figcaption class=\"ds-legend ds-legend-glass\">Deal math</figcaption><svg viewBox=\"0 0 240 150\" role=\"img\" aria-label=\"Deal math: 212 / 300\"><path d=\"M 40.3 164.0 A 92 92 0 0 1 199.7 164.0\" fill=\"none\" stroke=\"#4a4335\" stroke-width=\"1.5\"/><path d=\"M 46.5 160.5 A 85 85 0 0 1 120.0 33.0\" fill=\"none\" stroke=\"var(--cap-green, #2e9e5b)\" stroke-width=\"5\" opacity=\"0.9\"/><path d=\"M 120.0 33.0 A 85 85 0 0 1 169.1 48.4\" fill=\"none\" stroke=\"var(--cap-amber, #e0a526)\" stroke-width=\"5\" opacity=\"0.9\"/><path d=\"M 169.1 48.4 A 85 85 0 0 1 193.5 160.5\" fill=\"none\" stroke=\"var(--cap-red, #d7263d)\" stroke-width=\"5\" opacity=\"0.9\"/><line x1=\"40.3\" y1=\"164\" x2=\"50.7\" y2=\"158\" stroke=\"#15181b\" stroke-width=\"1.5\"/><line x1=\"120\" y1=\"26\" x2=\"120\" y2=\"38\" stroke=\"#15181b\" stroke-width=\"1.5\"/><line x1=\"199.7\" y1=\"164\" x2=\"189.3\" y2=\"158\" stroke=\"#15181b\" stroke-width=\"1.5\"/><g class=\"ds-needle\" transform=\"rotate(24.7 120 118)\"><line x1=\"120\" y1=\"118\" x2=\"120\" y2=\"30\" stroke=\"#15181b\" stroke-width=\"2\" stroke-linecap=\"round\"/><line x1=\"120\" y1=\"118\" x2=\"120\" y2=\"30\" stroke=\"var(--cap-red, #d7263d)\" stroke-width=\"0.8\" stroke-linecap=\"round\"/></g><circle cx=\"120\" cy=\"118\" r=\"7\" fill=\"#15181b\"/><circle cx=\"120\" cy=\"118\" r=\"3\" fill=\"#f3e9d2\"/><defs><clipPath id=\"ds-meter-clip\"><rect x=\"0\" y=\"0\" width=\"240\" height=\"150\" rx=\"6\"/></clipPath><radialGradient id=\"ds-meter-vignette\" cx=\"50%\" cy=\"60%\" r=\"70%\"><stop offset=\"55%\" stop-color=\"#4a4335\" stop-opacity=\"0\"/><stop offset=\"100%\" stop-color=\"#4a4335\" stop-opacity=\"0.18\"/></radialGradient><linearGradient id=\"ds-meter-sweep\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\"><stop offset=\"0%\" stop-color=\"#ffffff\" stop-opacity=\"0.32\"/><stop offset=\"38%\" stop-color=\"#ffffff\" stop-opacity=\"0.06\"/><stop offset=\"60%\" stop-color=\"#ffffff\" stop-opacity=\"0\"/></linearGradient></defs><g clip-path=\"url(#ds-meter-clip)\" pointer-events=\"none\"><rect x=\"0\" y=\"0\" width=\"240\" height=\"150\" fill=\"url(#ds-meter-vignette)\"/><path d=\"M -20 -10 L 150 -10 L 40 170 L -20 170 Z\" fill=\"url(#ds-meter-sweep)\"/></g></svg><div class=\"ds-meter-foot\"><span class=\"ds-reading\">212 / 300</span><span class=\"ds-legend ds-legend-glass\">71% of capacity</span></div></figure>",
+      "css": ".ds-legend { font-family: var(--font-barlow-condensed, 'Barlow Condensed', 'Barlow', sans-serif); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--legend, #3f4a55); text-shadow: var(--engrave, 0 1px 0 rgba(255,255,255,0.6)); } .ds-screw { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: radial-gradient(circle at 40% 40%, var(--panel-raised, #e6ebf0), var(--panel-deep, #4f5f70)); box-shadow: 0 1px 0 rgba(255,255,255,0.5); } .ds-screw:nth-child(1) { left: 0.5rem; top: 0.5rem; } .ds-screw:nth-child(2) { right: 0.5rem; top: 0.5rem; } .ds-screw:nth-child(3) { left: 0.5rem; bottom: 0.5rem; } .ds-screw:nth-child(4) { right: 0.5rem; bottom: 0.5rem; } .ds-legend-glass { color: var(--legend-on-glass, #4a4335); text-shadow: none; } .ds-meter { position: relative; margin: 0; padding: 1rem 1.25rem 1.25rem; background: var(--glass, #f3e9d2); color: #15181b; border: 1px solid var(--glass-edge, #cbbfa3); border-radius: 6px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -2px 6px rgba(74,67,53,0.12), 0 1px 2px rgba(21,24,27,0.18); } .ds-meter svg { display: block; width: 100%; margin-top: 0.25rem; } .ds-needle { transition: transform 700ms var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); } .ds-meter-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; margin-top: 0.25rem; } .ds-reading { font-family: var(--font-barlow-condensed, 'Barlow Condensed', 'Barlow', sans-serif); font-size: 1.5rem; font-weight: 600; line-height: 1; color: #15181b; font-variant-numeric: tabular-nums; } @media (prefers-reduced-motion: reduce) { .ds-needle { transition: none; } }"
+    },
+    {
+      "name": "Plate",
+      "kind": "card",
+      "refersTo": "plate",
+      "description": "A raised module bolted to the rail with four screws: the verdict plate, the evidence rack, every patch point. Legend as its heading.",
+      "html": "<section class=\"ds-plate\"><span class=\"ds-screw\" aria-hidden=\"true\"></span><span class=\"ds-screw\" aria-hidden=\"true\"></span><span class=\"ds-screw\" aria-hidden=\"true\"></span><span class=\"ds-screw\" aria-hidden=\"true\"></span><h2 class=\"ds-legend ds-plate-legend\">Evidence</h2><p class=\"ds-plate-body\">Live Qloo evidence, cached server-side; every call is traced below.</p></section>",
+      "css": ".ds-legend { font-family: var(--font-barlow-condensed, 'Barlow Condensed', 'Barlow', sans-serif); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--legend, #3f4a55); text-shadow: var(--engrave, 0 1px 0 rgba(255,255,255,0.6)); } .ds-screw { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: radial-gradient(circle at 40% 40%, var(--panel-raised, #e6ebf0), var(--panel-deep, #4f5f70)); box-shadow: 0 1px 0 rgba(255,255,255,0.5); } .ds-screw:nth-child(1) { left: 0.5rem; top: 0.5rem; } .ds-screw:nth-child(2) { right: 0.5rem; top: 0.5rem; } .ds-screw:nth-child(3) { left: 0.5rem; bottom: 0.5rem; } .ds-screw:nth-child(4) { right: 0.5rem; bottom: 0.5rem; } .ds-plate { position: relative; padding: 1.25rem; background: var(--panel-raised, #e6ebf0); color: var(--ink, #15181b); border: 1px solid var(--rail, #6f7d8b); border-radius: 6px; box-shadow: var(--shadow, 0 1px 0 rgba(255,255,255,0.55) inset, 0 2px 6px rgba(21,24,27,0.14)); font-family: var(--font-barlow, 'Barlow', system-ui, sans-serif); font-size: 15px; line-height: 1.5; } .ds-plate-legend { margin: 0 0 0.75rem; } .ds-plate-body { margin: 0; color: var(--legend, #3f4a55); }"
+    },
+    {
+      "name": "Site Header",
+      "kind": "nav",
+      "refersTo": "nav-header",
+      "description": "The deep-panel strip: an amber lamp and the condensed wordmark left, two or three body-size links with 16px icons at stroke 1.75 right.",
+      "html": "<header class=\"ds-nav\"><a class=\"ds-nav-brand\" href=\"#\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" class=\"ds-lamp-cap\"><circle cx=\"8\" cy=\"8\" r=\"7.5\" fill=\"var(--panel-deep, #4f5f70)\"/><circle cx=\"8\" cy=\"8\" r=\"5.5\" fill=\"var(--cap-amber, #e0a526)\"/><circle cx=\"6.2\" cy=\"6\" r=\"1.6\" fill=\"rgba(255,255,255,0.55)\"/></svg><span class=\"ds-nav-wordmark\">Headliner</span></a><nav class=\"ds-nav-links\"><a class=\"ds-nav-link\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2\"/></svg>Suite</a><a class=\"ds-nav-link\" href=\"#\">Sign in</a></nav></header>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.75rem 1rem; background: var(--panel-deep, #4f5f70); color: var(--panel-deep-ink, #f1f4f7); font-family: var(--font-barlow, 'Barlow', system-ui, sans-serif); font-size: 15px; } .ds-nav-brand { display: flex; align-items: center; gap: 0.75rem; color: inherit; text-decoration: none; } .ds-nav-wordmark { font-family: var(--font-barlow-condensed, 'Barlow Condensed', 'Barlow', sans-serif); font-size: 1.125rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; } .ds-nav-links { display: flex; align-items: center; gap: 1.25rem; } .ds-nav-link { display: inline-flex; align-items: center; gap: 0.375rem; color: inherit; text-decoration: none; text-underline-offset: 4px; } .ds-nav-link:hover { text-decoration: underline; } .ds-nav-link:focus-visible { outline: 2px solid var(--focus, #8fb4f0); outline-offset: 2px; }"
+    },
+    {
+      "name": "Stencil",
+      "kind": "custom",
+      "refersTo": "legend-engraved",
+      "description": "What the check cannot establish, engraved straight on the panel: no plate, no border, a legend and dash-led items in ink.",
+      "html": "<section class=\"ds-stencil\"><h2 class=\"ds-legend ds-stencil-legend\">Cannot establish</h2><ul class=\"ds-stencil-list\"><li><span class=\"ds-stencil-dash\" aria-hidden=\"true\"></span>Ticket demand on the night</li><li><span class=\"ds-stencil-dash\" aria-hidden=\"true\"></span>Competing shows the same week</li></ul></section>",
+      "css": ".ds-legend { font-family: var(--font-barlow-condensed, 'Barlow Condensed', 'Barlow', sans-serif); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--legend, #3f4a55); text-shadow: var(--engrave, 0 1px 0 rgba(255,255,255,0.6)); } .ds-stencil { padding: 0.5rem 0; background: var(--panel, #8a97a5); color: var(--ink, #15181b); font-family: var(--font-barlow, 'Barlow', system-ui, sans-serif); font-size: 15px; line-height: 1.5; } .ds-stencil-legend { margin: 0 0 0.5rem; color: var(--legend-ground, #15181b); text-shadow: 0 1px 0 rgba(255,255,255,0.35); } .ds-stencil-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; } .ds-stencil-list li { display: flex; align-items: flex-start; gap: 0.5rem; } .ds-stencil-dash { flex: none; width: 12px; height: 1px; margin-top: 0.5rem; background: var(--legend, #3f4a55); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Console",
+    "overview": "Headliner's interface is one channel strip on a recording console, read at night under a desk lamp. The offer line is the scribble strip across the top; money and cultural affinity each read on a cream-glass VU meter; the verdict is a lamp cap that lights green, amber, red or blue; the fixes sit in a patch bay beneath; the things no signal can establish are stencilled straight onto the panel; the API trace folds away as the back panel. The contract's thesis, that the desk refuses the KPI-tile dashboard, survived the build: there is no tile grid, no sparkline row, no type ladder of big numbers. Hierarchy comes from needle deflection and lit lamps, not from font size. One line of the contract did not land as written: \"money rides the fader\". The build has no fader; money reads on a meter like affinity does, and the refusal is the red zone of that meter plus the red lamp.\n\nThe materials are literal and consistent. The ground is a marine-grey panel with a visible 96px rail grid; modules are raised plates bolted on with four screws; readings sit on cream glass with an inner vignette and one specular sweep; labels are engraved condensed legends, uppercase and tracked, at one size everywhere. There is one body size (15px Barlow, and the root is 15px, so every rem in this file is 15/16 of the Tailwind default) and the condensed face carries every label, reading, heading and control. Colour is reserved for state: the four lamp tones map one-to-one onto the four verdict statuses in `src/lib/enums.ts`, and the single warm action colour is the amber cap of the lamp in the wordmark. Nothing is coloured for decoration.\n\nThe dark scene is defined but dormant: every token is redefined under `:root[data-theme=\"dark\"]`, the panel goes to charcoal and the lamp tones brighten, the glass stays cream and its ink stays dark, because a meter face does not change colour when the house lights come down. Nothing in the build sets `data-theme`; there is no switch, and the OS preference is deliberately not read. Motion is limited to the two things a console actually does: a needle swinging to its value and a lamp warming up. Both stop under `prefers-reduced-motion`.",
+    "keyCharacteristics": [
+      "Marine-grey panel ground with a visible 96px rail grid and screw holes at every module corner.",
+      "Cream meter glass (`glass`) whose ink is always dark, in both scenes.",
+      "One label voice: the engraved condensed legend (0.75rem, 0.12em tracking, uppercase, light text-shadow).",
+      "One body size (15px, Barlow 400); Barlow Condensed 500/600 for everything that is not running text.",
+      "Four lamp tones bound to the four verdict statuses; amber is also the only action colour.",
+      "Depth by material (plate on rail, glass in plate), not by elevation levels.",
+      "Two authored motions: needle settle (700ms) and lamp warm-up (450ms), both respecting reduced motion.",
+      "Every colour pair in `scripts/contrast.mjs` passes AA; lowest measured pair 4.63:1."
+    ],
+    "rules": [
+      {
+        "name": "The Four Lamps Rule",
+        "body": "The lamp tones are bound to the verdict statuses in `STATUS_TONE` (`src/lib/enums.ts`): cleared is green, fix_required is amber, refused is red, abstained is blue. No other mapping exists, no fifth tone is introduced, and the status is always written in text beside the lamp.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Amber Rule",
+        "body": "`action` is the primary button, the header lamp, and nothing else. One primary action per screen; secondary actions are plates or underlined links.",
+        "section": "colors"
+      },
+      {
+        "name": "The Ground Is Ink Rule",
+        "body": "Text placed directly on the bare panel is `ink`. Legend grey (3.04:1) and the lamp tones (1.99 to 2.26:1) only pass AA on a plate or on glass. The build's `.on-ground` class exists to enforce this for `.legend`; apply it to every element that sits on the panel outside a plate.",
+        "section": "colors"
+      },
+      {
+        "name": "The Cream Glass Rule",
+        "body": "Glass is cream and its ink is dark in both scenes. Readings, tick labels and scale arcs on a meter use `#15181b` and `legend-on-glass`, never `ink` or `legend`, which invert in the dark scene.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Body Size Rule",
+        "body": "Running text is 15px. No `text-sm`, `text-xs` or `text-xl` exists anywhere in `src`; de-emphasis is done with `legend` colour, not a smaller size. Secondary rows in the money table are body size in `legend` grey.",
+        "section": "typography"
+      },
+      {
+        "name": "The Condensed Numbers Rule",
+        "body": "Any figure that is a reading, a row value, a latency, a count or a version is set in Barlow Condensed with tabular numerals. Barlow (body) never carries a standalone number.",
+        "section": "typography"
+      },
+      {
+        "name": "The Same Screws Rule",
+        "body": "A module either has all four screws or none: `Screws` at 0.5rem from each corner on every `Plate`, every `Meter`, every `PatchPoint`, the offer form, the prose article and the suite table. The back panel (`details.plate`) and the OAuth plate buttons have none; a module that gets screws gets four, never two.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Flat Button Rule",
+        "body": "Buttons do not gain shadow on hover; the desk's primary button lifts 1px (`translateY(-1px)`, 150ms) and settles on press. The auth and suite primaries and all plate buttons do not move.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do put every module on a plate or on glass, with four screws at 0.5rem from the corners, and let the rail grid show between modules.",
+      "Do convey state with a lamp *and* the word beside it; `VerdictLamp` takes the tone from `STATUS_TONE` and never from a local mapping.",
+      "Do set every figure in Barlow Condensed with tabular numerals, and keep readings on cream glass in `#15181b` / `legend-on-glass` so they survive the dark scene.",
+      "Do use `.on-ground` on anything that sits on the bare panel outside a plate, so its legends and text read in ink (5.98:1).",
+      "Do keep one primary amber action per screen; secondary actions are plate buttons or underlined links.",
+      "Do mute a meter (no needle, dimmed scale, a printed \"no signal\") when the evidence is missing; a muted channel is the abstention, and the blue lamp says so.",
+      "Do keep motion to the needle settle (700ms `--ease-out`) and the lamp warm-up (450ms), and let `prefers-reduced-motion` turn both off.",
+      "Do measure any new colour pair with `node scripts/contrast.mjs` before it ships, and add the pair to the script; the dark placeholder pair (4.36:1) is the one known failure to fix before a theme switch exists."
+    ],
+    "donts": [
+      "Don't build a KPI tile, a stat card or a big-number ladder; a number that matters is a meter reading or a row, and it is the same size as the headline, never larger.",
+      "Don't add a type size for emphasis; running text is 15px and de-emphasis is `legend` grey, not `text-sm`.",
+      "Don't put `legend` grey, `lamp-blue` or any lamp tone as *text* on the bare panel; those pairs measure 1.99 to 3.04:1 there. Plate or glass first.",
+      "Don't invert the glass in the dark scene or colour its ink with `ink`; the glass is cream and its ink is dark under any lighting.",
+      "Don't introduce a fifth lamp tone, a gradient fill on a button, a pill radius, a hover shadow, a dashed border or a diagonal clip; the console's only gradients are the glass vignette, the sweep, and the screw and lamp highlights.",
+      "Don't use a lucide icon at a stroke other than 1.75 (navigation), 2 (disclosure chevron, the library default) or 2.25 (button leading icon), and don't draw a meter or a lamp with an icon; those are authored SVG.",
+      "Don't set colour on a `.legend` inside `.on-ground` with a Tailwind utility; the unlayered `.on-ground .legend` rule wins and the utility silently does nothing.",
+      "Don't record a pixel value from the Tailwind default scale; the root is 15px, so `h-12` is 45px and `p-5` is 18.75px. Write the rem."
+    ]
+  }
+}
