@@ -197,7 +197,8 @@
     "failed": "Failed",
     "notRun": "Not run",
     "checked": "{{done}} of {{total}} checked",
-    "next": "Next move"
+    "next": "Next move",
+    "nextAbstain": "Check the act's name"
   },
   "story": {
     "title": "How a check works",

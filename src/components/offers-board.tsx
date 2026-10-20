@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -74,7 +74,10 @@ export function OffersBoard({ rows, note }: { rows: Row[]; note?: string }) {
                         breakEvenPct: v.deal.breakEvenCapacityPct,
                         affinity: v.evidence.localAffinity?.label ?? null,
                         headline: v.headline,
-                        next: nextMove(v.fixes),
+                        next:
+                          v.status === "abstained"
+                            ? t("board.nextAbstain")
+                            : nextMove(v.fixes),
                       }
                     : x,
                 ),
@@ -105,6 +108,16 @@ export function OffersBoard({ rows, note }: { rows: Row[]; note?: string }) {
     );
     setBusy(false);
   }
+
+  // /board?run=all starts the run on load: a link that shows every offer checked live, in one click.
+  const autoRan = useRef(false);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount
+  useEffect(() => {
+    if (autoRan.current) return;
+    autoRan.current = true;
+    if (new URLSearchParams(window.location.search).get("run") === "all")
+      void runAll();
+  }, []);
 
   const done = states.filter((s) => s.phase === "done") as Extract<
     RowState,
