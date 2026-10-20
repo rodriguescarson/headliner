@@ -49,10 +49,12 @@ export default async function SharedPage({ params }: PageProps<"/s/[id]">) {
                   : t("app.sampleBanner")}
               </Dot>
               <span>
-                ·{" "}
-                {new Date(shared.createdAt).toLocaleString("en-US", {
-                  dateStyle: "medium",
-                  timeStyle: "short",
+                {t("share.checkedAt", {
+                  date: new Date(shared.createdAt).toLocaleString("en-US", {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                    timeZone: "UTC",
+                  }),
                 })}
               </span>
             </p>

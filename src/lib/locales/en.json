@@ -179,7 +179,8 @@
     "make": "Share this result",
     "making": "Making the link…",
     "copy": "Copy link",
-    "copied": "Copied"
+    "copied": "Copied",
+    "checkedAt": "Checked {{date}} UTC"
   },
   "board": {
     "title": "Offers",
