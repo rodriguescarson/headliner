@@ -41,20 +41,81 @@ export type BaselineComparison = {
 
 export type BaselineGenerator = (offer: Offer) => Promise<BaselineGuess>;
 
-export function baselineModel(): string | null {
-  if (!process.env.AI_GATEWAY_API_KEY) return null;
-  return process.env.HEADLINER_BASELINE_MODEL ?? "anthropic/claude-sonnet-5.5";
+type Provider = "gateway" | "openrouter";
+
+/** Which model route is configured: Vercel AI Gateway first, then OpenRouter. Null disables the control. */
+export function baselineRoute(): { provider: Provider; model: string } | null {
+  const model =
+    process.env.HEADLINER_BASELINE_MODEL ?? "anthropic/claude-sonnet-5.5";
+  if (process.env.AI_GATEWAY_API_KEY) return { provider: "gateway", model };
+  if (process.env.OPENROUTER_API_KEY) return { provider: "openrouter", model };
+  return null;
 }
 
-export function makeGenerator(model: string): BaselineGenerator {
+export function baselineModel(): string | null {
+  return baselineRoute()?.model ?? null;
+}
+
+const SYSTEM =
+  "You are a booking assistant with no access to any data source. Answer from general knowledge only. Name real acts and brands if you know them; if you do not know the local scene, say so in reasoning and return empty lists rather than inventing names.";
+const promptFor = (offer: Offer) =>
+  `Act: ${offer.artist}\nCity: ${offer.city}\nVenue capacity: ${offer.capacity}\n\nRate this act's local affinity in this city (low, mid, strong), list up to five local opening acts that share its audience, and up to five brands that could sponsor the show.`;
+
+/**
+ * OpenRouter speaks the OpenAI chat API. Plain fetch with a JSON schema response, validated by the same zod
+ * schema as the gateway route, so both routes produce identical guesses for the comparison.
+ */
+function openRouterGenerator(model: string): BaselineGenerator {
+  return async (offer) => {
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+        "X-Title": "Headliner",
+      },
+      body: JSON.stringify({
+        model,
+        temperature: 0,
+        messages: [
+          { role: "system", content: SYSTEM },
+          {
+            role: "user",
+            content: `${promptFor(offer)}\n\nReply with JSON only: {"localAffinity": "low"|"mid"|"strong", "openers": string[], "sponsors": string[], "reasoning": string (under 400 characters)}.`,
+          },
+        ],
+        response_format: { type: "json_object" },
+      }),
+    });
+    const body = (await res.json()) as {
+      choices?: { message?: { content?: string } }[];
+      error?: { message?: string };
+    };
+    if (!res.ok)
+      throw new Error(body.error?.message ?? `OpenRouter HTTP ${res.status}`);
+    const text = body.choices?.[0]?.message?.content ?? "";
+    const json = JSON.parse(text.replace(/^```(?:json)?\s*|\s*```$/g, ""));
+    return BaselineSchema.parse({
+      ...json,
+      openers: (json.openers ?? []).slice(0, 5),
+      sponsors: (json.sponsors ?? []).slice(0, 5),
+      reasoning: String(json.reasoning ?? "").slice(0, 400),
+    });
+  };
+}
+
+export function makeGenerator(
+  model: string,
+  provider: Provider = "gateway",
+): BaselineGenerator {
+  if (provider === "openrouter") return openRouterGenerator(model);
   return async (offer) => {
     const { output } = await generateText({
       model,
       temperature: 0,
       output: Output.object({ schema: BaselineSchema }),
-      system:
-        "You are a booking assistant with no access to any data source. Answer from general knowledge only. Name real acts and brands if you know them; if you do not know the local scene, say so in reasoning and return empty lists rather than inventing names.",
-      prompt: `Act: ${offer.artist}\nCity: ${offer.city}\nVenue capacity: ${offer.capacity}\n\nRate this act's local affinity in this city (low, mid, strong), list up to five local opening acts that share its audience, and up to five brands that could sponsor the show.`,
+      system: SYSTEM,
+      prompt: promptFor(offer),
     });
     return output;
   };
@@ -112,15 +173,18 @@ export async function runBaseline(
   evidence: CulturalEvidence,
   generator?: BaselineGenerator,
 ): Promise<BaselineComparison> {
-  const model = baselineModel();
-  if (!generator && !model) {
+  const route = baselineRoute();
+  const model = route ? `${route.model} via ${route.provider}` : null;
+  if (!generator && !route) {
     return {
       enabled: false,
-      note: "Baseline disabled: no AI_GATEWAY_API_KEY configured.",
+      note: "Baseline disabled: no AI_GATEWAY_API_KEY or OPENROUTER_API_KEY configured.",
     };
   }
   try {
-    const guess = await (generator ?? makeGenerator(model as string))(offer);
+    const guess = await (
+      generator ?? makeGenerator(route?.model as string, route?.provider)
+    )(offer);
     return {
       enabled: true,
       model: model ?? "test",
