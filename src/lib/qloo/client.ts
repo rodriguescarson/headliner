@@ -3,7 +3,7 @@
  * - GET only (Qloo rejects JSON bodies on these routes).
  * - The key never leaves the server.
  * - Every call is recorded in a trace so the UI and the MCP view can show exactly what was asked.
- * - Parameter names follow docs.qloo.com; the ones marked UNVERIFIED are confirmed by scripts/verify-qloo.ts.
+ * - Every parameter here was checked against the live hackathon API on 2026-10-19 (scripts/verify-qloo.ts).
  */
 import { type CacheStore, cacheKey, defaultCache } from "./cache";
 
@@ -277,7 +277,6 @@ export class QlooClient {
     });
   }
 
-  /** Time-series popularity. Path and params UNVERIFIED on the hackathon tier. */
   /** Trending needs a date window (verified 2026-10-19). Probe-only: it is not part of the verdict. */
   trending(entityId: string, type: string = ENTITY.artist, days = 30) {
     const end = new Date();
