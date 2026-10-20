@@ -25,7 +25,7 @@ Deadline: Oct 30, 2026, 11:45 pm ET (Oct 31, 9:15 am IST). The brief says submit
 
 ## Before submitting
 
-- [ ] Add `AI_GATEWAY_API_KEY` to `/opt/headliner/.env` and run `pnpm offers --baseline` locally, so the Without-Qloo numbers can replace the "not verified" line in DEVPOST.md.
+- [x] Without-Qloo control run on all twelve offers (Anthropic key on the server and locally); numbers are in DEVPOST.md.
 - [ ] Sign in with Google on the live site once and open Settings, to confirm the signed-in flow.
 - [ ] Run https://headliner.carsonrodrigues.com/board?run=all once on submission day so the server cache is warm for judges.
 

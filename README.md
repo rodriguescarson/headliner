@@ -36,7 +36,7 @@ Three things are kept strictly apart:
 
 ## Why Qloo
 
-Without Qloo the second column does not exist. A language model can tell you Austin likes live music; it cannot tell you whether *this* act has affinity in *this* metro, which local acts share its audience, or which brands its fans already buy. The "Without Qloo" control (F6 in the feature register) runs the same offer through a model alone and measures the overlap; it needs `AI_GATEWAY_API_KEY`.
+Without Qloo the second column does not exist. A language model can tell you Austin likes live music; it cannot tell you whether *this* act has affinity in *this* metro, which local acts share its audience, or which brands its fans already buy. The "Without Qloo" control runs the same offer through a model alone and measures the overlap. On the twelve pre-seeded offers it was 1% on openers and 1% on sponsors, the model read no real market as weak where Qloo read four, and it named sponsors for acts that do not exist (details in DEVPOST.md). It runs with `ANTHROPIC_API_KEY`, `AI_GATEWAY_API_KEY` or `OPENROUTER_API_KEY`.
 
 ## Running it
 

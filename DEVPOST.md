@@ -50,6 +50,20 @@ When the signal is not there, it says so. An act Qloo cannot match exactly, or a
 
 A spreadsheet can do part one. Part two does not exist without a cultural graph: a language model can say Denver likes live music, but it cannot say whether this act over-indexes in Denver, which Denver acts share its audience, or which brands its fans buy there.
 
+## Would it work without Qloo? We measured it.
+
+Every check can also send the same offer to a language model alone, with no data source (Claude Opus 5.5, medium effort, told to say so rather than invent), and compare what comes back. We ran it on all twelve offers (`pnpm offers --baseline`). Across the ten real acts:
+
+| | Model alone | Qloo |
+|---|---|---|
+| Markets read as low | 0 of 10 | 4 of 10 |
+| Agreement on the market read | 2 of 10 | |
+| Sponsor lists containing a drinks brand | 10 of 10 | 1 of 10 |
+| Acts where no opener was named | 3 of 10 | 0 of 10 |
+| Names in common | one opener (Liv.e, for Sampha) and one sponsor (Coca-Cola, for Cedric) | |
+
+Mean overlap was 1% on openers and 1% on sponsors. These figures come from one full run on October 21; the model's individual names change from run to run, while Qloo's come from its graph and repeat. That measures difference, not who is right, but the difference has a shape. The model answers from the city: local breweries, vodka and radio stations, for a hardcore band and a soul singer alike, and never calls a market weak. Qloo answers from the audience: Patagonia and The North Face for Khruangbin's Denver crowd, Glossier and Reformation for Japanese Breakfast, comedians Qloo reports share Nate Bargatze's audience. And for the two invented acts the model still produced sponsor shortlists, while Qloo, correctly, had nothing to say.
+
 ## Key day: what the real API taught us
 
 The Qloo key arrived two days into the build. The first probe run against 20 acts (15 real, 5 invented to test abstention) in five cities was a useful failure:
@@ -116,11 +130,11 @@ Real acts and cities; the deal terms are illustrative shapes, not claims about a
 ## What we did not verify
 
 - What exactly `affinity_rank` ranks against. Qloo's docs do not say; we use it because it varies by city in ways that match known markets, and the calibration table above is the evidence.
-- The Without-Qloo control (the same offer through a model alone, with measured overlap) is built and tested but needs a model key on the server; numbers from it are not quoted here until it has run on all twelve offers.
+- Which side is right on any single act. The control shows the model and Qloo answer different questions; it does not prove Qloo's picks sell tickets.
 - Whether any act would accept a counter. The counter is arithmetic on the promoter's own numbers.
 
 ## Built with
 
-Next.js 16, React 19, TypeScript, shadcn/ui on Base UI, Tailwind CSS 4, Geist, GSAP and Lenis (off under reduced motion), self-hosted Supabase (Auth with Google and email, Postgres with row-level security), Resend, Docker behind Caddy on a VPS, Vitest, Biome, the Qloo Insights API, and the Model Context Protocol SDK.
+Next.js 16, React 19, TypeScript, the Anthropic API (Claude Opus 5.5, for the Without-Qloo control only), shadcn/ui on Base UI, Tailwind CSS 4, Geist, GSAP and Lenis (off under reduced motion), self-hosted Supabase (Auth with Google and email, Postgres with row-level security), Resend, Docker behind Caddy on a VPS, Vitest, Biome, the Qloo Insights API, and the Model Context Protocol SDK.
 
 Interface structure was benchmarked against shipped products (Gemini and Copilot for the input, Wise and Grammarly for the verdict, Mercury and Polar for the board). No borrowed visuals.
