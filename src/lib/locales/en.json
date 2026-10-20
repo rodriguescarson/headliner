@@ -202,7 +202,7 @@
   },
   "story": {
     "title": "How a check works",
-    "intro": "Three columns, kept strictly apart. A promoter can trust each one for what it is.",
+    "intro": "Three parts, kept strictly apart, so a promoter can trust each one for what it is.",
     "money": {
       "title": "Economics are arithmetic",
       "body": "Break-even, net per ticket and net at sellout come from arithmetic against a versioned rulebook. No model touches a dollar figure, and the rulebook version is stamped on every verdict."
@@ -217,7 +217,7 @@
     },
     "scenario": {
       "title": "Change one thing",
-      "body": "Swap the market, put the opener on the bill, apply a sponsor offset. The same check runs again and the two verdicts sit side by side with exactly what moved and why."
+      "body": "Counter the guarantee, swap the market, put the opener on the bill, apply a sponsor offset. The same check runs again and the two verdicts sit side by side with exactly what moved and why."
     }
   },
   "settings": {
