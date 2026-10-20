@@ -6,7 +6,10 @@ An independent promoter looks at an offer sheet at 10 PM: an act, a city, a venu
 
 Built for the [Qloo Agentic Hackathon](https://qloo.devpost.com) (Sep 30 – Oct 30, 2026). MIT licensed.
 
-**Live:** https://headliner.carsonrodrigues.com (sample mode until the Qloo key lands).
+**Live:** https://headliner.carsonrodrigues.com, running on the Qloo API. No sign-in needed.
+**All twelve offers checked live in one click:** https://headliner.carsonrodrigues.com/board?run=all
+
+![A live Headliner verdict: Khruangbin in Denver, fix required, with a counter-guarantee, Qloo sponsor fits and openers](docs/devpost/02-verdict-khruangbin.png)
 
 ## What it does
 

@@ -108,7 +108,7 @@ Real acts and cities; the deal terms are illustrative shapes, not claims about a
 ## For the judges
 
 - **Check any act**: the desk runs live against `hackathon.api.qloo.com`.
-- **/board**: all twelve offers on one table with a "next move" column; run them and watch each row settle.
+- **[/board?run=all](https://headliner.carsonrodrigues.com/board?run=all)**: all twelve offers checked live on one table, each with its next move.
 - **Share**: any verdict becomes a link with a preview card showing the verdict, break-even and sellout net.
 - **/suite**: every endpoint fired once, with status and latency.
 - **MCP**: a venue booker's or sponsor's agent can call `check_offer`, read the `rulebook` and run the `endpoint_suite`. Same evidence, read-only.
