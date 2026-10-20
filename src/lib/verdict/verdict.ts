@@ -97,28 +97,36 @@ function counterFix(input: DealInput): Fix | null {
   };
 }
 
-/** Swap the market: the nearby metro's affinity against this one, or an honest note that none was compared. */
+/**
+ * Swap the market, but only toward a nearby metro that reads better on the same measure. Recommending a weaker
+ * room would be worse than saying nothing.
+ */
 function marketFix(
   evidence: CulturalEvidence,
   affinity: CulturalEvidence["localAffinity"],
-): Fix {
+): Fix | null {
   const alt = evidence.altMarket;
   const altAff = alt?.localAffinity;
-  let detail =
-    "No routing alternative is configured for this city, so no comparison was run.";
-  if (alt && altAff) {
-    detail = `${alt.city} reads ${altAff.label} (mean affinity rank ${altAff.mean} across ${altAff.cells} cells) against ${affinity?.mean} here. Same money, different room.`;
-  } else if (alt) {
-    detail = `${alt.city} was checked but its heatmap is too sparse to compare; no claim is made about it.`;
-  }
+  if (!alt || !altAff || !affinity || altAff.mean <= affinity.mean) return null;
   return {
     kind: "market",
     title: "Swap the market",
-    detail,
-    altCity: alt?.city,
-    altAffinity: altAff ?? undefined,
-    sharedTags: alt?.sharedTags,
+    detail: `${alt.city} reads ${altAff.label} (mean affinity rank ${altAff.mean} across ${altAff.cells} cells) against ${affinity.mean} here. Same money, different room.`,
+    altCity: alt.city,
+    altAffinity: altAff,
+    sharedTags: alt.sharedTags,
   };
+}
+
+/** Why no market swap is offered, stated as a reason so the promoter sees the comparison was made. */
+function noBetterMarket(evidence: CulturalEvidence): string {
+  const alt = evidence.altMarket;
+  const here = evidence.localAffinity?.mean;
+  if (!alt)
+    return "No routing alternative is configured for this city, so no market swap was compared.";
+  if (!alt.localAffinity)
+    return `${alt.city} was checked but its heatmap is too sparse or unavailable; no claim is made about it.`;
+  return `${alt.city} reads no better (mean affinity rank ${alt.localAffinity.mean} against ${here} here), so a market swap is not offered.`;
 }
 
 export function decide(offer: Offer, evidence: CulturalEvidence): Verdict {
@@ -140,8 +148,11 @@ export function decide(offer: Offer, evidence: CulturalEvidence): Verdict {
     for (const v of deal.violations) reasons.push(v.detail);
     const counter = counterFix(input);
     if (counter) fixes.push(counter);
-    if (evidence.localAffinity?.label === "low")
-      fixes.push(marketFix(evidence, evidence.localAffinity));
+    if (evidence.localAffinity?.label === "low") {
+      const m = marketFix(evidence, evidence.localAffinity);
+      if (m) fixes.push(m);
+      else reasons.push(noBetterMarket(evidence));
+    }
     return {
       ...base,
       status: "refused",
@@ -219,7 +230,11 @@ export function decide(offer: Offer, evidence: CulturalEvidence): Verdict {
       dealAtHigh: withSponsorOffset(input, a.high),
     });
   }
-  if (weakMarket) fixes.push(marketFix(evidence, affinity));
+  if (weakMarket) {
+    const m = marketFix(evidence, affinity);
+    if (m) fixes.push(m);
+    else reasons.push(noBetterMarket(evidence));
+  }
 
   if (fixes.length > 0) {
     return {

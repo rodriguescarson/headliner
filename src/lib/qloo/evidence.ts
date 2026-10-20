@@ -155,9 +155,12 @@ const SHOWN_TAG_FAMILIES = [
   "keyword",
   "occupation",
 ];
+/** People (comics, hosts) also carry tags from their books and shows; genre tags mislead there. */
+const PERSON_TAG_FAMILIES = ["style", "category", "keyword", "occupation"];
 function tagNames(
   res: { ok: boolean; data?: unknown },
   limit: number,
+  families: string[] = SHOWN_TAG_FAMILIES,
 ): string[] {
   const t = res.ok ? TagsResponse.safeParse(res.data) : undefined;
   if (!t?.success) return [];
@@ -165,7 +168,7 @@ function tagNames(
   const out: string[] = [];
   for (const tag of t.data.results.tags ?? []) {
     const family = (tag.subtype ?? "").split(":")[2] ?? "";
-    if (!SHOWN_TAG_FAMILIES.includes(family)) continue;
+    if (!families.includes(family)) continue;
     const name = tag.name.trim().replace(/\s+/g, " ");
     const key = name.toLowerCase();
     if (!name || seen.has(key)) continue;
@@ -431,7 +434,11 @@ export async function gatherEvidence(
     ev.openerSharedTags = tagNames(cmp, 6);
   }
 
-  ev.tasteTags = tagNames(tags, 12);
+  ev.tasteTags = tagNames(
+    tags,
+    12,
+    openerType.endsWith("person") ? PERSON_TAG_FAMILIES : SHOWN_TAG_FAMILIES,
+  );
 
   return ev;
 }
