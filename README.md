@@ -83,6 +83,16 @@ Every fix carries a one-click scenario: swap the market to the compared metro, p
 - **Queued checks**: `POST /api/jobs` returns a job id at once; the desk polls `GET /api/jobs/:id` and the id rides in the URL hash so a refresh resumes. The in-memory worker (`src/lib/jobs/store.ts`) is the development implementation behind a store interface.
 - **Pages**: `/terms`, `/privacy`, `/cookies`, `/support` (FAQ with schema.org), `/contact` (Resend when `RESEND_API_KEY` and `CONTACT_FROM` are set), `/llms.txt`, `/robots.txt`, `/sitemap.xml`, `/.well-known/security.txt`.
 
+## Key-day scripts
+
+With `QLOO_API_KEY` in `.env`:
+
+- `pnpm probe` checks every endpoint against 20 acts (15 real, 5 invented) and prints resolution and coverage counts.
+- `pnpm calibrate` measures mean affinity rank for 15 acts in 5 cities; the rulebook's cut-offs are its tertiles.
+- `pnpm offers [--baseline]` runs all twelve pre-seeded offers through the site's own check and prints the tally.
+
+Raw responses go to `.cache/` (git-ignored). DEVPOST.md records what the first live run got wrong and how each finding was fixed.
+
 ## Design
 
 shadcn/ui (style `base-nova`, Base UI primitives, neutral palette) with Geist Sans for interface text and Geist Mono for every number, id and parameter. Components under `src/components/ui/` are owned source added with the shadcn CLI; the product components compose them. Colour is reserved for state: four status tones (`success`, `warning`, `destructive`, `info`) map one-to-one onto the four verdict statuses in `src/lib/enums.ts` and are always paired with a text label. Tokens live in `src/app/globals.css`; the `.dark` class and the OS preference both switch the scene, and the account settings page overrides it. Contrast is measured with `node scripts/contrast.mjs`.
