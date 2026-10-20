@@ -14,7 +14,7 @@ TAG="$(git rev-parse --short HEAD)$(git diff --quiet || echo -dirty)"
 
 # One multiplexed SSH connection for the whole deploy. The server rate-limits bursts of new SSH connections,
 # and a deploy used to open about eight; a refused connection then looked like a missing stack.
-CTL="${TMPDIR:-/tmp}/headliner-deploy-%r@%h:%p"
+CTL="/tmp/hl-%C"  # short: macOS caps Unix socket paths near 104 characters
 SSH_OPTS=(-o ControlMaster=auto -o "ControlPath=$CTL" -o ControlPersist=120 -o ConnectTimeout=20)
 rsh() { ssh "${SSH_OPTS[@]}" "$SSH_HOST" "$@"; }
 for attempt in 1 2 3 4 5 6; do
