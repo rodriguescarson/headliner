@@ -61,7 +61,7 @@
     "netAt": "Net at {{pct}} sold",
     "affinity": "Local affinity",
     "affinityScale": ["low", "mid", "strong"],
-    "cells": "{{count}} cells",
+    "cells": "Mean Qloo affinity rank across {{count}} map cells (0 to 1)",
     "noSignal": "No signal",
     "entity": "Resolved act",
     "openers": "Local openers",
@@ -74,7 +74,11 @@
     "sharedTags": "Shared taste tags",
     "warnAbove": "warn above {{warn}}, refuse above {{refuse}}",
     "netTitle": "Net by tickets sold",
-    "noSignalTitle": "No signal for this city"
+    "noSignalTitle": "No signal for this city",
+    "noSkew": "no age band over-indexes",
+    "offered": "Guarantee as offered",
+    "counter": "Counter at",
+    "breakEvenAtCounter": "Break-even at the counter"
   },
   "cannot": {
     "competing_shows_same_night": "Competing shows on the same night",
@@ -166,7 +170,8 @@
     "sponsor": "Apply a {{amount}} sponsor offset",
     "breakEven": "Break-even",
     "affinity": "Local affinity",
-    "verdict": "Verdict"
+    "verdict": "Verdict",
+    "guarantee": "Counter at {{amount}}"
   },
   "share": {
     "title": "Shared result",
@@ -191,7 +196,8 @@
     "state": "State",
     "failed": "Failed",
     "notRun": "Not run",
-    "checked": "{{done}} of {{total}} checked"
+    "checked": "{{done}} of {{total}} checked",
+    "next": "Next move"
   },
   "story": {
     "title": "How a check works",

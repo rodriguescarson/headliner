@@ -12,8 +12,9 @@
     "test": "vitest run",
     "prepare": "husky",
     "mcp": "tsx src/mcp/server.ts",
-    "probe": "tsx scripts/verify-qloo.ts",
-    "offers": "tsx scripts/run-offers.ts"
+    "probe": "tsx --env-file-if-exists=.env scripts/verify-qloo.ts",
+    "offers": "tsx --env-file-if-exists=.env scripts/run-offers.ts",
+    "calibrate": "tsx --env-file-if-exists=.env scripts/calibrate-affinity.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

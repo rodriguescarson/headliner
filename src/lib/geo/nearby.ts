@@ -22,6 +22,7 @@ const NEARBY: Record<string, string> = {
   "boston, ma": "Providence, RI",
   "minneapolis, mn": "Madison, WI",
   "phoenix, az": "Tucson, AZ",
+  "tucson, az": "Phoenix, AZ",
   "detroit, mi": "Cleveland, OH",
   "cleveland, oh": "Pittsburgh, PA",
   "miami, fl": "Orlando, FL",

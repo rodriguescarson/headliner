@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { computeDeal, withSponsorOffset } from "./deal-math";
+import { rules } from "@/lib/rules";
+import { computeDeal, counterGuarantee, withSponsorOffset } from "./deal-math";
 
 const base = {
   capacity: 300,
@@ -72,5 +73,43 @@ describe("computeDeal", () => {
     expect(computeDeal(base).rulesVersion).toMatch(
       /^headliner-rules@\d+\.\d+\.\d+$/,
     );
+  });
+});
+
+describe("counterGuarantee", () => {
+  const offer = {
+    capacity: 1000,
+    ticketPrice: 40,
+    guarantee: 30_000,
+    venueCost: 5_000,
+  };
+  it("finds the largest $250 step that brings break-even inside the warning line", () => {
+    const c = counterGuarantee(offer);
+    expect(c).not.toBeNull();
+    expect(c?.guarantee ? c.guarantee % 250 : 1).toBe(0);
+    expect(c?.deal.breakEvenCapacityPct).toBeLessThanOrEqual(
+      rules.money.warnAboveBreakEvenPct,
+    );
+    // one more step up would cross the line
+    const over = computeDeal({
+      ...offer,
+      guarantee: (c?.guarantee ?? 0) + 250,
+    });
+    expect(over.breakEvenCapacityPct).toBeGreaterThan(
+      rules.money.warnAboveBreakEvenPct - 0.002,
+    );
+  });
+  it("offers no counter when the deal already clears the line", () => {
+    expect(counterGuarantee({ ...offer, guarantee: 5_000 })).toBeNull();
+  });
+  it("offers no counter when no positive guarantee can fix the room", () => {
+    expect(
+      counterGuarantee({
+        capacity: 100,
+        ticketPrice: 10,
+        guarantee: 5_000,
+        venueCost: 2_000,
+      }),
+    ).toBeNull();
   });
 });

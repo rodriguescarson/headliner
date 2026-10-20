@@ -1,7 +1,7 @@
 {
   "id": "headliner-rules",
-  "version": "1.0.0",
-  "updated": "2026-10-17",
+  "version": "1.1.0",
+  "updated": "2026-10-19",
   "description": "Deterministic rulebook for the Headliner deal check. Every threshold that touches money lives here, never in a prompt.",
   "money": {
     "currency": "USD",
@@ -14,10 +14,12 @@
   "evidence": {
     "minHeatmapCells": 5,
     "minSearchConfidence": 0.5,
-    "lowAffinityBelow": 0.3,
-    "strongAffinityAbove": 0.6,
+    "lowAffinityBelow": 0.61,
+    "strongAffinityAbove": 0.88,
     "minOpenerCandidates": 1,
-    "minSponsorCandidates": 1
+    "minSponsorCandidates": 1,
+    "affinityMetric": "Mean Qloo heatmap affinity_rank across the city's geohash cells (0 to 1). Raw affinity is rescaled per response (mean 0.500 in every city) and is not used.",
+    "affinityCalibration": "Cut-offs are the tertiles of 75 act-city pairs (15 real acts x Austin, Chicago, Atlanta, Denver, Los Angeles) measured 2026-10-19 with pnpm calibrate: p33 0.614, median 0.756, p67 0.883. Stand-up comics scored 0.88-0.98 in every city, so for them the city comparison carries more information than the label."
   },
   "assumptions": {
     "sponsorActivationUsd": {
@@ -32,5 +34,17 @@
     "actual_ticket_sales",
     "venue_hold_status",
     "artist_availability"
+  ],
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-10-19",
+      "change": "Affinity read from affinity_rank instead of the per-response rescaled affinity; low/strong cut-offs recalibrated from 0.30/0.60 to measured tertiles 0.61/0.88."
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-10-17",
+      "change": "First rulebook, written before the Qloo key arrived; affinity cut-offs were placeholders."
+    }
   ]
 }
