@@ -4,6 +4,8 @@
  * eligibility test ("if your submission would work the same without Qloo, you're building the wrong thing")
  * turned into a number. The model is only ever asked for names and a label; it never touches money.
  */
+import Anthropic from "@anthropic-ai/sdk";
+import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { generateText, Output } from "ai";
 import { z } from "zod";
 import type { Offer } from "@/lib/deal/offer-parser";
@@ -41,13 +43,18 @@ export type BaselineComparison = {
 
 export type BaselineGenerator = (offer: Offer) => Promise<BaselineGuess>;
 
-type Provider = "gateway" | "openrouter";
+type Provider = "gateway" | "anthropic" | "openrouter";
 
 /** Which model route is configured: Vercel AI Gateway first, then OpenRouter. Null disables the control. */
 export function baselineRoute(): { provider: Provider; model: string } | null {
   const model =
     process.env.HEADLINER_BASELINE_MODEL ?? "anthropic/claude-sonnet-5.5";
   if (process.env.AI_GATEWAY_API_KEY) return { provider: "gateway", model };
+  if (process.env.ANTHROPIC_API_KEY)
+    return {
+      provider: "anthropic",
+      model: process.env.HEADLINER_ANTHROPIC_MODEL ?? "claude-opus-5-5",
+    };
   if (process.env.OPENROUTER_API_KEY) return { provider: "openrouter", model };
   return null;
 }
@@ -60,6 +67,46 @@ const SYSTEM =
   "You are a booking assistant with no access to any data source. Answer from general knowledge only. Name real acts and brands if you know them; if you do not know the local scene, say so in reasoning and return empty lists rather than inventing names.";
 const promptFor = (offer: Offer) =>
   `Act: ${offer.artist}\nCity: ${offer.city}\nVenue capacity: ${offer.capacity}\n\nRate this act's local affinity in this city (low, mid, strong), list up to five local opening acts that share its audience, and up to five brands that could sponsor the show.`;
+
+/** Request shape for structured outputs: no length limits (those are enforced after parsing). */
+const BaselineRequestSchema = z.object({
+  localAffinity: z.enum(["low", "mid", "strong"]),
+  openers: z.array(z.string()),
+  sponsors: z.array(z.string()),
+  reasoning: z.string(),
+});
+
+/**
+ * Anthropic route: the official SDK with structured outputs, then the same BaselineSchema as the other routes.
+ * Medium effort is set explicitly; server-side fallback answers a policy decline instead of failing the control.
+ */
+function anthropicGenerator(model: string): BaselineGenerator {
+  const client = new Anthropic();
+  return async (offer) => {
+    const response = await client.beta.messages.parse({
+      model,
+      max_tokens: 16000,
+      betas: ["server-side-fallback-2026-07-01"],
+      fallbacks: "default",
+      output_config: {
+        effort: "medium",
+        format: zodOutputFormat(BaselineRequestSchema),
+      },
+      system: SYSTEM,
+      messages: [{ role: "user", content: promptFor(offer) }],
+    });
+    if (response.stop_reason === "refusal")
+      throw new Error("The model declined the baseline request.");
+    const out = response.parsed_output;
+    if (!out) throw new Error("The model returned no parseable output.");
+    return BaselineSchema.parse({
+      ...out,
+      openers: out.openers.slice(0, 5),
+      sponsors: out.sponsors.slice(0, 5),
+      reasoning: out.reasoning.slice(0, 400),
+    });
+  };
+}
 
 /**
  * OpenRouter speaks the OpenAI chat API. Plain fetch with a JSON schema response, validated by the same zod
@@ -108,6 +155,7 @@ export function makeGenerator(
   model: string,
   provider: Provider = "gateway",
 ): BaselineGenerator {
+  if (provider === "anthropic") return anthropicGenerator(model);
   if (provider === "openrouter") return openRouterGenerator(model);
   return async (offer) => {
     const { output } = await generateText({
@@ -178,7 +226,7 @@ export async function runBaseline(
   if (!generator && !route) {
     return {
       enabled: false,
-      note: "Baseline disabled: no AI_GATEWAY_API_KEY or OPENROUTER_API_KEY configured.",
+      note: "Baseline disabled: no AI_GATEWAY_API_KEY, ANTHROPIC_API_KEY or OPENROUTER_API_KEY configured.",
     };
   }
   try {
