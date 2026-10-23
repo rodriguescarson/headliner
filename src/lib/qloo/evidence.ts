@@ -39,6 +39,8 @@ export type CulturalEvidence = {
     gender: Record<string, number>;
   } | null;
   tasteTags: string[];
+  /** Tags shared by the headliner and the top opener, from /v2/analysis/compare. */
+  openerSharedTags?: string[];
   openers: Candidate[];
   sponsors: Candidate[];
   places: Candidate[];
@@ -58,8 +60,13 @@ const Entity = z
     id: z.string().optional(),
     name: z.string(),
     type: z.string().optional(),
+    types: z.array(z.string()).optional(),
     subtype: z.string().optional(),
     popularity: z.number().optional(),
+    properties: z
+      .object({ aliases: z.array(z.string()).optional() })
+      .passthrough()
+      .optional(),
     query: z
       .object({
         affinity: z.number().optional(),
@@ -85,7 +92,10 @@ const HeatmapResponse = z
             z
               .object({
                 query: z
-                  .object({ affinity: z.number().optional() })
+                  .object({
+                    affinity: z.number().optional(),
+                    affinity_rank: z.number().optional(),
+                  })
                   .passthrough(),
               })
               .passthrough(),
@@ -121,13 +131,84 @@ const TagsResponse = z
   .object({
     results: z
       .object({
-        entities: z
-          .array(z.object({ name: z.string() }).passthrough())
+        tags: z
+          .array(
+            z
+              .object({ name: z.string(), subtype: z.string().optional() })
+              .passthrough(),
+          )
           .optional(),
       })
       .passthrough(),
   })
   .passthrough();
+
+/**
+ * Tag families worth showing a promoter. Ethnicity and language tags are dropped on purpose: a booking tool
+ * should not describe an act's audience by ethnicity. Payment and hotel tags are irrelevant to a show.
+ */
+const SHOWN_TAG_FAMILIES = [
+  "style",
+  "music",
+  "genre",
+  "category",
+  "keyword",
+  "occupation",
+];
+/** People (comics, hosts) also carry tags from their books and shows; genre tags mislead there. */
+const PERSON_TAG_FAMILIES = ["style", "category", "keyword", "occupation"];
+function tagNames(
+  res: { ok: boolean; data?: unknown },
+  limit: number,
+  families: string[] = SHOWN_TAG_FAMILIES,
+): string[] {
+  const t = res.ok ? TagsResponse.safeParse(res.data) : undefined;
+  if (!t?.success) return [];
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const tag of t.data.results.tags ?? []) {
+    const family = (tag.subtype ?? "").split(":")[2] ?? "";
+    if (!families.includes(family)) continue;
+    const name = tag.name.trim().replace(/\s+/g, " ");
+    const key = name.toLowerCase();
+    if (!name || seen.has(key)) continue;
+    seen.add(key);
+    out.push(name);
+    if (out.length >= limit) break;
+  }
+  return out;
+}
+
+/** Normalised for matching: case, accents, punctuation, "&" and a leading "the" do not distinguish acts. */
+export function normaliseActName(s: string): string {
+  return s
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/^the /, "");
+}
+
+/**
+ * Qloo /search returns its nearest matches even for names it does not know ("Goan Garage Collective" comes back
+ * as Animal Collective). Headliner accepts only an exact normalised match on the name or a listed alias.
+ */
+export function pickExactEntity<T extends z.infer<typeof Entity>>(
+  query: string,
+  results: T[],
+): T | undefined {
+  const q = normaliseActName(query);
+  return results.find(
+    (r) =>
+      normaliseActName(r.name) === q ||
+      (r.properties?.aliases ?? []).some((a) => normaliseActName(a) === q),
+  );
+}
+
+const entityType = (e: z.infer<typeof Entity>) =>
+  e.types?.[0] ?? e.subtype ?? e.type ?? "unknown";
 
 function toCandidate(e: z.infer<typeof Entity>): Candidate {
   const explainRaw = e.query?.explainability as
@@ -151,7 +232,7 @@ function toCandidate(e: z.infer<typeof Entity>): Candidate {
   };
 }
 
-function affinityLabel(mean: number): "low" | "mid" | "strong" {
+export function affinityLabel(mean: number): "low" | "mid" | "strong" {
   if (mean < rules.evidence.lowAffinityBelow) return "low";
   if (mean > rules.evidence.strongAffinityAbove) return "strong";
   return "mid";
@@ -178,19 +259,24 @@ export async function gatherEvidence(
     trace: client.trace,
   };
 
-  const search = await client.search(offer.artist, [
-    ENTITY.artist,
-    "urn:entity:person",
-  ]);
+  const search = await client.search(
+    offer.artist,
+    [ENTITY.artist, "urn:entity:person"],
+    5,
+  );
   const parsed = search.ok ? SearchResponse.safeParse(search.data) : undefined;
-  const top = parsed?.success ? parsed.data.results[0] : undefined;
+  const results = parsed?.success ? parsed.data.results : [];
+  const top = pickExactEntity(offer.artist, results);
   if (!top) {
+    const nearest = results[0]?.name;
     coverage.push({
       code: "ENTITY_UNRESOLVED",
       ok: false,
-      detail: search.ok
-        ? `Qloo /search returned no entity for "${offer.artist}".`
-        : `Qloo /search failed: ${search.trace.error}.`,
+      detail: !search.ok
+        ? `Qloo /search failed: ${search.trace.error}.`
+        : nearest
+          ? `Qloo has no exact match for "${offer.artist}". Its closest result was "${nearest}", a different act, so no evidence is borrowed from it.`
+          : `Qloo /search returned no entity for "${offer.artist}".`,
     });
     return ev;
   }
@@ -198,13 +284,13 @@ export async function gatherEvidence(
   ev.entity = {
     id,
     name: top.name,
-    type: top.type ?? top.subtype ?? "unknown",
+    type: entityType(top),
     popularity: top.popularity,
   };
   coverage.push({
     code: "ENTITY_RESOLVED",
     ok: true,
-    detail: `"${offer.artist}" resolved to ${top.name} (${id}).`,
+    detail: `"${offer.artist}" resolved to ${top.name} (${entityType(top).replace("urn:entity:", "")}, ${id}).`,
   });
 
   const popularityMax =
@@ -212,18 +298,21 @@ export async function gatherEvidence(
       ? Math.max(0.05, top.popularity - 0.05)
       : 0.9;
   // Comedians and podcasters resolve as persons; their openers are persons too.
-  const openerType = (top.type ?? "").includes("person")
+  const openerType = entityType(top).includes("person")
     ? "urn:entity:person"
     : ENTITY.artist;
   // A scenario can put an opener on the bill; the combined bill becomes the signal for the market reads.
   let billIds = [id];
   if (offer.opener) {
-    const o = await client.search(offer.opener, [
-      ENTITY.artist,
-      "urn:entity:person",
-    ]);
+    const o = await client.search(
+      offer.opener,
+      [ENTITY.artist, "urn:entity:person"],
+      5,
+    );
     const op = o.ok ? SearchResponse.safeParse(o.data) : undefined;
-    const first = op?.success ? op.data.results[0] : undefined;
+    const first = op?.success
+      ? pickExactEntity(offer.opener, op.data.results)
+      : undefined;
     const oid = first?.entity_id ?? first?.id;
     if (oid) {
       billIds = [id, oid];
@@ -247,7 +336,7 @@ export async function gatherEvidence(
     client.openers([id], offer.city, popularityMax, 10, openerType),
     client.brands([id], offer.city),
     client.places([id], offer.city),
-    client.tasteTags([id]),
+    client.tasteTags([id], openerType),
   ]);
 
   const affinities = heatmapAffinities(heat);
@@ -256,43 +345,43 @@ export async function gatherEvidence(
     coverage.push({
       code: "HEATMAP_OK",
       ok: true,
-      detail: `${affinities.length} heatmap cells for ${offer.city}.`,
+      detail: `${affinities.length} heatmap cells for ${offer.city}, mean affinity rank ${ev.localAffinity.mean}.`,
+    });
+  } else if (!heat.ok) {
+    coverage.push({
+      code: "HEATMAP_FAILED",
+      ok: false,
+      detail: `The Qloo heatmap call for ${offer.city} failed (${heat.trace.error ?? `HTTP ${heat.trace.status}`}), so local affinity is unknown, not low. Run the check again.`,
     });
   } else {
     coverage.push({
       code: "HEATMAP_SPARSE",
       ok: false,
-      detail: heat.ok
-        ? `Only ${affinities.length} heatmap cells for ${offer.city}; the rulebook needs ${rules.evidence.minHeatmapCells}.`
-        : `Heatmap call failed: ${heat.trace.error}.`,
+      detail: `Only ${affinities.length} heatmap cells for ${offer.city}; the rulebook needs ${rules.evidence.minHeatmapCells}.`,
     });
   }
 
   // Routing alternative: only worth the calls when the primary market reads weak.
   const alt = nearbyCity(offer.city);
   if (alt && ev.localAffinity && ev.localAffinity.label === "low") {
-    const [altHeat, cmp] = await Promise.all([
-      client.heatmap([id], alt),
-      client.compare([id], [id], ENTITY.tag),
-    ]);
+    const altHeat = await client.heatmap([id], alt);
     const altAff = heatmapAffinities(altHeat);
-    const cmpParsed = cmp.ok ? TagsResponse.safeParse(cmp.data) : undefined;
     ev.altMarket = {
       city: alt,
       localAffinity:
         altAff.length >= rules.evidence.minHeatmapCells
           ? summariseAffinity(altAff)
           : null,
-      sharedTags: cmpParsed?.success
-        ? (cmpParsed.data.results.entities ?? []).map((t) => t.name).slice(0, 8)
-        : [],
+      sharedTags: [],
     };
     coverage.push({
       code: "ALT_MARKET",
       ok: ev.altMarket.localAffinity !== null,
       detail: ev.altMarket.localAffinity
-        ? `${alt}: ${altAff.length} heatmap cells, mean ${ev.altMarket.localAffinity.mean}.`
-        : `${alt}: heatmap too sparse to compare (${altAff.length} cells).`,
+        ? `${alt}: ${altAff.length} heatmap cells, mean affinity rank ${ev.altMarket.localAffinity.mean}.`
+        : altHeat.ok
+          ? `${alt}: heatmap too sparse to compare (${altAff.length} cells).`
+          : `${alt}: heatmap call failed (${altHeat.trace.error ?? `HTTP ${altHeat.trace.status}`}).`,
     });
   }
 
@@ -322,21 +411,34 @@ export async function gatherEvidence(
   ev.openers = take(openers);
   ev.sponsors = take(brands);
   ev.places = take(places);
+  const failed = (r: typeof openers) =>
+    r.ok ? null : (r.trace.error ?? `HTTP ${r.trace.status}`);
   coverage.push({
     code: "OPENERS",
     ok: ev.openers.length >= rules.evidence.minOpenerCandidates,
-    detail: `${ev.openers.length} local artist candidates below the headliner's popularity.`,
+    detail: failed(openers)
+      ? `Opener lookup failed (${failed(openers)}); no claim either way.`
+      : `${ev.openers.length} local ${openerType.endsWith("person") ? "comics" : "acts"} below the headliner's popularity share its audience.`,
   });
   coverage.push({
     code: "SPONSORS",
     ok: ev.sponsors.length >= rules.evidence.minSponsorCandidates,
-    detail: `${ev.sponsors.length} brand candidates with affinity to the act.`,
+    detail: failed(brands)
+      ? `Brand lookup failed (${failed(brands)}); no claim either way.`
+      : `${ev.sponsors.length} brand candidates with affinity to the act.`,
   });
 
-  const tg = tags.ok ? TagsResponse.safeParse(tags.data) : undefined;
-  ev.tasteTags = tg?.success
-    ? (tg.data.results.entities ?? []).map((t) => t.name).slice(0, 12)
-    : [];
+  // Why the top opener fits: the taste tags it shares with the headliner.
+  if (ev.openers[0]) {
+    const cmp = await client.compare([id], [ev.openers[0].id], ENTITY.tag, 20);
+    ev.openerSharedTags = tagNames(cmp, 6);
+  }
+
+  ev.tasteTags = tagNames(
+    tags,
+    12,
+    openerType.endsWith("person") ? PERSON_TAG_FAMILIES : SHOWN_TAG_FAMILIES,
+  );
 
   return ev;
 }
@@ -348,8 +450,9 @@ function heatmapAffinities(
 ): number[] {
   const h = res.ok ? HeatmapResponse.safeParse(res.data) : undefined;
   const cells = h?.success ? (h.data.results.heatmap ?? []) : [];
+  // affinity is rescaled per response (mean 0.500 everywhere); affinity_rank is comparable across cities.
   return cells
-    .map((c) => c.query.affinity)
+    .map((c) => c.query.affinity_rank)
     .filter((a): a is number => typeof a === "number");
 }
 

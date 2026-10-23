@@ -21,7 +21,7 @@ export type VerdictDiff = {
 
 const affinityText = (v: Verdict) =>
   v.evidence.localAffinity
-    ? `${v.evidence.localAffinity.label} (mean ${v.evidence.localAffinity.mean})`
+    ? `${v.evidence.localAffinity.label}, mean affinity rank ${v.evidence.localAffinity.mean}`
     : null;
 
 export function diffVerdicts(base: Verdict, next: Verdict): VerdictDiff {
@@ -59,7 +59,7 @@ export function diffVerdicts(base: Verdict, next: Verdict): VerdictDiff {
       "The market read is unchanged: the opener could not be evaluated as part of the bill.",
     );
   } else {
-    lines.push(`Local affinity is unchanged (${b ?? "no signal"}).`);
+    lines.push(`Local affinity is unchanged: ${b ?? "no signal"}.`);
   }
 
   const fixes = {
@@ -90,7 +90,7 @@ export function diffVerdicts(base: Verdict, next: Verdict): VerdictDiff {
   const stillCannot = next.cannotEstablish.length;
   if (stillCannot)
     lines.push(
-      `${stillCannot} things still cannot be established either way (see the stencil).`,
+      `${stillCannot} things still cannot be established either way (listed under Outside this check).`,
     );
   return { status, breakEven: be, affinity: aff, fixes, lines };
 }

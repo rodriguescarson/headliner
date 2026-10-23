@@ -5,7 +5,7 @@
  */
 import type { Offer } from "@/lib/deal/offer-parser";
 import { nearbyCity } from "@/lib/geo/nearby";
-import type { CulturalEvidence } from "./evidence";
+import { affinityLabel, type CulturalEvidence } from "./evidence";
 
 type SampleAct = {
   id: string;
@@ -26,9 +26,9 @@ const ACTS: SampleAct[] = [
     type: "artist",
     popularity: 0.62,
     cities: {
-      "austin, tx": { mean: 0.71, max: 0.93, cells: 42 },
-      "dallas, tx": { mean: 0.38, max: 0.66, cells: 37 },
-      "chicago, il": { mean: 0.55, max: 0.81, cells: 58 },
+      "austin, tx": { mean: 0.92, max: 0.99, cells: 42 },
+      "dallas, tx": { mean: 0.55, max: 0.8, cells: 37 },
+      "chicago, il": { mean: 0.78, max: 0.95, cells: 58 },
     },
     openers: [
       "Sample Local Opener A",
@@ -49,9 +49,9 @@ const ACTS: SampleAct[] = [
     type: "person",
     popularity: 0.78,
     cities: {
-      "denver, co": { mean: 0.24, max: 0.41, cells: 31 },
-      "salt lake city, ut": { mean: 0.52, max: 0.77, cells: 22 },
-      "atlanta, ga": { mean: 0.69, max: 0.9, cells: 49 },
+      "denver, co": { mean: 0.45, max: 0.71, cells: 31 },
+      "salt lake city, ut": { mean: 0.8, max: 0.94, cells: 22 },
+      "atlanta, ga": { mean: 0.91, max: 0.99, cells: 49 },
     },
     openers: ["Sample Local Comic A", "Sample Local Comic B"],
     sponsors: ["Sample Sports Bar Chain", "Sample Streaming Service"],
@@ -102,7 +102,7 @@ export function sampleEvidence(offer: Offer): CulturalEvidence {
   if (city) {
     base.localAffinity = {
       ...city,
-      label: city.mean < 0.3 ? "low" : city.mean > 0.6 ? "strong" : "mid",
+      label: affinityLabel(city.mean),
     };
     base.coverage.push({
       code: "HEATMAP_OK",
@@ -125,12 +125,7 @@ export function sampleEvidence(offer: Offer): CulturalEvidence {
         localAffinity: altCity
           ? {
               ...altCity,
-              label:
-                altCity.mean < 0.3
-                  ? "low"
-                  : altCity.mean > 0.6
-                    ? "strong"
-                    : "mid",
+              label: affinityLabel(altCity.mean),
             }
           : null,
         sharedTags: act.tags.slice(0, 3),
@@ -145,20 +140,21 @@ export function sampleEvidence(offer: Offer): CulturalEvidence {
     }
   }
   base.demographics = {
+    // Signed affinity per band (-1 to 1), the same scale Qloo returns. Illustrative, not Qloo data.
     age: {
-      "24_and_younger": 0.12,
-      "25_to_29": 0.31,
-      "30_to_34": 0.28,
-      "35_to_44": 0.19,
-      "45_to_54": 0.07,
-      "55_and_older": 0.03,
+      "24_and_younger": 0.18,
+      "25_to_29": 0.42,
+      "30_to_34": 0.27,
+      "35_to_44": -0.08,
+      "45_to_54": -0.35,
+      "55_and_older": -0.51,
     },
-    gender: { male: 0.54, female: 0.46 },
+    gender: { male: 0.12, female: -0.12 },
   };
   base.coverage.push({
     code: "DEMOGRAPHICS_OK",
     ok: true,
-    detail: "Sample age and gender distribution.",
+    detail: "Sample age and gender affinity (illustrative).",
   });
   base.openers = act.openers.map((n, i) => ({
     id: `sample:opener:${i}`,

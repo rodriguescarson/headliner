@@ -6,7 +6,10 @@ An independent promoter looks at an offer sheet at 10 PM: an act, a city, a venu
 
 Built for the [Qloo Agentic Hackathon](https://qloo.devpost.com) (Sep 30 – Oct 30, 2026). MIT licensed.
 
-**Live:** https://headliner.carsonrodrigues.com (sample mode until the Qloo key lands).
+**Live:** https://headliner.carsonrodrigues.com, running on the Qloo API. No sign-in needed.
+**All twelve offers checked live in one click:** https://headliner.carsonrodrigues.com/board?run=all
+
+![A live Headliner verdict: Khruangbin in Denver, fix required, with a counter-guarantee, Qloo sponsor fits and openers](docs/devpost/02-verdict-khruangbin.png)
 
 ## What it does
 
@@ -21,19 +24,19 @@ Headliner answers with one of four statuses and shows its work:
 | Status | Meaning |
 |---|---|
 | **Cleared** | The money works and the act has local affinity in that city. |
-| **Fix required** | The money is tight or the market is weak; the smallest fix is shown (a local opener, a sponsor offset, another routing city). |
-| **Refused** | The arithmetic fails a rulebook rule. Taste does not override money. |
-| **Abstained** | The signal cannot be established (act unresolved, sparse heatmap). Headliner says exactly what is missing instead of guessing. |
+| **Fix required** | The money is tight or the market is weak; the smallest fix is shown (a counter-guarantee, a local opener, a sponsor offset, or a nearby city that reads better). |
+| **Refused** | The arithmetic fails a rulebook rule. Taste does not override money, but the verdict still gives the guarantee to counter with. |
+| **Abstained** | The signal cannot be established (no exact Qloo match for the act, or too few map cells). Headliner names what is missing, and Qloo's nearest miss, instead of guessing. |
 
 Three things are kept strictly apart:
 
 1. **Deterministic deal math** (`src/lib/deal/deal-math.ts`) against a versioned rulebook (`src/lib/rules/rules-v1.json`). Every dollar figure comes from here. No model touches arithmetic.
-2. **Qloo cultural evidence** (`src/lib/qloo/`): entity resolution, geographic affinity heatmap, demographic skew, local openers, brand candidates, night-out places, taste tags. Every call is traced and shown. Affinity is evidence, never a ticket forecast.
+2. **Qloo cultural evidence** (`src/lib/qloo/`): exact-match entity resolution, affinity rank across the city's heatmap cells, over-indexing age bands, local openers, brand candidates, night-out places, taste tags. Every call is traced and shown. Affinity is evidence, never a ticket forecast.
 3. **What the check cannot establish**: competing shows, radius clauses, actual sales, hold status, availability. Listed on every result.
 
 ## Why Qloo
 
-Without Qloo the second column does not exist. A language model can tell you Austin likes live music; it cannot tell you whether *this* act has affinity in *this* metro, which local acts share its audience, or which brands its fans already buy. The "Without Qloo" comparison (planned, F6 in the feature register) runs the same offer through a model alone and measures the overlap.
+Without Qloo the second column does not exist. A language model can tell you Austin likes live music; it cannot tell you whether *this* act has affinity in *this* metro, which local acts share its audience, or which brands its fans already buy. The "Without Qloo" control runs the same offer through a model alone and measures the overlap. On the twelve pre-seeded offers it was 1% on openers and 1% on sponsors, the model read no real market as weak where Qloo read four, and it named sponsors for acts that do not exist (details in DEVPOST.md). It runs with `ANTHROPIC_API_KEY`, `AI_GATEWAY_API_KEY` or `OPENROUTER_API_KEY`.
 
 ## Running it
 
@@ -45,13 +48,7 @@ pnpm dev
 
 Without a key the app runs in **sample mode** and says so on every screen. Sample evidence is illustrative and labelled; it is not Qloo data.
 
-When the key arrives:
-
-```bash
-QLOO_API_KEY=... pnpm tsx scripts/verify-qloo.ts
-```
-
-This probes every endpoint with 20 real acts (including five intentionally obscure ones to exercise the abstention path), writes raw shapes to `.cache/` (git-ignored) and prints a coverage table. The numbers from that run, including the failures, are what the Devpost write-up reports.
+With a key, `pnpm probe`, `pnpm calibrate` and `pnpm offers` reproduce every number in DEVPOST.md (see Key-day scripts below).
 
 Qloo responses are cached server-side (allowed by the hackathon terms, no time limit) and are never committed.
 
@@ -82,6 +79,16 @@ Every fix carries a one-click scenario: swap the market to the compared metro, p
 - **Accounts** (optional): Supabase Auth with Google, Apple and email, cookie sessions refreshed in `src/proxy.ts`. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`; without them the desk runs and account links are hidden. Apple on web needs `NEXT_PUBLIC_AUTH_APPLE=true` once the Services ID is configured in Supabase.
 - **Queued checks**: `POST /api/jobs` returns a job id at once; the desk polls `GET /api/jobs/:id` and the id rides in the URL hash so a refresh resumes. The in-memory worker (`src/lib/jobs/store.ts`) is the development implementation behind a store interface.
 - **Pages**: `/terms`, `/privacy`, `/cookies`, `/support` (FAQ with schema.org), `/contact` (Resend when `RESEND_API_KEY` and `CONTACT_FROM` are set), `/llms.txt`, `/robots.txt`, `/sitemap.xml`, `/.well-known/security.txt`.
+
+## Key-day scripts
+
+With `QLOO_API_KEY` in `.env`:
+
+- `pnpm probe` checks every endpoint against 20 acts (15 real, 5 invented) and prints resolution and coverage counts.
+- `pnpm calibrate` measures mean affinity rank for 15 acts in 5 cities; the rulebook's cut-offs are its tertiles.
+- `pnpm offers [--baseline]` runs all twelve pre-seeded offers through the site's own check and prints the tally.
+
+Raw responses go to `.cache/` (git-ignored). DEVPOST.md records what the first live run got wrong and how each finding was fixed.
 
 ## Design
 
@@ -125,7 +132,7 @@ pnpm test        # Vitest
 
 ## Status
 
-See `FEATURE-REGISTER.md` for what is built, what is pending the Qloo key, and what is deliberately out of scope.
+See `FEATURE-REGISTER.md` for what is built, how each part was verified, and what is deliberately out of scope.
 
 ## Support
 

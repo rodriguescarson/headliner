@@ -61,7 +61,10 @@ export async function runSuite(
     ["GET /v2/insights urn:entity:place", client.places([id], city)],
     ["GET /v2/insights urn:tag (taste analysis)", client.tasteTags([id])],
     ["GET /v2/analysis/compare", client.compare([id], [id])],
-    ["GET /v2/trending (UNVERIFIED path)", client.trending(id)],
+    [
+      "GET /v2/trending (last 30 days; not used in the verdict)",
+      client.trending(id),
+    ],
   ];
   const results = await Promise.all(steps.map(([, p]) => p));
   for (const [i, r] of results.entries())

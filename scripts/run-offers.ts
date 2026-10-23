@@ -60,6 +60,12 @@ async function main() {
       qlooCalls: v.evidence.trace.length,
       baselineOpenersPct: b?.openers.pct ?? null,
       baselineSponsorsPct: b?.sponsors.pct ?? null,
+      baselineAffinity: r.baseline?.guess?.localAffinity ?? null,
+      baselineOpeners: r.baseline?.guess?.openers ?? [],
+      baselineSponsors: r.baseline?.guess?.sponsors ?? [],
+      qlooOpeners: v.evidence.openers.slice(0, 5).map((o) => o.name),
+      qlooSponsors: v.evidence.sponsors.slice(0, 5).map((o) => o.name),
+      baselineNote: r.baseline?.note ?? null,
     });
   }
 

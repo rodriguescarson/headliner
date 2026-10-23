@@ -162,3 +162,31 @@ export const money = (n: number, exact = false) =>
     minimumFractionDigits: exact ? 2 : 0,
     maximumFractionDigits: exact ? 2 : 0,
   }).format(n);
+
+/**
+ * The largest guarantee, rounded down to $250, at which break-even sits at or under the rulebook's warning line.
+ * This is arithmetic on the promoter's own numbers, not advice on what the act will accept. Returns null when no
+ * positive guarantee gets there (the ticket price or room is the problem, not the guarantee) or when the offer
+ * already clears the line.
+ */
+export function counterGuarantee(
+  input: DealInput,
+  targetPct: number = rules.money.warnAboveBreakEvenPct,
+): { guarantee: number; deal: DealMath } | null {
+  const base = computeDeal(input);
+  if (!(base.netPerTicket > 0) || !Number.isFinite(base.breakEvenCapacityPct))
+    return null;
+  if (base.breakEvenCapacityPct <= targetPct) return null;
+  const i = base.inputs;
+  const tickets = Math.floor(targetPct * i.capacity);
+  const otherFixed =
+    i.venueCost +
+    i.productionCost +
+    i.marketingBudget +
+    i.otherFixed -
+    i.sponsorOffset;
+  const raw = tickets * base.netPerTicket - otherFixed;
+  const guarantee = Math.floor(raw / 250) * 250;
+  if (guarantee <= 0 || guarantee >= i.guarantee) return null;
+  return { guarantee, deal: computeDeal({ ...input, guarantee }) };
+}

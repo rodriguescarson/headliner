@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -18,6 +18,7 @@ import { parseOfferLine } from "@/lib/deal/offer-parser";
 import { VERDICT_STATUS, type VerdictStatus } from "@/lib/enums";
 import { t } from "@/lib/i18n";
 import type { JobRecord } from "@/lib/jobs/store";
+import type { Verdict } from "@/lib/verdict/verdict";
 import { useFlipIn } from "./motion/reveal";
 import { Dot, StatusBadge, statusTone } from "./status";
 
@@ -31,6 +32,7 @@ type RowState =
       breakEvenPct: number;
       affinity: string | null;
       headline: string;
+      next: string | null;
     }
   | { phase: "failed" };
 
@@ -72,6 +74,10 @@ export function OffersBoard({ rows, note }: { rows: Row[]; note?: string }) {
                         breakEvenPct: v.deal.breakEvenCapacityPct,
                         affinity: v.evidence.localAffinity?.label ?? null,
                         headline: v.headline,
+                        next:
+                          v.status === "abstained"
+                            ? t("board.nextAbstain")
+                            : nextMove(v.fixes),
                       }
                     : x,
                 ),
@@ -102,6 +108,16 @@ export function OffersBoard({ rows, note }: { rows: Row[]; note?: string }) {
     );
     setBusy(false);
   }
+
+  // /board?run=all starts the run on load: a link that shows every offer checked live, in one click.
+  const autoRan = useRef(false);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount
+  useEffect(() => {
+    if (autoRan.current) return;
+    autoRan.current = true;
+    if (new URLSearchParams(window.location.search).get("run") === "all")
+      void runAll();
+  }, []);
 
   const done = states.filter((s) => s.phase === "done") as Extract<
     RowState,
@@ -154,6 +170,7 @@ export function OffersBoard({ rows, note }: { rows: Row[]; note?: string }) {
               </TableHead>
               <TableHead>{t("board.signal")}</TableHead>
               <TableHead>{t("board.state")}</TableHead>
+              <TableHead>{t("board.next")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -219,6 +236,9 @@ export function OffersBoard({ rows, note }: { rows: Row[]; note?: string }) {
                       </Dot>
                     )}
                   </StateCell>
+                  <TableCell className="text-sm">
+                    {s.phase === "done" ? (s.next ?? "—") : "—"}
+                  </TableCell>
                 </TableRow>
               );
             })}
@@ -227,6 +247,19 @@ export function OffersBoard({ rows, note }: { rows: Row[]; note?: string }) {
       </Card>
     </div>
   );
+}
+
+/** The first fix as a short instruction, so the board reads as a to-do list, not a scoreboard. */
+function nextMove(fixes: Verdict["fixes"]): string | null {
+  const f = fixes[0];
+  if (!f) return null;
+  if (f.kind === "counter")
+    return t("scenario.guarantee", { amount: money(f.guarantee) });
+  if (f.kind === "market" && f.altCity)
+    return t("scenario.market", { city: f.altCity });
+  if (f.kind === "opener" && f.candidates[0])
+    return t("scenario.opener", { opener: f.candidates[0].name });
+  return f.title;
 }
 
 function StateCell({

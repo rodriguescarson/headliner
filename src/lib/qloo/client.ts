@@ -3,7 +3,7 @@
  * - GET only (Qloo rejects JSON bodies on these routes).
  * - The key never leaves the server.
  * - Every call is recorded in a trace so the UI and the MCP view can show exactly what was asked.
- * - Parameter names follow docs.qloo.com; the ones marked UNVERIFIED are confirmed by scripts/verify-qloo.ts.
+ * - Every parameter here was checked against the live hackathon API on 2026-10-19 (scripts/verify-qloo.ts).
  */
 import { type CacheStore, cacheKey, defaultCache } from "./cache";
 
@@ -22,6 +22,8 @@ export type TraceEntry = {
   ok: boolean;
   error?: string;
   resultCount?: number;
+  /** Times this call was retried after HTTP 429. */
+  retries?: number;
 };
 
 export type QlooResult<T = unknown> =
@@ -39,6 +41,22 @@ export const ENTITY = {
   demographics: "urn:demographics",
   tag: "urn:tag",
 } as const;
+
+/**
+ * Qloo's hackathon tier allows 5 requests per second per key (x-second-ratelimit-* headers, measured
+ * 2026-10-19). One pacer per process spaces request starts so a check's parallel calls never trip it, and a
+ * 429 is retried after the one-second reset instead of being reported as missing evidence.
+ */
+const MIN_GAP_MS = 250;
+const MAX_RETRIES = 3;
+const pacer = globalThis as typeof globalThis & { __qlooNextSlot?: number };
+async function takeSlot(): Promise<void> {
+  const now = Date.now();
+  const slot = Math.max(now, pacer.__qlooNextSlot ?? 0);
+  pacer.__qlooNextSlot = slot + MIN_GAP_MS;
+  if (slot > now) await new Promise((r) => setTimeout(r, slot - now));
+}
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export class QlooClient {
   readonly trace: TraceEntry[] = [];
@@ -98,9 +116,24 @@ export class QlooClient {
 
     const url = `${this.baseUrl}${pathname}?${new URLSearchParams(p).toString()}`;
     try {
-      const res = await this.fetchImpl(url, {
-        headers: { "X-Api-Key": this.apiKey, Accept: "application/json" },
-      });
+      let res: Response;
+      let attempt = 0;
+      for (;;) {
+        // Injected fetches (tests) skip the pacer; the real API is paced.
+        if (this.fetchImpl === fetch) await takeSlot();
+        res = await this.fetchImpl(url, {
+          headers: { "X-Api-Key": this.apiKey, Accept: "application/json" },
+        });
+        if (res.status !== 429 || attempt >= MAX_RETRIES) break;
+        attempt += 1;
+        const reset = Number(res.headers.get("x-second-ratelimit-reset"));
+        await res.text().catch(() => "");
+        await sleep(
+          (Number.isFinite(reset) && reset > 0 ? reset * 1000 : 1000) +
+            Math.floor(Math.random() * 200),
+        );
+      }
+      if (attempt) entry.retries = attempt;
       entry.status = res.status;
       entry.ms = Math.round(performance.now() - started);
       const text = await res.text();
@@ -148,11 +181,15 @@ export class QlooClient {
     return this.get("/v2/insights", params);
   }
 
-  /** Geographic affinity for a set of entities within a city. UNVERIFIED on the hackathon tier until the probe runs. */
+  /**
+   * Geographic affinity within a city, one cell per geohash. Verified 2026-10-19: each cell's `affinity` is
+   * rescaled within the response (its mean is 0.500 in every city), so it cannot compare cities;
+   * `affinity_rank` varies by city and is the field Headliner reads.
+   */
   heatmap(
     entityIds: string[],
     locationQuery: string,
-    boundary: "geohash" | "city" | "neighborhood" = "geohash",
+    boundary: "urn:geohash" | "urn:entity:locality" = "urn:geohash",
   ) {
     return this.insights({
       "filter.type": ENTITY.heatmap,
@@ -210,10 +247,16 @@ export class QlooClient {
   }
 
   /** Taste tags describing an entity set (taste analysis). */
-  tasteTags(entityIds: string[], take = 15) {
+  /** Taste tags for an entity, restricted to tags that describe that kind of entity (artist or person). */
+  tasteTags(
+    entityIds: string[],
+    parentType: string = ENTITY.artist,
+    take = 20,
+  ) {
     return this.insights({
       "filter.type": ENTITY.tag,
       "signal.interests.entities": entityIds,
+      "filter.parents.types": parentType,
       take,
     });
   }
@@ -234,11 +277,16 @@ export class QlooClient {
     });
   }
 
-  /** Time-series popularity. Path and params UNVERIFIED on the hackathon tier. */
-  trending(entityId: string, type: string = ENTITY.artist) {
+  /** Trending needs a date window (verified 2026-10-19). Probe-only: it is not part of the verdict. */
+  trending(entityId: string, type: string = ENTITY.artist, days = 30) {
+    const end = new Date();
+    const start = new Date(end.getTime() - days * 86_400_000);
+    const day = (d: Date) => d.toISOString().slice(0, 10);
     return this.get("/v2/trending", {
       "signal.interests.entities": entityId,
       "filter.type": type,
+      "filter.start_date": day(start),
+      "filter.end_date": day(end),
     });
   }
 }

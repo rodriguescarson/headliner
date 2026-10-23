@@ -65,4 +65,29 @@ describe("decide (sample evidence)", () => {
     const v = run(SAMPLE_OFFERS[0].line);
     expect(v.cannotEstablish).toContain("actual_ticket_sales");
   });
+
+  it("never recommends swapping to a market that reads worse", () => {
+    const p = parseOfferLine(SAMPLE_OFFERS[2].line);
+    if (!p.ok) throw new Error("fixture");
+    const ev = sampleEvidence(p.offer);
+    if (!ev.localAffinity || !ev.altMarket?.localAffinity)
+      throw new Error("fixture lacks alt");
+    ev.altMarket.localAffinity = {
+      ...ev.altMarket.localAffinity,
+      mean: ev.localAffinity.mean - 0.05,
+    };
+    const v = decide(p.offer, ev);
+    expect(v.fixes.some((f) => f.kind === "market")).toBe(false);
+    expect(v.reasons.join(" ")).toMatch(/reads no better/);
+  });
+
+  it("gives a refused deal a counter-offer instead of a dead end", () => {
+    const v = run(SAMPLE_OFFERS[3].line);
+    expect(v.status).toBe("refused");
+    const counter = v.fixes.find((f) => f.kind === "counter");
+    expect(counter).toBeDefined();
+    if (counter?.kind !== "counter") return;
+    expect(counter.guarantee).toBeLessThan(counter.offered);
+    expect(counter.detail).toMatch(/negotiation/);
+  });
 });

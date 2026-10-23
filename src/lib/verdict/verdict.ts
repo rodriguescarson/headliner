@@ -7,6 +7,7 @@
  */
 import {
   computeDeal,
+  counterGuarantee,
   type DealInput,
   type DealMath,
   money,
@@ -24,7 +25,21 @@ export type VerdictStatus =
   | "abstained";
 
 export type Fix =
-  | { kind: "opener"; title: string; detail: string; candidates: Candidate[] }
+  | {
+      kind: "counter";
+      title: string;
+      detail: string;
+      guarantee: number;
+      offered: number;
+      dealAtCounter: DealMath;
+    }
+  | {
+      kind: "opener";
+      title: string;
+      detail: string;
+      candidates: Candidate[];
+      sharedTags?: string[];
+    }
   | {
       kind: "sponsor";
       title: string;
@@ -68,6 +83,52 @@ export function toDealInput(offer: Offer): DealInput {
   };
 }
 
+/** The counter-offer, when one exists: arithmetic on the promoter's numbers, never a claim about what the act accepts. */
+function counterFix(input: DealInput): Fix | null {
+  const c = counterGuarantee(input);
+  if (!c) return null;
+  return {
+    kind: "counter",
+    title: "Counter the guarantee",
+    detail: `At ${money(c.guarantee)} instead of ${money(input.guarantee)}, break-even drops to ${c.deal.breakEvenTickets} tickets (${pct(c.deal.breakEvenCapacityPct)}), inside the rulebook's ${pct(rules.money.warnAboveBreakEvenPct)} line. Whether the act takes it is a negotiation, not a number this check can know.`,
+    guarantee: c.guarantee,
+    offered: input.guarantee,
+    dealAtCounter: c.deal,
+  };
+}
+
+/**
+ * Swap the market, but only toward a nearby metro that reads better on the same measure. Recommending a weaker
+ * room would be worse than saying nothing.
+ */
+function marketFix(
+  evidence: CulturalEvidence,
+  affinity: CulturalEvidence["localAffinity"],
+): Fix | null {
+  const alt = evidence.altMarket;
+  const altAff = alt?.localAffinity;
+  if (!alt || !altAff || !affinity || altAff.mean <= affinity.mean) return null;
+  return {
+    kind: "market",
+    title: "Swap the market",
+    detail: `${alt.city} reads ${altAff.label} (mean affinity rank ${altAff.mean} across ${altAff.cells} cells) against ${affinity.mean} here. Same money, different room.`,
+    altCity: alt.city,
+    altAffinity: altAff,
+    sharedTags: alt.sharedTags,
+  };
+}
+
+/** Why no market swap is offered, stated as a reason so the promoter sees the comparison was made. */
+function noBetterMarket(evidence: CulturalEvidence): string {
+  const alt = evidence.altMarket;
+  const here = evidence.localAffinity?.mean;
+  if (!alt)
+    return "No routing alternative is configured for this city, so no market swap was compared.";
+  if (!alt.localAffinity)
+    return `${alt.city} was checked but its heatmap is too sparse or unavailable; no claim is made about it.`;
+  return `${alt.city} reads no better (mean affinity rank ${alt.localAffinity.mean} against ${here} here), so a market swap is not offered.`;
+}
+
 export function decide(offer: Offer, evidence: CulturalEvidence): Verdict {
   const input = toDealInput(offer);
   const deal = computeDeal(input);
@@ -85,6 +146,13 @@ export function decide(offer: Offer, evidence: CulturalEvidence): Verdict {
   // 1. Money first.
   if (deal.level === "refuse") {
     for (const v of deal.violations) reasons.push(v.detail);
+    const counter = counterFix(input);
+    if (counter) fixes.push(counter);
+    if (evidence.localAffinity?.label === "low") {
+      const m = marketFix(evidence, evidence.localAffinity);
+      if (m) fixes.push(m);
+      else reasons.push(noBetterMarket(evidence));
+    }
     return {
       ...base,
       status: "refused",
@@ -109,7 +177,9 @@ export function decide(offer: Offer, evidence: CulturalEvidence): Verdict {
   for (const flag of evidence.coverage) {
     if (
       !flag.ok &&
-      (flag.code === "ENTITY_UNRESOLVED" || flag.code === "HEATMAP_SPARSE")
+      (flag.code === "ENTITY_UNRESOLVED" ||
+        flag.code === "HEATMAP_SPARSE" ||
+        flag.code === "HEATMAP_FAILED")
     ) {
       abstentions.push({ code: flag.code, message: flag.detail });
     }
@@ -132,7 +202,7 @@ export function decide(offer: Offer, evidence: CulturalEvidence): Verdict {
   const tightMoney = deal.level === "warn";
   if (affinity)
     reasons.push(
-      `Local affinity in ${offer.city}: mean ${affinity.mean}, max ${affinity.max} across ${affinity.cells} cells (${affinity.label}).`,
+      `Local affinity in ${offer.city}: mean affinity rank ${affinity.mean} (best cell ${affinity.max}) across ${affinity.cells} map cells, which the rulebook reads as ${affinity.label}.`,
     );
 
   if (weakMarket && evidence.openers.length > 0) {
@@ -141,7 +211,12 @@ export function decide(offer: Offer, evidence: CulturalEvidence): Verdict {
       title: "Change the bill",
       detail: `Local affinity is ${affinity?.label}. These local acts share audience with the headliner; a local opener is the cheapest way to bring the room.`,
       candidates: evidence.openers.slice(0, 5),
+      sharedTags: evidence.openerSharedTags,
     });
+  }
+  if (tightMoney) {
+    const counter = counterFix(input);
+    if (counter) fixes.push(counter);
   }
   if (tightMoney && evidence.sponsors.length > 0) {
     const a = rules.assumptions.sponsorActivationUsd;
@@ -156,23 +231,9 @@ export function decide(offer: Offer, evidence: CulturalEvidence): Verdict {
     });
   }
   if (weakMarket) {
-    const alt = evidence.altMarket;
-    const altAff = alt?.localAffinity;
-    let detail =
-      "No routing alternative is configured for this city, so no comparison was run.";
-    if (alt && altAff) {
-      detail = `${alt.city} reads ${altAff.label} (mean ${altAff.mean} across ${altAff.cells} cells) against ${affinity?.mean} here. Same money, different room.`;
-    } else if (alt) {
-      detail = `${alt.city} was checked but its heatmap is too sparse to compare; no claim is made about it.`;
-    }
-    fixes.push({
-      kind: "market",
-      title: "Swap the market",
-      detail,
-      altCity: alt?.city,
-      altAffinity: altAff ?? undefined,
-      sharedTags: alt?.sharedTags,
-    });
+    const m = marketFix(evidence, affinity);
+    if (m) fixes.push(m);
+    else reasons.push(noBetterMarket(evidence));
   }
 
   if (fixes.length > 0) {

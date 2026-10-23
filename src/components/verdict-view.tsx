@@ -38,7 +38,21 @@ const statusEdge: Record<Verdict["status"], string> = {
   abstained: "border-t-info",
 };
 
+/**
+ * Qloo demographics are signed affinity scores (-1 to 1) per age band, not shares of the audience. Show the
+ * bands that over-index, with the score, never as a percentage.
+ */
+function audienceSkew(age: Record<string, number>): string {
+  const top = Object.entries(age)
+    .filter(([, v]) => v > 0)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2)
+    .map(([k, v]) => `${k.replaceAll("_", " ")} +${v.toFixed(2)}`);
+  return top.length ? top.join(", ") : t("verdict.noSkew");
+}
+
 const fixTone: Record<Fix["kind"], Tone> = {
+  counter: "destructive",
   opener: "info",
   sponsor: "warning",
   market: "success",
@@ -203,11 +217,7 @@ export function VerdictView({
                 {ev.demographics && (
                   <Stat
                     label={t("verdict.demographics")}
-                    value={Object.entries(ev.demographics.age)
-                      .sort((a, b) => b[1] - a[1])
-                      .slice(0, 2)
-                      .map(([k, v]) => `${k.replaceAll("_", " ")} ${pct(v)}`)
-                      .join(", ")}
+                    value={audienceSkew(ev.demographics.age)}
                   />
                 )}
               </div>
@@ -449,8 +459,18 @@ function FixView({
         <CardDescription>{fix.detail}</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3">
-        {fix.kind !== "market" && (
+        {(fix.kind === "opener" || fix.kind === "sponsor") && (
           <CandidateList title="" items={fix.candidates} />
+        )}
+        {fix.kind === "counter" && (
+          <div className="grid gap-1">
+            <Stat label={t("verdict.offered")} value={money(fix.offered)} />
+            <Stat label={t("verdict.counter")} value={money(fix.guarantee)} />
+            <Stat
+              label={t("verdict.breakEvenAtCounter")}
+              value={`${fix.dealAtCounter.breakEvenTickets} (${pct(fix.dealAtCounter.breakEvenCapacityPct)})`}
+            />
+          </div>
         )}
         {fix.kind === "sponsor" && (
           <div className="grid gap-1">
@@ -467,7 +487,7 @@ function FixView({
             </p>
           </div>
         )}
-        {fix.kind === "market" &&
+        {(fix.kind === "market" || fix.kind === "opener") &&
           fix.sharedTags &&
           fix.sharedTags.length > 0 && (
             <p className="text-sm text-muted-foreground">
@@ -476,6 +496,18 @@ function FixView({
           )}
         {onScenario && (
           <div className="flex flex-wrap gap-2">
+            {fix.kind === "counter" && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  onScenario({ kind: "guarantee", guarantee: fix.guarantee })
+                }
+              >
+                {t("scenario.guarantee", { amount: money(fix.guarantee) })}
+              </Button>
+            )}
             {fix.kind === "market" && fix.altCity && (
               <Button
                 type="button"

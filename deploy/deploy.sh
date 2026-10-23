@@ -11,18 +11,30 @@ set -euo pipefail
 REMOTE_DIR="${REMOTE_DIR:-/opt/headliner}"
 DOMAIN="${DOMAIN:-headliner.carsonrodrigues.com}"
 TAG="$(git rev-parse --short HEAD)$(git diff --quiet || echo -dirty)"
+
+# One multiplexed SSH connection for the whole deploy. The server rate-limits bursts of new SSH connections,
+# and a deploy used to open about eight; a refused connection then looked like a missing stack.
+CTL="/tmp/hl-%C"  # short: macOS caps Unix socket paths near 104 characters
+SSH_OPTS=(-o ControlMaster=auto -o "ControlPath=$CTL" -o ControlPersist=120 -o ConnectTimeout=20)
+rsh() { ssh "${SSH_OPTS[@]}" "$SSH_HOST" "$@"; }
+for attempt in 1 2 3 4 5 6; do
+  rsh true 2>/dev/null && break
+  [ "$attempt" = 6 ] && { echo "Cannot reach $SSH_HOST over SSH." >&2; exit 1; }
+  echo "SSH not accepting connections yet; retrying in 20s"
+  sleep 20
+done
 IMAGE="headliner-app:$TAG"
 
-ssh "$SSH_HOST" "test -f $REMOTE_DIR/.env" || {
+rsh "test -f $REMOTE_DIR/.env" || {
   echo "No .env on the server at $REMOTE_DIR/.env. Fill it from .env.example first." >&2
   exit 1
 }
-ssh "$SSH_HOST" "docker network inspect headliner_default >/dev/null 2>&1" || {
+rsh "docker network inspect headliner_default >/dev/null 2>&1" || {
   echo "The headliner Supabase stack (network headliner_default) does not exist yet." >&2
   exit 1
 }
 
-ARCH="$(ssh "$SSH_HOST" uname -m)"
+ARCH="$(rsh uname -m)"
 case "$ARCH" in
   x86_64) PLATFORM=linux/amd64 ;;
   aarch64 | arm64) PLATFORM=linux/arm64 ;;
@@ -33,14 +45,14 @@ echo "Building $IMAGE for $PLATFORM on this machine"
 docker buildx build --platform "$PLATFORM" -t "$IMAGE" -t headliner-app:latest --load .
 
 echo "Shipping the image ($(docker image inspect "$IMAGE" --format '{{.Size}}' | awk '{printf "%.0f MB", $1/1e6}'))"
-docker save "$IMAGE" headliner-app:latest | gzip -1 | ssh "$SSH_HOST" "gunzip | docker load"
+docker save "$IMAGE" headliner-app:latest | gzip -1 | rsh "gunzip | docker load"
 
 echo "Syncing compose and Caddy files"
-ssh "$SSH_HOST" "mkdir -p $REMOTE_DIR/deploy"
-rsync -az deploy/ "$SSH_HOST:$REMOTE_DIR/deploy/"
+rsh "mkdir -p $REMOTE_DIR/deploy"
+rsync -az -e "ssh ${SSH_OPTS[*]}" deploy/ "$SSH_HOST:$REMOTE_DIR/deploy/"
 
 echo "Restarting the app container"
-ssh "$SSH_HOST" "cd $REMOTE_DIR && HEADLINER_IMAGE=$IMAGE docker compose -f deploy/compose.yml up -d --no-build --remove-orphans"
+rsh "cd $REMOTE_DIR && HEADLINER_IMAGE=$IMAGE docker compose -f deploy/compose.yml up -d --no-build --remove-orphans"
 
 echo "Post-check"
 for i in 1 2 3 4 5 6; do
@@ -49,4 +61,4 @@ for i in 1 2 3 4 5 6; do
   sleep 5
 done
 echo "https://$DOMAIN/robots.txt -> $code"
-ssh "$SSH_HOST" "free -m | sed -n 1,2p; docker image prune -f --filter 'until=72h' >/dev/null"
+rsh "free -m | sed -n 1,2p; docker image prune -f --filter 'until=72h' >/dev/null"

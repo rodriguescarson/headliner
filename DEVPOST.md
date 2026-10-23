@@ -1,10 +1,12 @@
-# Headliner — Devpost submission draft
+# Headliner
 
-> Judges may score from this text alone. Every number below must come from a run; placeholders are marked `[RUN]`. On key day, `pnpm probe` prints the probe counts and `pnpm offers --baseline` prints the board tally and the Without-Qloo overlap, both straight from the code paths the site uses.
+> Check a live-show offer before you sign it. Deterministic deal math, cultural evidence from Qloo, and a plain list of what no data can tell you.
+
+**Live:** https://headliner.carsonrodrigues.com (no sign-in needed) · **Repo:** https://github.com/rodriguescarson/headliner (MIT)
 
 ## Inspiration
 
-Three hundred seats, a $2,500 guarantee, a $1,200 venue deposit, and the hold expires at midnight. Independent promoters sign that offer sheet on gut feel and a Spotify top-cities list. One misrouted mid-week show wipes out the profit from four sold-out weekends. Nothing on the desk tells them whether *this* act has an audience in *this* city, who should open, or which brand already sells to those fans.
+Three hundred seats, a $2,500 guarantee, a $1,200 venue deposit, and the hold expires at midnight. Independent promoters sign that offer sheet on gut feel and a Spotify top-cities list. One misrouted mid-week show wipes out the profit from four sold-out weekends. Nothing on the desk tells them whether *this* act has an audience in *this* city, who should open, which brand already sells to those fans, or what to counter with.
 
 ## What it does
 
@@ -14,69 +16,125 @@ Type the offer the way it arrives:
 Khruangbin · Denver, CO · 2,000 cap · $48 ticket · $45,000 guarantee + $9,000 room
 ```
 
-Headliner answers **Cleared**, **Fix required**, **Refused** or **Abstained**, and shows its work in three strictly separated columns:
+Headliner answers **Cleared**, **Fix required**, **Refused** or **Abstained**, and shows its work in three strictly separated parts:
 
-1. **Deal math**: break-even tickets and percentage of capacity, net per ticket, net at 50/65/80/100% sold. Pure TypeScript against a versioned rulebook (`headliner-rules@1.0.0`). No model touches arithmetic.
-2. **Cultural evidence from Qloo**: the act resolved to an entity, geographic affinity across the metro's heatmap cells, demographic skew, local openers below the headliner's popularity, brand candidates, night-out places, taste tags. Every call is traced and shown with its parameters and latency.
-3. **What this check cannot establish**: competing shows that night, radius clauses, actual ticket sales, hold status, availability. Printed on every result.
+1. **Deal math.** Break-even tickets and share of capacity, net per ticket, net at 50, 65, 80 and 100% sold. Plain TypeScript against a versioned rulebook (`headliner-rules@1.1.0`). No model touches a dollar.
+2. **Cultural evidence from Qloo.** The act resolved to an entity, its affinity across the city's map cells, which age bands over-index, local acts below its popularity that share its audience, brands its fans buy, night-out places, and taste tags. Every call is traced with its parameters and latency.
+3. **What the check cannot establish.** Competing shows that night, radius clauses, actual ticket sales, hold status, availability. Printed on every result.
 
-When the money is tight or the market reads weak, it prescribes the smallest fix: a local opener Qloo says shares the audience, a sponsor offset shown as a labelled rulebook assumption (never a quote), or a swap to a nearby metro with both heatmaps side by side and the shared taste tags from `/v2/analysis/compare`.
+The real answer for that Khruangbin offer, live from Qloo:
 
-**Scenarios.** Every fix is one click away from being tested: swap the market, put the opener on the bill, apply the sponsor offset. The changed offer runs through the same arithmetic and the same Qloo calls, and the two verdicts sit side by side with a list of exactly what moved and why. The promoter sees how the recommendation changes when the booking changes, with predicted demand never standing in for observed affinity.
+> **Fix required.** Break-even at 68.6% is above the 65% comfort line. Denver reads mid (mean affinity rank 0.718 across 393 map cells).
+> **Counter the guarantee:** at $42,000 instead of $45,000, break-even drops to 1,296 tickets (64.8%). Whether the act takes it is a negotiation, not a number this check can know.
+> **Offset it:** Patagonia, Fjällräven and The North Face already sell to this audience in Denver. Openers who share it: Brittany Howard, Adi Oasis, Mdou Moctar.
 
-When the signal is not there, it says so. An act Qloo cannot resolve, or a city with fewer than five heatmap cells, produces an abstention naming the exact missing signal. It does not guess.
+Every fix is one click from a **scenario**: counter the guarantee, swap the market, put the opener on the bill, apply a sponsor offset. The changed offer runs through the same arithmetic and the same Qloo calls, and the two verdicts sit side by side with exactly what moved.
+
+When the signal is not there, it says so. An act Qloo cannot match exactly, or a city with too few map cells, produces an abstention naming the missing signal:
+
+> **Abstained.** Qloo has no exact match for "The Tuesday Night Basement Trio". Its closest result was "Night Marks Electric Trio", a different act, so no evidence is borrowed from it.
 
 ## How Qloo is used
 
-| Step | Endpoint | What it decides |
+| Step | Call | What it decides |
 |---|---|---|
-| Resolve the act | `GET /search` | Whether we have an entity at all; stops here if not |
-| Local affinity | `GET /v2/insights` `filter.type=urn:heatmap` + `filter.location.query` | Market strength (mean/max affinity, cell count) |
-| Who is there | `GET /v2/insights` `filter.type=urn:demographics` | Age and gender skew for the promoter's marketing |
-| Who opens | `GET /v2/insights` `urn:entity:artist` + `signal.location.query` + `filter.popularity.max` + `feature.explainability` | Local acts that share audience, with the reason |
-| Who sponsors | `GET /v2/insights` `urn:entity:brand` + explainability | Brands the act's fans already buy |
-| Where fans go after | `GET /v2/insights` `urn:entity:place` + `filter.location.query` | The night-out package promoters sell |
-| Taste profile | `GET /v2/insights` `filter.type=urn:tag` | Tags for the brief to the DJ, the venue, the sponsor |
-| Swap the market | `urn:heatmap` for the nearby metro + `GET /v2/analysis/compare` | Side-by-side affinity and shared tags |
-| Tags | `GET /v2/tags` | Taste vocabulary for the live endpoint suite |
+| Resolve the act | `GET /search` (exact name or alias only) | Whether there is an entity at all; abstain if not |
+| Local affinity | `/v2/insights` `filter.type=urn:heatmap`, `output.heatmap.boundary=urn:geohash` | Market strength: mean `affinity_rank` across the city's cells |
+| Who is there | `/v2/insights` `urn:demographics` | Age bands that over-index, as signed scores |
+| Who opens | `/v2/insights` `urn:entity:artist` or `urn:entity:person`, `signal.location.query`, `filter.popularity.max`, `feature.explainability` | Local acts (or comics, for comics) that share the audience |
+| Why that opener | `GET /v2/analysis/compare` headliner vs top opener | The taste tags the two share |
+| Who sponsors | `/v2/insights` `urn:entity:brand` + explainability | Brands the act's fans already buy |
+| Where fans go after | `/v2/insights` `urn:entity:place` | The night-out package promoters sell |
+| Taste profile | `/v2/insights` `urn:tag`, `filter.parents.types` = the act's type | Style tags for the brief to the venue and sponsor |
+| Swap the market | the same heatmap for a nearby metro | Offered only if that city reads higher |
 
-Would it work without Qloo? No. The first column is arithmetic any spreadsheet can do. The second column does not exist without a cultural graph: a language model can say Denver likes live music; it cannot say whether this act has affinity in Denver, which Denver acts share its audience, or which brands its fans buy. `[RUN]` The "Without Qloo" control runs the same offer through a model alone and reports the overlap: `[RUN overlap %]` on openers, `[RUN]` on brands, across the twelve pre-seeded offers.
+A spreadsheet can do part one. Part two does not exist without a cultural graph: a language model can say Denver likes live music, but it cannot say whether this act over-indexes in Denver, which Denver acts share its audience, or which brands its fans buy there.
 
-## Evidence from the key-day probe
+## Would it work without Qloo? We measured it.
 
-`[RUN]` Twenty acts across comedy, indie, hardcore, soul, electronic and five deliberately obscure local acts, five metros:
+Every check can also send the same offer to a language model alone, with no data source (Claude Opus 5.5, medium effort, told to say so rather than invent), and compare what comes back. We ran it on all twelve offers (`pnpm offers --baseline`). Across the ten real acts:
 
-- `[RUN]` of 20 acts resolved; `[RUN]` did not, and Headliner abstained on each.
-- `[RUN]` of the resolved acts had five or more heatmap cells in their first city.
-- `[RUN]` of the twelve pre-seeded offers fail as written; `[RUN]` abstain; `[RUN]` clear.
-- Raw response shapes and every trace are in the repo's probe output (git-ignored data, documented schema).
+| | Model alone | Qloo |
+|---|---|---|
+| Markets read as low | 0 of 10 | 4 of 10 |
+| Agreement on the market read | 2 of 10 | |
+| Sponsor lists containing a drinks brand | 10 of 10 | 1 of 10 |
+| Acts where no opener was named | 3 of 10 | 0 of 10 |
+| Names in common | one opener (Liv.e, for Sampha) and one sponsor (Coca-Cola, for Cedric) | |
+
+Mean overlap was 1% on openers and 1% on sponsors. These figures come from one full run on October 21; the model's individual names change from run to run, while Qloo's come from its graph and repeat. That measures difference, not who is right, but the difference has a shape. The model answers from the city: local breweries, vodka and radio stations, for a hardcore band and a soul singer alike, and never calls a market weak. Qloo answers from the audience: Patagonia and The North Face for Khruangbin's Denver crowd, Glossier and Reformation for Japanese Breakfast, comedians Qloo reports share Nate Bargatze's audience. And for the two invented acts the model still produced sponsor shortlists, while Qloo, correctly, had nothing to say.
+
+## Key day: what the real API taught us
+
+The Qloo key arrived two days into the build. The first probe run against 20 acts (15 real, 5 invented to test abstention) in five cities was a useful failure:
+
+| | First run | After fixes |
+|---|---|---|
+| Acts "resolved" | 20 of 20, five of them wrong | 15 of 15 real acts |
+| Invented acts rejected | 0 of 5 | 5 of 5 |
+| Real acts with a usable heatmap | 0 of 15 | 15 of 15 |
+| Gaps left | rate limits reported as missing data | demographics for two comics, which Qloo did not return |
+
+What was wrong, all of it found by the probe and fixed with a test:
+
+1. **Heatmap boundary.** The API wants `urn:geohash`; we sent `geohash`. Every heatmap call had failed.
+2. **The heatmap's `affinity` cannot compare cities.** It is rescaled inside each response: its mean was exactly 0.500 in every city for every act. `affinity_rank` varies by city, so that is what Headliner reads.
+3. **Search always returns something.** "Goan Garage Collective" came back as Animal Collective, "DJ Kettle Corn" as DJ Karotte. Headliner now accepts only an exact normalised name or alias, and names the near miss when it abstains.
+4. **Entity type** lives in `types[]`, not `type`. Comics had been getting singers as openers (Cedric the Entertainer got Wayne Brady).
+5. **Tags** are under `results.tags`, so taste tags had always been empty; compare had been comparing the act with itself.
+6. **Unfiltered tags are noise.** A comic came back tagged with a credit card, his ethnicity, and genres from his books. Tags are now restricted to the act's own type, and ethnicity and language tags are never shown.
+7. **Demographics are signed affinity scores** from -1 to 1, not shares. They are shown as over-indexing bands with the score, never as a percentage.
+8. **Rate limits.** The hackathon tier allows 5 requests a second; a check fires nine. A 429 had been reported as "0 brand candidates". Calls are now paced and retried, and a failed call says it failed.
+9. **Trending** needs a date window and returned an empty list for the acts tested. It is not part of the verdict.
+
+## Calibrated, not guessed
+
+The first rulebook set "low" and "strong" affinity at 0.30 and 0.60 before any real data existed. On key day we measured instead: 15 real acts in Austin, Chicago, Atlanta, Denver and Los Angeles, 75 act-city pairs, all scored, 90 API calls, no retries (`pnpm calibrate`). The cut-offs in `headliner-rules@1.1.0` are the tertiles of that population, 0.61 and 0.88, and the rulebook records how they were made.
+
+Before trusting the measure we checked it against what any promoter knows. Each act's best city out of the five:
+
+| Act | Best city | Read |
+|---|---|---|
+| Leon Bridges | Austin (0.909) | Texas soul singer |
+| Khruangbin | Austin (0.743) | Texas band |
+| Cedric the Entertainer | Atlanta (0.976) | His strongest market |
+| Bad Bunny | Los Angeles (0.934) | Largest Latin audience of the five |
+| Jinjer | none above 0.28 | Ukrainian metal, low everywhere |
+
+One limitation, stated rather than hidden: stand-up comics scored 0.88 to 0.98 in every city, so for comics the comparison between cities carries more information than the label.
+
+## The twelve pre-seeded offers, live
+
+Real acts and cities; the deal terms are illustrative shapes, not claims about any act's fees.
+
+- 1 cleared, 3 fix required, 6 refused as written, 2 abstained.
+- Every offer that fails as written comes with a concrete next move: a counter-guarantee on all nine, and a sponsor shortlist on the three tight ones.
+- Four offers sit in low-affinity markets. In each case the nearby metro read no better, so no market swap is offered and the verdict shows the comparison that ruled it out. An earlier build would have sent Men I Trust from Phoenix (0.399) to Tucson (0.322).
+- Both invented acts abstain and name Qloo's closest miss.
 
 ## How we kept it honest
 
-- **Money never comes from a model.** Deal math is plain TypeScript against `headliner-rules@1.0.0`, covered by unit tests (36 tests across deal math, offer parsing, verdicts, scenario diffs, storage and theme). The rulebook version is printed on every verdict.
-- **It abstains out loud.** No entity, or fewer than five heatmap cells, means "Abstained" with the missing signal named. The pre-seeded set includes an act built to abstain.
-- **Every number is reproducible.** The two key-day scripts run every offer and every probe act, failures included, and write the raw output to a git-ignored folder. Nothing is hand-picked.
-- **We fixed what we found.** A pre-submission pass caught shared verdict links failing to render (a server/client boundary bug in the count-up animation) and an in-memory store that dev bundles did not share. Both are fixed and noted in the commit history.
+- **Money never comes from a model.** 45 unit tests cover deal math, the counter-offer, parsing, verdicts, scenario diffs, the evidence layer against real response shapes, storage and theme.
+- **It abstains out loud** and never borrows evidence from a near-miss entity.
+- **A weaker market is never recommended.** If the nearby city reads lower, the verdict says the comparison was made and why no swap is offered.
+- **Every number is reproducible.** `pnpm probe`, `pnpm calibrate` and `pnpm offers` run the same code paths as the site, failures included. Qloo responses are cached server-side and never committed.
 
 ## For the judges
 
-- **Try it with any act**: nothing is canned; the desk runs live against `hackathon.api.qloo.com`, cached server-side.
-- **/board**: all twelve pre-seeded offers on one board; run them and watch each row settle with its verdict.
-- **Share**: any verdict becomes a link a co-promoter or sponsor can open.
-- **/suite**: watch every endpoint fire with status and latency.
-- **MCP**: a venue booker's or sponsor's agent can run `check_offer`, read the `rulebook` and the `endpoint_suite` over stdio. Same evidence, same trace, read-only.
+- **Check any act**: the desk runs live against `hackathon.api.qloo.com`.
+- **[/board?run=all](https://headliner.carsonrodrigues.com/board?run=all)**: all twelve offers checked live on one table, each with its next move.
+- **Share**: any verdict becomes a link with a preview card showing the verdict, break-even and sellout net.
+- **/suite**: every endpoint fired once, with status and latency.
+- **MCP**: a venue booker's or sponsor's agent can call `check_offer`, read the `rulebook` and run the `endpoint_suite`. Same evidence, read-only.
 
-## What we got wrong, what we did not verify
+## What we did not verify
 
-`[RUN]` Filled from the probe: endpoints whose parameter names did not match the docs, acts that resolved to the wrong entity, cities where the heatmap was too sparse. Reported here, not hidden.
+- What exactly `affinity_rank` ranks against. Qloo's docs do not say; we use it because it varies by city in ways that match known markets, and the calibration table above is the evidence.
+- Which side is right on any single act. The control shows the model and Qloo answer different questions; it does not prove Qloo's picks sell tickets.
+- Whether any act would accept a counter. The counter is arithmetic on the promoter's own numbers.
 
 ## Built with
 
-Next.js 16 (App Router), React 19, TypeScript, shadcn/ui on Base UI, Tailwind CSS 4, Geist, GSAP and Lenis (motion, off under reduced motion), Supabase (self-hosted: Auth with Google and email, Postgres with row-level security), Resend, Docker behind Caddy on a VPS, Vitest, Biome, Qloo Insights API, Model Context Protocol SDK, Vercel AI SDK (Without-Qloo control only).
+Next.js 16, React 19, TypeScript, the Anthropic API (Claude Opus 5.5, for the Without-Qloo control only), shadcn/ui on Base UI, Tailwind CSS 4, Geist, GSAP and Lenis (off under reduced motion), self-hosted Supabase (Auth with Google and email, Postgres with row-level security), Resend, Docker behind Caddy on a VPS, Vitest, Biome, the Qloo Insights API, and the Model Context Protocol SDK.
 
-Interface patterns were benchmarked against shipped products (Gemini and Copilot for the input, Wise and Grammarly for the verdict, Mercury and Polar for the board); structure only, no borrowed visuals.
-
-## Repo and demo
-
-- Repo: https://github.com/rodriguescarson/headliner (MIT)
-- Demo: https://headliner.carsonrodrigues.com (no sign-in needed to run a check)
+Interface structure was benchmarked against shipped products (Gemini and Copilot for the input, Wise and Grammarly for the verdict, Mercury and Polar for the board). No borrowed visuals.
