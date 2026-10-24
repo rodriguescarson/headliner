@@ -8,6 +8,7 @@ Built for the [Qloo Agentic Hackathon](https://qloo.devpost.com) (Sep 30 – Oct
 
 **Live:** https://headliner.carsonrodrigues.com, running on the Qloo API. No sign-in needed.
 **All twelve offers checked live in one click:** https://headliner.carsonrodrigues.com/board?run=all
+**Demo video (2 min):** https://youtu.be/hagGRXNhnMI
 
 ![A live Headliner verdict: Khruangbin in Denver, fix required, with a counter-guarantee, Qloo sponsor fits and openers](docs/devpost/02-verdict-khruangbin.png)
 
