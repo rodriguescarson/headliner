@@ -3,3 +3,8 @@ allowBuilds:
   esbuild: true
   sharp: true
   unrs-resolver: false
+
+# Patched transitive dependencies of @modelcontextprotocol/sdk (pnpm audit, 2026-10-24).
+overrides:
+  body-parser@2: ^2.4.0
+  fast-uri@3: ^3.1.9

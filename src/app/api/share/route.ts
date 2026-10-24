@@ -1,6 +1,7 @@
 import { currentUser } from "@/lib/auth/session";
 import { jobStore } from "@/lib/jobs/store";
 import { guardJson, log } from "@/lib/security/guard";
+import { publicOrigin } from "@/lib/security/public-origin";
 import { checkStore, toShared } from "@/lib/storage";
 
 /** Turn a finished check into a share link. The payload is copied from the job, never from the client. */
@@ -33,7 +34,7 @@ export async function POST(request: Request) {
       ...shared,
       userId: user?.id ?? null,
     });
-    const base = process.env.NEXT_PUBLIC_APP_URL ?? new URL(request.url).origin;
+    const base = publicOrigin(request);
     return Response.json(
       { ok: true, id: saved.id, url: `${base}/s/${saved.id}` },
       { status: 201 },

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { publicOrigin } from "@/lib/security/public-origin";
 import { createClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
@@ -8,5 +9,7 @@ export async function POST(request: Request) {
     return new NextResponse(null, { status: 403 });
   const supabase = await createClient();
   if (supabase) await supabase.auth.signOut();
-  return NextResponse.redirect(new URL("/", request.url), { status: 303 });
+  return NextResponse.redirect(new URL("/", publicOrigin(request)), {
+    status: 303,
+  });
 }
