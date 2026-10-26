@@ -78,7 +78,11 @@
     "noSkew": "no age band over-indexes",
     "offered": "Guarantee as offered",
     "counter": "Counter at",
-    "breakEvenAtCounter": "Break-even at the counter"
+    "breakEvenAtCounter": "Break-even at the counter",
+    "priceOffered": "Ticket as offered",
+    "priceRaised": "Raise to",
+    "breakEvenAtPrice": "Break-even at the higher price",
+    "priceDemandUnknown": "Affinity is evidence about the audience, not about what it will spend."
   },
   "cannot": {
     "competing_shows_same_night": "Competing shows on the same night",
@@ -171,7 +175,8 @@
     "breakEven": "Break-even",
     "affinity": "Local affinity",
     "verdict": "Verdict",
-    "guarantee": "Counter at {{amount}}"
+    "guarantee": "Counter at {{amount}}",
+    "price": "Raise the ticket to {{amount}}"
   },
   "share": {
     "title": "Shared result",
@@ -218,7 +223,7 @@
     },
     "scenario": {
       "title": "Change one thing",
-      "body": "Counter the guarantee, swap the market, put the opener on the bill, apply a sponsor offset. The same check runs again and the two verdicts sit side by side with exactly what moved and why."
+      "body": "Counter the guarantee, raise the ticket price, swap the market, put the opener on the bill, apply a sponsor offset. The same check runs again and the two verdicts sit side by side with exactly what moved and why."
     }
   },
   "settings": {
