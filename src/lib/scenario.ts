@@ -1,19 +1,20 @@
 /**
  * A scenario is one deliberate change to the offer on the desk: swap the market, put an opener on the bill,
- * apply a sponsor offset, or counter the guarantee. The same deterministic check runs on the changed offer and the two verdicts are
+ * apply a sponsor offset, counter the guarantee, or raise the ticket price. The same deterministic check runs on the changed offer and the two verdicts are
  * compared. Nothing here forecasts; it re-runs the same arithmetic and the same evidence calls.
  */
 import { z } from "zod";
 import type { Offer } from "@/lib/deal/offer-parser";
-import type { ScenarioKind } from "@/lib/enums";
+import { SCENARIO_KIND, type ScenarioKind } from "@/lib/enums";
 
 export const ScenarioSchema = z
   .object({
-    kind: z.enum(["market", "opener", "sponsor", "guarantee"]),
+    kind: z.enum(SCENARIO_KIND),
     city: z.string().trim().min(2).max(80).optional(),
     opener: z.string().trim().min(1).max(120).optional(),
     sponsorOffset: z.number().nonnegative().max(1_000_000).optional(),
     guarantee: z.number().positive().max(10_000_000).optional(),
+    ticketPrice: z.number().positive().max(100_000).optional(),
   })
   .refine(
     (s) =>
@@ -23,7 +24,9 @@ export const ScenarioSchema = z
           ? !!s.opener
           : s.kind === "guarantee"
             ? typeof s.guarantee === "number"
-            : typeof s.sponsorOffset === "number",
+            : s.kind === "price"
+              ? typeof s.ticketPrice === "number"
+              : typeof s.sponsorOffset === "number",
     {
       message: "A scenario needs the field its kind changes.",
     },
@@ -38,6 +41,8 @@ export function applyScenario(offer: Offer, scenario: Scenario): Offer {
       return { ...offer, opener: scenario.opener };
     case "guarantee":
       return { ...offer, guarantee: scenario.guarantee as number };
+    case "price":
+      return { ...offer, ticketPrice: scenario.ticketPrice as number };
     case "sponsor":
       return {
         ...offer,
@@ -60,6 +65,11 @@ export function describeScenario(scenario: Scenario): {
       return {
         kind: "guarantee",
         label: `Counter at a ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(scenario.guarantee as number)} guarantee`,
+      };
+    case "price":
+      return {
+        kind: "price",
+        label: `Raise the ticket to ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(scenario.ticketPrice as number)}`,
       };
     case "sponsor":
       return {

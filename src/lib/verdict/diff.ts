@@ -33,15 +33,31 @@ export function diffVerdicts(base: Verdict, next: Verdict): VerdictDiff {
     fromPct: base.deal.breakEvenCapacityPct,
     toPct: next.deal.breakEvenCapacityPct,
   };
+  const netFrom = base.deal.netPerTicket;
+  const netTo = next.deal.netPerTicket;
   if (be.deltaTickets !== 0) {
+    const causes: string[] = [];
+    if (base.deal.totalFixedCost !== next.deal.totalFixedCost)
+      causes.push(
+        `fixed costs change from ${money(base.deal.totalFixedCost)} to ${money(next.deal.totalFixedCost)}`,
+      );
+    if (netFrom !== netTo)
+      causes.push(
+        `net per ticket changes from ${money(netFrom, true)} to ${money(netTo, true)}`,
+      );
     lines.push(
-      `Break-even moves from ${be.from} to ${be.to} tickets (${pct(be.fromPct)} → ${pct(be.toPct)} of capacity) because fixed costs change from ${money(base.deal.totalFixedCost)} to ${money(next.deal.totalFixedCost)}.`,
+      `Break-even moves from ${be.from} to ${be.to} tickets (${pct(be.fromPct)} → ${pct(be.toPct)} of capacity) because ${causes.join(" and ")}.`,
     );
   } else {
     lines.push(
       `Break-even is unchanged at ${be.to} tickets (${pct(be.toPct)}): this scenario does not touch the money.`,
     );
   }
+
+  if (next.deal.inputs.ticketPrice > base.deal.inputs.ticketPrice)
+    lines.push(
+      `Whether fans pay ${money(next.deal.inputs.ticketPrice)} instead of ${money(base.deal.inputs.ticketPrice)} is not something this check can know.`,
+    );
 
   const a = affinityText(base);
   const b = affinityText(next);
