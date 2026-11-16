@@ -53,6 +53,7 @@ function audienceSkew(age: Record<string, number>): string {
 
 const fixTone: Record<Fix["kind"], Tone> = {
   counter: "destructive",
+  price: "destructive",
   opener: "info",
   sponsor: "warning",
   market: "success",
@@ -472,6 +473,25 @@ function FixView({
             />
           </div>
         )}
+        {fix.kind === "price" && (
+          <div className="grid gap-1">
+            <Stat
+              label={t("verdict.priceOffered")}
+              value={money(fix.offered, true)}
+            />
+            <Stat
+              label={t("verdict.priceRaised")}
+              value={money(fix.ticketPrice, true)}
+            />
+            <Stat
+              label={t("verdict.breakEvenAtPrice")}
+              value={`${fix.dealAtPrice.breakEvenTickets} (${pct(fix.dealAtPrice.breakEvenCapacityPct)})`}
+            />
+            <p className="text-sm text-muted-foreground">
+              {t("verdict.priceDemandUnknown")}
+            </p>
+          </div>
+        )}
         {fix.kind === "sponsor" && (
           <div className="grid gap-1">
             <Stat
@@ -506,6 +526,18 @@ function FixView({
                 }
               >
                 {t("scenario.guarantee", { amount: money(fix.guarantee) })}
+              </Button>
+            )}
+            {fix.kind === "price" && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  onScenario({ kind: "price", ticketPrice: fix.ticketPrice })
+                }
+              >
+                {t("scenario.price", { amount: money(fix.ticketPrice) })}
               </Button>
             )}
             {fix.kind === "market" && fix.altCity && (

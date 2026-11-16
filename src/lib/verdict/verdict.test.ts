@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { parseOfferLine } from "@/lib/deal/offer-parser";
+import { LIVE_OFFERS } from "@/lib/offers";
 import { SAMPLE_OFFERS, sampleEvidence } from "@/lib/qloo/sample";
+import { rules } from "@/lib/rules";
 import { decide } from "./verdict";
 
 const run = (line: string) => {
@@ -89,5 +91,40 @@ describe("decide (sample evidence)", () => {
     if (counter?.kind !== "counter") return;
     expect(counter.guarantee).toBeLessThan(counter.offered);
     expect(counter.detail).toMatch(/negotiation/);
+  });
+
+  it("offers a ticket-price raise on tight money and says demand at that price is unknown", () => {
+    const v = run(SAMPLE_OFFERS[1].line); // fix_required on money at $28
+    expect(v.status).toBe("fix_required");
+    const price = v.fixes.find((f) => f.kind === "price");
+    expect(price).toBeDefined();
+    if (price?.kind !== "price") return;
+    expect(price.offered).toBe(28);
+    expect(price.ticketPrice).toBe(30);
+    expect(price.dealAtPrice.breakEvenCapacityPct).toBeLessThanOrEqual(
+      rules.money.warnAboveBreakEvenPct,
+    );
+    expect(price.detail).toMatch(/not something this check can know/);
+    expect(price.detail).not.toMatch(/will sell|will pay|forecast/i);
+  });
+
+  it("offers a ticket-price raise on a refused deal when it fits under the ceiling", () => {
+    const turnstile = LIVE_OFFERS.find((o) => o.line.startsWith("Turnstile"));
+    const v = run(turnstile?.line ?? "");
+    expect(v.status).toBe("refused");
+    const price = v.fixes.find((f) => f.kind === "price");
+    expect(price?.kind === "price" && price.ticketPrice).toBe(40);
+  });
+
+  it("offers no ticket-price raise when the price would have to jump past the ceiling", () => {
+    const leon = LIVE_OFFERS.find((o) => o.line.startsWith("Leon Bridges"));
+    const v = run(leon?.line ?? "");
+    expect(v.status).toBe("refused");
+    expect(v.fixes.some((f) => f.kind === "price")).toBe(false);
+  });
+
+  it("offers no ticket-price raise on a deal that clears", () => {
+    const v = run(SAMPLE_OFFERS[0].line);
+    expect(v.fixes.some((f) => f.kind === "price")).toBe(false);
   });
 });

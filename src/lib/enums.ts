@@ -9,7 +9,13 @@ export const VERDICT_STATUS = [
 ] as const;
 export type VerdictStatus = (typeof VERDICT_STATUS)[number];
 
-export const FIX_KIND = ["counter", "opener", "sponsor", "market"] as const;
+export const FIX_KIND = [
+  "counter",
+  "price",
+  "opener",
+  "sponsor",
+  "market",
+] as const;
 export type FixKind = (typeof FIX_KIND)[number];
 
 export const EVIDENCE_SOURCE = ["live", "sample", "none"] as const;
@@ -45,6 +51,7 @@ export const SCENARIO_KIND = [
   "opener",
   "sponsor",
   "guarantee",
+  "price",
 ] as const;
 export type ScenarioKind = (typeof SCENARIO_KIND)[number];
 

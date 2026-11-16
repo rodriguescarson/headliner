@@ -19,6 +19,8 @@ export function scenarioLabel(s: Scenario): string {
   if (s.kind === "opener") return t("scenario.opener", { opener: s.opener });
   if (s.kind === "guarantee")
     return t("scenario.guarantee", { amount: money(s.guarantee ?? 0) });
+  if (s.kind === "price")
+    return t("scenario.price", { amount: money(s.ticketPrice ?? 0) });
   return t("scenario.sponsor", { amount: money(s.sponsorOffset ?? 0) });
 }
 

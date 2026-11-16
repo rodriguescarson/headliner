@@ -3,11 +3,13 @@
  *   1. Deterministic deal math (rulebook) can refuse on its own.
  *   2. Missing evidence makes the product abstain rather than guess.
  *   3. Evidence can require a fix (opener, sponsor, market) before clearing.
+ * Money fixes (counter the guarantee, raise the ticket price) are arithmetic on the offer and appear whenever money fails.
  * The model never participates here.
  */
 import {
   computeDeal,
   counterGuarantee,
+  counterTicketPrice,
   type DealInput,
   type DealMath,
   money,
@@ -32,6 +34,14 @@ export type Fix =
       guarantee: number;
       offered: number;
       dealAtCounter: DealMath;
+    }
+  | {
+      kind: "price";
+      title: string;
+      detail: string;
+      ticketPrice: number;
+      offered: number;
+      dealAtPrice: DealMath;
     }
   | {
       kind: "opener";
@@ -97,6 +107,20 @@ function counterFix(input: DealInput): Fix | null {
   };
 }
 
+/** The ticket-price fix, when one exists: the same arithmetic with only the price moved. Demand at that price is unknown. */
+function priceFix(input: DealInput): Fix | null {
+  const p = counterTicketPrice(input);
+  if (!p) return null;
+  return {
+    kind: "price",
+    title: "Raise the ticket price",
+    detail: `At ${money(p.ticketPrice)} instead of ${money(input.ticketPrice)}, with the same guarantee and costs, break-even drops to ${p.deal.breakEvenTickets} tickets (${pct(p.deal.breakEvenCapacityPct)}), inside the rulebook's ${pct(rules.money.warnAboveBreakEvenPct)} line. Whether fans pay the higher price is not something this check can know.`,
+    ticketPrice: p.ticketPrice,
+    offered: input.ticketPrice,
+    dealAtPrice: p.deal,
+  };
+}
+
 /**
  * Swap the market, but only toward a nearby metro that reads better on the same measure. Recommending a weaker
  * room would be worse than saying nothing.
@@ -148,6 +172,8 @@ export function decide(offer: Offer, evidence: CulturalEvidence): Verdict {
     for (const v of deal.violations) reasons.push(v.detail);
     const counter = counterFix(input);
     if (counter) fixes.push(counter);
+    const price = priceFix(input);
+    if (price) fixes.push(price);
     if (evidence.localAffinity?.label === "low") {
       const m = marketFix(evidence, evidence.localAffinity);
       if (m) fixes.push(m);
@@ -217,6 +243,8 @@ export function decide(offer: Offer, evidence: CulturalEvidence): Verdict {
   if (tightMoney) {
     const counter = counterFix(input);
     if (counter) fixes.push(counter);
+    const price = priceFix(input);
+    if (price) fixes.push(price);
   }
   if (tightMoney && evidence.sponsors.length > 0) {
     const a = rules.assumptions.sponsorActivationUsd;

@@ -1,7 +1,7 @@
 {
   "id": "headliner-rules",
-  "version": "1.1.0",
-  "updated": "2026-10-19",
+  "version": "1.2.0",
+  "updated": "2026-10-26",
   "description": "Deterministic rulebook for the Headliner deal check. Every threshold that touches money lives here, never in a prompt.",
   "money": {
     "currency": "USD",
@@ -9,7 +9,8 @@
     "defaultFeesPct": 0.1,
     "refuseAboveBreakEvenPct": 0.85,
     "warnAboveBreakEvenPct": 0.65,
-    "minNetPerTicket": 1
+    "minNetPerTicket": 1,
+    "maxTicketRaisePct": 0.35
   },
   "evidence": {
     "minHeatmapCells": 5,
@@ -36,6 +37,11 @@
     "artist_availability"
   ],
   "changelog": [
+    {
+      "version": "1.2.0",
+      "date": "2026-10-26",
+      "change": "Added maxTicketRaisePct (0.35): the ticket-price fix is offered only when a raise of at most 35% over the offered price brings break-even inside the warning line. Seed offers needing more (57% to 165%) get no price fix."
+    },
     {
       "version": "1.1.0",
       "date": "2026-10-19",

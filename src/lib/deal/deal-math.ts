@@ -190,3 +190,36 @@ export function counterGuarantee(
   if (guarantee <= 0 || guarantee >= i.guarantee) return null;
   return { guarantee, deal: computeDeal({ ...input, guarantee }) };
 }
+
+/**
+ * The lowest whole-dollar ticket price at which break-even sits at or under the rulebook's warning line, with the
+ * guarantee and every cost unchanged. Arithmetic on the promoter's own numbers, not a claim that fans pay it.
+ * Returns null when the offer already clears the line, when no ticket count fits under it, or when the price would
+ * have to rise more than the rulebook's ceiling over the offered price (that is a different show, not a fix).
+ */
+export function counterTicketPrice(
+  input: DealInput,
+  targetPct: number = rules.money.warnAboveBreakEvenPct,
+): { ticketPrice: number; deal: DealMath } | null {
+  const base = computeDeal(input);
+  if (!Number.isFinite(base.breakEvenCapacityPct)) return null;
+  if (base.breakEvenCapacityPct <= targetPct) return null;
+  const i = base.inputs;
+  const keep = 1 - i.taxPct - i.feesPct;
+  const tickets = Math.floor(targetPct * i.capacity);
+  if (!(keep > 0) || tickets <= 0 || !(base.totalFixedCost > 0)) return null;
+  const ceiling = Math.floor(
+    i.ticketPrice * (1 + rules.money.maxTicketRaisePct),
+  );
+  // Start a dollar under the closed form (cent rounding on net per ticket can move it either way), then step up.
+  let price = Math.max(
+    Math.floor(i.ticketPrice) + 1,
+    Math.ceil(base.totalFixedCost / tickets / keep) - 1,
+  );
+  for (; price <= ceiling; price++) {
+    const deal = computeDeal({ ...input, ticketPrice: price });
+    if (deal.breakEvenCapacityPct <= targetPct)
+      return { ticketPrice: price, deal };
+  }
+  return null;
+}

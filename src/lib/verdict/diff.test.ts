@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { parseOfferLine } from "@/lib/deal/offer-parser";
 import { SAMPLE_OFFERS, sampleEvidence } from "@/lib/qloo/sample";
-import { applyScenario } from "@/lib/scenario";
+import { applyScenario, ScenarioSchema } from "@/lib/scenario";
 import { diffVerdicts } from "./diff";
 import { decide } from "./verdict";
 
@@ -45,5 +45,31 @@ describe("scenario compare", () => {
     const d = diffVerdicts(run(base), run(next));
     expect(d.affinity.changed).toBe(false);
     expect(d.lines.join(" ")).toMatch(/could not be evaluated/);
+  });
+
+  it("ticket-price raise moves break-even through net per ticket and names demand as unknown", () => {
+    const base = offerOf(SAMPLE_OFFERS[1].line); // fix_required at $28
+    const next = applyScenario(base, { kind: "price", ticketPrice: 30 });
+    expect(next.ticketPrice).toBe(30);
+    expect(next.guarantee).toBe(base.guarantee);
+    const d = diffVerdicts(run(base), run(next));
+    expect(d.breakEven.deltaTickets).toBeLessThan(0);
+    expect(d.status.to).toBe("cleared");
+    const text = d.lines.join(" ");
+    expect(text).toMatch(/net per ticket changes/);
+    expect(text).not.toMatch(/fixed costs change/);
+    expect(text).toMatch(
+      /Whether fans pay \$30 instead of \$28 is not something this check can know/,
+    );
+  });
+
+  it("price scenarios need the price they change", () => {
+    expect(
+      ScenarioSchema.safeParse({ kind: "price", ticketPrice: 30 }).success,
+    ).toBe(true);
+    expect(ScenarioSchema.safeParse({ kind: "price" }).success).toBe(false);
+    expect(
+      ScenarioSchema.safeParse({ kind: "price", ticketPrice: -5 }).success,
+    ).toBe(false);
   });
 });

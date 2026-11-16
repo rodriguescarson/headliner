@@ -255,6 +255,8 @@ function nextMove(fixes: Verdict["fixes"]): string | null {
   if (!f) return null;
   if (f.kind === "counter")
     return t("scenario.guarantee", { amount: money(f.guarantee) });
+  if (f.kind === "price")
+    return t("scenario.price", { amount: money(f.ticketPrice) });
   if (f.kind === "market" && f.altCity)
     return t("scenario.market", { city: f.altCity });
   if (f.kind === "opener" && f.candidates[0])
