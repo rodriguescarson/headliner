@@ -8,3 +8,7 @@ allowBuilds:
 overrides:
   body-parser@2: ^2.4.0
   fast-uri@3: ^3.1.9
+  hono@4: 4.13.16
+  '@hono/node-server@2': 2.1.6
+  minimatch@10: 11.0.1
+  systeminformation@5: 5.33.16
