@@ -2,7 +2,7 @@
 
 > Check a live-show offer before you sign it. Deterministic deal math, cultural evidence from Qloo, and a plain list of what no data can tell you.
 
-**Live:** https://headliner.carsonrodrigues.com (no sign-in needed) · **Repo:** https://github.com/rodriguescarson/headliner (MIT) · **Video:** https://youtu.be/hagGRXNhnMI
+**Live demo:** retired on 12 Nov 2026, after the hackathon (it was at headliner.carsonrodrigues.com) · **Repo:** https://github.com/rodriguescarson/headliner (MIT) · **Video:** https://youtu.be/hagGRXNhnMI
 
 ## Inspiration
 

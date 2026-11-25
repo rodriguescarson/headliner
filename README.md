@@ -6,9 +6,9 @@ An independent promoter looks at an offer sheet at 10 PM: an act, a city, a venu
 
 Built for the [Qloo Agentic Hackathon](https://qloo.devpost.com) (Sep 30 – Oct 30, 2026). MIT licensed.
 
-**Live:** https://headliner.carsonrodrigues.com, running on the Qloo API. No sign-in needed.
-**All twelve offers checked live in one click:** https://headliner.carsonrodrigues.com/board?run=all
+**The hackathon is over, and the live demo is retired.** Headliner did not place (the winners were Roomful, Backline and Undertow, out of 1,040 entries). The site at headliner.carsonrodrigues.com and its database were shut down on 12 Nov 2026. To try it, run it locally in sample mode (see "Running it") or with your own Qloo key.
 **Demo video (2 min):** https://youtu.be/hagGRXNhnMI
+**Write-up:** https://carsonrodrigues.com/blog/headliner-qloo-agentic
 
 ![A live Headliner verdict: Khruangbin in Denver, fix required, with a counter-guarantee, Qloo sponsor fits and openers](docs/devpost/02-verdict-khruangbin.png)
 
@@ -99,6 +99,8 @@ Motion (`src/components/motion/`) is small and functional: GSAP counts the break
 
 ## Deploy (Carson's VPS, behind the shared Caddy)
 
+This deployment was taken down on 12 Nov 2026 (app, Supabase stack, Caddy blocks and DNS records). The steps are kept so it can be stood up again.
+
 The VPS already runs one self-hosted Supabase stack per product under `/root/stacks/<name>` and a shared `supabase-caddy` that owns ports 80 and 443. Headliner follows the same pattern:
 
 1. Create the `headliner` Supabase stack with the server's `new-stack.sh`; it provides the `headliner_default` network and `headliner-supabase-kong`.
@@ -133,7 +135,7 @@ pnpm test        # Vitest
 
 ## Status
 
-See `FEATURE-REGISTER.md` for what is built, how each part was verified, and what is deliberately out of scope.
+Retired on 12 Nov 2026 after the hackathon; the code stays public under MIT. See `FEATURE-REGISTER.md` for what is built, how each part was verified, and what is deliberately out of scope.
 
 ## Support
 
